@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>RobotCar Smart Rover · Documentation Hub</title>
+  <link rel="icon" href="images/logo.png" type="image/png">
+  <style>
+    :root {
+      --bg: #0d1117;
+      --card-bg: #161b22;
+      --border: #30363d;
+      --text: #c9d1d9;
+      --text-bright: #f0f6fc;
+      --accent: #58a6ff;
+      --accent-hover: #79c0ff;
+      --success: #238636;
+      --font: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      background-color: var(--bg);
+      color: var(--text);
+      font-family: var(--font);
+      line-height: 1.6;
+      padding: 0 1rem 3rem 1rem;
+    }
+    .container {
+      max-width: 1040px;
+      margin: 0 auto;
+    }
+    header {
+      text-align: center;
+      padding: 2.5rem 1rem 2rem 1rem;
+    }
+    .logo-hero {
+      max-width: 780px;
+      width: 100%;
+      border-radius: 12px;
+      box-shadow: 0 12px 32px rgba(0, 0, 0, 0.6);
+      margin-bottom: 1.5rem;
+      border: 1px solid var(--border);
+    }
+    h1 {
+      color: var(--text-bright);
+      font-size: 2.2rem;
+      margin-bottom: 0.5rem;
+    }
+    p.tagline {
+      font-size: 1.1rem;
+      color: #8b949e;
+      margin-bottom: 1.5rem;
+    }
+    .badge-bar {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 0.5rem;
+      margin-bottom: 2rem;
+    }
+    .badge {
+      display: inline-block;
+      padding: 0.35rem 0.75rem;
+      border-radius: 20px;
+      font-size: 0.85rem;
+      font-weight: 600;
+      text-decoration: none;
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      color: var(--text-bright);
+    }
+    .badge.primary { background: #1f6feb; border-color: #388bfd; }
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 1.5rem;
+      margin-bottom: 2.5rem;
+    }
+    .card {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 1.5rem;
+      transition: transform 0.2s, border-color 0.2s;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+    .card:hover {
+      transform: translateY(-3px);
+      border-color: var(--accent);
+    }
+    .card h2 {
+      font-size: 1.3rem;
+      color: var(--text-bright);
+      margin-bottom: 0.6rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    .card p {
+      font-size: 0.95rem;
+      color: #8b949e;
+      margin-bottom: 1rem;
+      flex-grow: 1;
+    }
+    .btn {
+      display: inline-block;
+      text-align: center;
+      background: #21262d;
+      color: var(--accent);
+      padding: 0.5rem 1rem;
+      border-radius: 6px;
+      text-decoration: none;
+      font-weight: 600;
+      border: 1px solid var(--border);
+      transition: background 0.2s, color 0.2s;
+    }
+    .btn:hover {
+      background: #30363d;
+      color: var(--accent-hover);
+    }
+    .btn.primary {
+      background: var(--success);
+      color: white;
+      border-color: rgba(255,255,255,0.1);
+    }
+    .btn.primary:hover {
+      background: #2ea043;
+    }
+    .featured {
+      grid-column: 1 / -1;
+      background: linear-gradient(180deg, #161b22 0%, #0d1117 100%);
+      border: 2px solid #238636;
+      text-align: center;
+      padding: 2rem;
+    }
+    footer {
+      text-align: center;
+      padding-top: 2rem;
+      border-top: 1px solid var(--border);
+      color: #8b949e;
+      font-size: 0.9rem;
+    }
+    footer a { color: var(--accent); text-decoration: none; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <img src="images/logo.png" alt="RobotCar Smart Rover" class="logo-hero">
+      <h1>Autonomous & Teleoperated 4WD Smart Rover</h1>
+      <p class="tagline">Dual-Core Architecture (ESP32-CAM + Arduino UNO) · FPV Video Stream · Sonar Radar · Auto-Brake</p>
+      
+      <div class="badge-bar">
+        <span class="badge">Arduino Uno R3</span>
+        <span class="badge">ESP32-CAM (AI-Thinker)</span>
+        <span class="badge">Wi-Fi 802.11 b/g/n</span>
+        <span class="badge">Sub-100ms MJPEG</span>
+        <span class="badge">WebSocket Telemetry</span>
+        <a href="https://github.com/Ben-coderr/robot-car" class="badge primary">View on GitHub ★</a>
+      </div>
+    </header>
+
+    <div class="grid">
+      <div class="card featured">
+        <h2>🎮 Interactive 3D Assembly Viewer</h2>
+        <p>Explore the full 3D CAD assembly of the robot car in real-time WebGL directly in your browser without installing any software.</p>
+        <a href="3d/robot_car_3d_viewer.html" class="btn primary">Launch 3D WebGL Viewer →</a>
+      </div>
+
+      <div class="card">
+        <h2>🧩 01 · Bill of Materials</h2>
+        <p>Itemized component specifications, visual parts gallery with vector SVGs, power budget calculation, and shopping links.</p>
+        <a href="https://github.com/Ben-coderr/robot-car/blob/main/docs/01_BOM.md" class="btn">Read BOM Guide →</a>
+      </div>
+
+      <div class="card">
+        <h2>⚡ 02 · Wiring Guide</h2>
+        <p>Step-by-step schematics, detailed zoom diagrams for all 7 assembly stages, resistor dividers, and safety rules.</p>
+        <a href="https://github.com/Ben-coderr/robot-car/blob/main/docs/02_WIRING.md" class="btn">View Wiring Guide →</a>
+      </div>
+
+      <div class="card">
+        <h2>📐 03 · Mechanical Assembly</h2>
+        <p>Double-decker acrylic chassis layout, motor mounting, balance considerations, and wire routing guidelines.</p>
+        <a href="https://github.com/Ben-coderr/robot-car/blob/main/docs/03_ASSEMBLY.md" class="btn">Read Assembly Guide →</a>
+      </div>
+
+      <div class="card">
+        <h2>📱 04 · Software & Web App</h2>
+        <p>Arduino IDE setup, ESP32 Huge APP partition flashing, mobile touch joystick, and classroom observation dashboard.</p>
+        <a href="https://github.com/Ben-coderr/robot-car/blob/main/docs/04_SOFTWARE_SETUP.md" class="btn">Read Software Guide →</a>
+      </div>
+
+      <div class="card">
+        <h2>🛰️ 05 · Protocol & Endpoints</h2>
+        <p>XOR checksum verification algorithm, WebSocket command format, real-time sonar telemetry packets, and fail-safes.</p>
+        <a href="https://github.com/Ben-coderr/robot-car/blob/main/docs/05_PROTOCOL.md" class="btn">Read Protocol Specs →</a>
+      </div>
+
+      <div class="card">
+        <h2>🩺 06 · Troubleshooting</h2>
+        <p>Diagnostic testing pipeline, multimeter voltage verification points, brownout reset fixes, and progressive test sketches.</p>
+        <a href="https://github.com/Ben-coderr/robot-car/blob/main/docs/06_TROUBLESHOOTING.md" class="btn">Troubleshooting Guide →</a>
+      </div>
+    </div>
+
+    <footer>
+      <p>RobotCar Smart Rover Platform · Open-source hardware & software under the <a href="https://github.com/Ben-coderr/robot-car/blob/main/LICENSE">MIT License</a>.</p>
+      <p>Repository maintained by <a href="https://github.com/Ben-coderr">Benkorich Abdenour (@Ben-coderr)</a>.</p>
+    </footer>
+  </div>
+</body>
+</html>
