@@ -314,7 +314,7 @@ const $ = id => document.getElementById(id);
 const buzz = ms => { try { navigator.vibrate && navigator.vibrate(ms); } catch(e){} };
 
 /* ======================= settings (saved on the phone) ======================= */
-const servedByCar = location.protocol.startsWith("http") && !/[?&]demo/.test(location.search);
+const servedByCar = (location.hostname === "192.168.4.1" || location.hostname.endsWith(".local")) && !/[?&]demo/.test(location.search);
 const DEFAULTS = { warn:100, stop:15, brake:true, always:false, mute:false, phoneBeep:false, vibe:true,
   mode:"joy", turn:70, flash:180, res:8, qual:12, vflip:false, mirror:false, range:200, speed:70, intro:false,
   host: servedByCar ? location.host : "192.168.4.1" };

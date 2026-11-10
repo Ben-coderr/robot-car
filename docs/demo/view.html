@@ -1,0 +1,483 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#070b11">
+<title>Robot Car · Classroom Viewer</title>
+<style>
+:root{
+  --bg:#070b11; --bg2:#0c121b; --panel:#101823; --panel2:#162131; --line:#223047; --line2:#2d3e58;
+  --text:#eef3f8; --muted:#8a9bb0; --accent:#22d3ee; --green:#22c55e; --amber:#f59e0b; --red:#ef4444; --yellow:#fde047;
+  --radius:18px; --shadow:0 10px 30px rgba(0,0,0,.35);
+}
+*{box-sizing:border-box}
+html,body{margin:0;min-height:100%;background:var(--bg);color:var(--text);font:14px/1.4 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+body{background:radial-gradient(1400px 700px at 30% -300px,#0f2233 0,transparent 60%),var(--bg)}
+button{font:inherit;color:inherit;cursor:pointer}
+svg.i{width:18px;height:18px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;flex:none}
+.hidden{display:none!important}
+
+/* ---------------- header ---------------- */
+header{display:flex;align-items:center;gap:14px;padding:14px 22px}
+.brand{display:flex;align-items:center;gap:12px}
+.logo{width:40px;height:40px;border-radius:12px;display:grid;place-items:center;background:linear-gradient(135deg,var(--accent),#6366f1);color:#04121a}
+.logo svg{width:24px;height:24px}
+.brand h1{font-size:19px;margin:0;letter-spacing:.02em}.brand small{display:block;color:var(--muted);font-size:12px}
+.chips{display:flex;gap:8px;flex-wrap:wrap;margin-left:auto}
+.chip{display:inline-flex;align-items:center;gap:7px;padding:7px 12px;border-radius:99px;background:var(--panel);border:1px solid var(--line);font-size:13px;color:var(--muted);white-space:nowrap}
+.chip i{width:9px;height:9px;border-radius:50%;background:var(--muted)}
+.chip.ok i{background:var(--green);box-shadow:0 0 8px var(--green)}.chip.bad i{background:var(--red)}.chip.warn i{background:var(--amber)}
+.chip b{color:var(--text)}
+.clock{font-variant-numeric:tabular-nums;font-weight:700;font-size:15px;color:var(--muted);min-width:76px;text-align:right}
+.ibtn{width:40px;height:40px;border-radius:12px;border:1px solid var(--line);background:var(--panel);display:grid;place-items:center}
+
+/* ---------------- grid ---------------- */
+main{display:grid;gap:14px;padding:0 22px 22px;grid-template-columns:minmax(0,1.85fr) minmax(340px,1fr);
+  grid-template-areas:"video side" "chart log"}
+@media (min-width:1200px) and (min-height:760px){
+  body{height:100vh;display:flex;flex-direction:column;overflow:hidden}
+  main{flex:1;min-height:0;grid-template-rows:minmax(0,1fr) 220px}
+}
+@media (max-width:1000px){ main{grid-template-columns:1fr;grid-template-areas:"video" "side" "chart" "log"} }
+.card{background:linear-gradient(180deg,var(--panel),var(--bg2));border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow);
+  min-width:0;min-height:0;display:flex;flex-direction:column;overflow:hidden}
+.ttl{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:12px 16px 0;font-size:11px;font-weight:700;letter-spacing:.14em;color:var(--muted);text-transform:uppercase}
+.ttl b{color:var(--text);letter-spacing:.02em;text-transform:none;font-size:13px}
+
+/* ---------------- video ---------------- */
+.video{grid-area:video}
+.screen{position:relative;flex:1;min-height:320px;margin:12px;border-radius:14px;overflow:hidden;background:#000}
+.screen img{position:absolute;inset:0;width:100%;height:100%;object-fit:contain}
+.novideo{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;text-align:center;color:var(--muted);
+  background:radial-gradient(circle at 50% 40%,#132132,#05080c)}
+.novideo svg{width:56px;height:56px;opacity:.55}
+.hud{position:absolute;inset:0;pointer-events:none;border:4px solid transparent;border-radius:14px}
+.hud.alarm{animation:flash .5s steps(1) infinite}
+.hud.danger{border-color:var(--red);box-shadow:inset 0 0 70px rgba(239,68,68,.6)}
+@keyframes flash{50%{border-color:var(--red);box-shadow:inset 0 0 50px rgba(239,68,68,.45)}}
+.hud .tl,.hud .tr{position:absolute;top:14px;display:flex;gap:8px}.hud .tl{left:14px}.hud .tr{right:14px}
+.tag{padding:6px 12px;border-radius:10px;font-size:13px;font-weight:800;letter-spacing:.08em;background:rgba(0,0,0,.55);color:#fff;backdrop-filter:blur(4px)}
+.tag.rev{background:var(--amber);color:#1a1200}.tag.brk{background:var(--red)}.tag.lt{background:rgba(253,224,71,.92);color:#2a2000}.tag.rec{background:#dc2626}
+.tag.rec:before{content:"";display:inline-block;width:9px;height:9px;border-radius:50%;background:#fff;margin-right:7px;animation:blink 1s steps(1) infinite}
+@keyframes blink{50%{opacity:0}}
+.bigdist{position:absolute;left:14px;bottom:14px;padding:10px 16px;border-radius:14px;background:rgba(0,0,0,.6);backdrop-filter:blur(4px)}
+.bigdist .n{font-size:44px;font-weight:900;font-variant-numeric:tabular-nums;line-height:1}.bigdist .n small{font-size:16px;color:var(--muted);margin-left:4px}
+.bigdist .z{font-size:12px;font-weight:900;letter-spacing:.14em;margin-top:4px}
+.vbar{display:flex;gap:10px;padding:0 12px 12px;flex-wrap:wrap}
+.pill{height:40px;padding:0 14px;border-radius:12px;border:1px solid var(--line);background:var(--panel2);display:flex;align-items:center;gap:8px;font-weight:600}
+.pill.on{background:var(--accent);color:#04252b;border-color:var(--accent)}
+.pill.rec.on{background:#dc2626;color:#fff;border-color:#dc2626}
+.pill.right{margin-left:auto}
+
+/* ---------------- side ---------------- */
+.side{grid-area:side;display:flex;flex-direction:column;gap:14px;min-height:0}
+.side .card{flex:1}
+.radar-wrap{position:relative;flex:1;min-height:120px}
+#radar{position:absolute;inset:0;width:100%;height:100%}
+.readout{display:flex;align-items:center;justify-content:space-between;padding:0 16px 10px;flex:none}
+.num{font-size:32px;font-weight:900;font-variant-numeric:tabular-nums}.num small{font-size:15px;color:var(--muted);margin-left:4px}
+.zone{padding:6px 14px;border-radius:99px;font-weight:900;font-size:12px;letter-spacing:.12em;background:var(--panel2);color:var(--muted)}
+.status{display:grid;grid-template-columns:96px 1fr;gap:14px;padding:8px 16px 12px;align-items:center}
+.carsvg{width:96px;height:auto}
+.stats{display:grid;gap:6px}
+.stat{display:flex;justify-content:space-between;align-items:center;gap:8px;font-size:13px;color:var(--muted)}
+.stat b{color:var(--text);font-variant-numeric:tabular-nums}
+.bar{height:8px;border-radius:99px;background:#1b2636;position:relative;overflow:hidden;margin-top:3px}
+.bar span{position:absolute;top:0;bottom:0;left:50%;background:var(--accent);border-radius:99px}
+.badge{padding:3px 9px;border-radius:99px;font-size:11px;font-weight:800;letter-spacing:.08em;background:var(--panel2);color:var(--muted)}
+.badge.on{background:var(--yellow);color:#2a2000}.badge.warn{background:var(--amber);color:#1a1200}.badge.red{background:var(--red);color:#fff}.badge.ok{background:#14532d;color:#bbf7d0}
+
+/* ---------------- chart + log ---------------- */
+.chart{grid-area:chart}.chart .wrap{position:relative;flex:1;min-height:170px;margin:6px 12px 12px}
+#chart{position:absolute;inset:0;width:100%;height:100%}
+.log{grid-area:log}
+.events{list-style:none;margin:8px 0 0;padding:0 12px 12px;overflow-y:auto;flex:1;min-height:170px}
+.events li{display:flex;gap:10px;align-items:baseline;padding:6px 6px;border-bottom:1px solid #18222f;font-size:13px}
+.events time{color:var(--muted);font-variant-numeric:tabular-nums;font-size:12px;flex:none}
+.events .d{width:8px;height:8px;border-radius:50%;flex:none;transform:translateY(-1px)}
+
+/* ---------------- control drawer ---------------- */
+details.ctrl{margin:0 22px 22px;background:var(--panel);border:1px solid var(--line);border-radius:var(--radius)}
+details.ctrl summary{padding:14px 18px;cursor:pointer;font-weight:700;list-style:none;display:flex;align-items:center;gap:10px}
+details.ctrl summary::-webkit-details-marker{display:none}
+details.ctrl summary span{color:var(--muted);font-weight:500;font-size:13px}
+.ctrl-body{display:flex;flex-wrap:wrap;gap:12px;padding:0 18px 18px;align-items:center}
+.tog{appearance:none;width:46px;height:28px;border-radius:99px;background:#2a3648;position:relative;transition:.2s;margin:0;vertical-align:middle}
+.tog:before{content:"";position:absolute;top:3px;left:3px;width:22px;height:22px;border-radius:50%;background:#fff;transition:.2s}
+.tog:checked{background:var(--accent)}.tog:checked:before{left:21px}
+kbd{background:var(--panel2);border:1px solid var(--line2);border-bottom-width:2px;border-radius:5px;padding:0 6px;font-size:12px}
+select{background:var(--panel2);border:1px solid var(--line);color:var(--text);border-radius:10px;padding:8px}
+.toast{position:fixed;left:50%;bottom:24px;transform:translate(-50%,10px);background:var(--panel2);border:1px solid var(--line2);padding:10px 16px;border-radius:12px;opacity:0;transition:.2s;pointer-events:none;font-weight:600;z-index:9}
+.toast.show{opacity:1;transform:translate(-50%,0)}
+</style>
+</head>
+<body>
+<header>
+  <div class="brand"><span class="logo"><svg class="i" viewBox="0 0 24 24"><rect x="4" y="8" width="16" height="9" rx="3"/><circle cx="8" cy="18" r="2"/><circle cx="16" cy="18" r="2"/><path d="M8 8l2-3h4l2 3"/></svg></span>
+    <div><h1>Robot Car · Classroom Viewer</h1><small>Live video, rear radar and data from the car. Drive it with the phone app.</small></div></div>
+  <div class="chips">
+    <span class="chip bad" id="chWs"><i></i><span>offline</span></span>
+    <span class="chip" id="chCar"><i></i><span>car</span></span>
+    <span class="chip" id="chDev"><i></i><span>no phones</span></span>
+    <span class="chip hidden" id="chRssi"><i></i><span></span></span>
+  </div>
+  <div class="clock" id="clock">--:--:--</div>
+  <button class="ibtn" id="btnFull" title="Full screen"><svg class="i" viewBox="0 0 24 24"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"/></svg></button>
+</header>
+
+<main>
+  <section class="card video">
+    <div class="ttl"><span>Front camera</span><b id="vidInfo">live</b></div>
+    <div class="screen" id="screen">
+      <div class="novideo" id="novideo"><svg class="i" viewBox="0 0 24 24"><path d="M3 8h4l2-3h6l2 3h4v11H3z"/><circle cx="12" cy="13" r="3.5"/></svg><span id="novTxt">Connecting to the camera&hellip;</span></div>
+      <img id="cam" alt="" crossorigin="anonymous">
+      <div class="hud" id="hud">
+        <div class="tl"><span class="tag rev hidden" id="tagRev">REVERSE</span><span class="tag brk hidden" id="tagBrk">AUTO-BRAKE</span></div>
+        <div class="tr"><span class="tag rec hidden" id="tagRec">REC 00:00</span><span class="tag lt hidden" id="tagLt">LIGHTS</span><span class="tag hidden" id="tagDemo">DEMO</span></div>
+        <div class="bigdist"><div class="n" id="bdN">--<small>cm</small></div><div class="z" id="bdZ">REAR SENSOR</div></div>
+      </div>
+    </div>
+    <div class="vbar">
+      <button class="pill" id="btnSnap"><svg class="i" viewBox="0 0 24 24"><path d="M3 8h4l2-3h6l2 3h4v11H3z"/><circle cx="12" cy="13" r="3.5"/></svg>Save photo</button>
+      <button class="pill rec" id="btnRec"><svg class="i" viewBox="0 0 24 24"><circle cx="12" cy="12" r="6"/></svg><span>Record video</span></button>
+      <button class="pill" id="btnPause"><svg class="i" viewBox="0 0 24 24"><path d="M8 5v14M16 5v14"/></svg><span>Pause</span></button>
+      <button class="pill right" id="btnVidFull"><svg class="i" viewBox="0 0 24 24"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"/></svg>Video full screen</button>
+    </div>
+  </section>
+
+  <div class="side">
+    <section class="card">
+      <div class="ttl"><span>Rear radar</span><b id="radarMode">fixed sensor</b></div>
+      <div class="radar-wrap"><canvas id="radar"></canvas></div>
+      <div class="readout"><div class="num" id="distNum">--<small>cm</small></div><div class="zone" id="zone">NO DATA</div></div>
+    </section>
+    <section class="card" style="flex:none">
+      <div class="ttl"><span>Car status</span><b id="motion">stopped</b></div>
+      <div class="status">
+        <svg class="carsvg" viewBox="0 0 150 200" id="carSvg">
+          <defs><radialGradient id="beam" cx=".5" cy="1" r="1"><stop offset="0" stop-color="#fde047" stop-opacity=".75"/><stop offset="1" stop-color="#fde047" stop-opacity="0"/></radialGradient></defs>
+          <g id="beams" opacity="0"><path d="M35 34 L5 -10 L65 -10 Z" fill="url(#beam)"/><path d="M115 34 L85 -10 L145 -10 Z" fill="url(#beam)"/></g>
+          <rect x="22" y="40" width="14" height="34" rx="4" fill="#0b0f14" stroke="#334155"/><rect x="114" y="40" width="14" height="34" rx="4" fill="#0b0f14" stroke="#334155"/>
+          <rect x="22" y="126" width="14" height="34" rx="4" fill="#0b0f14" stroke="#334155"/><rect x="114" y="126" width="14" height="34" rx="4" fill="#0b0f14" stroke="#334155"/>
+          <rect x="34" y="28" width="82" height="146" rx="18" fill="#1b2a3d" stroke="#3b5272" stroke-width="2"/>
+          <rect x="50" y="42" width="50" height="22" rx="6" fill="#0b1220" stroke="#22d3ee" stroke-opacity=".5"/>
+          <circle cx="75" cy="53" r="5" fill="#22d3ee" opacity=".7"/>
+          <circle id="hlL" cx="44" cy="34" r="6" fill="#334155"/><circle id="hlR" cx="106" cy="34" r="6" fill="#334155"/>
+          <circle id="tlL" cx="46" cy="168" r="5" fill="#3f1d24"/><circle id="tlR" cx="104" cy="168" r="5" fill="#3f1d24"/>
+          <rect id="rvL" x="64" y="166" width="22" height="5" rx="2" fill="#1f2937"/>
+          <path id="arL" d="M29 100 l-7 9 h14 z" fill="#22d3ee" opacity="0"/><path id="arR" d="M121 100 l-7 9 h14 z" fill="#22d3ee" opacity="0"/>
+          <text x="75" y="118" text-anchor="middle" fill="#64748b" font-size="10" font-weight="700" letter-spacing="2">FRONT ▲</text>
+        </svg>
+        <div class="stats">
+          <div><div class="stat"><span>Left wheels</span><b id="lV">0%</b></div><div class="bar"><span id="lB"></span></div></div>
+          <div><div class="stat"><span>Right wheels</span><b id="rV">0%</b></div><div class="bar"><span id="rB"></span></div></div>
+          <div class="stat"><span>Headlights</span><span class="badge" id="bLt">OFF</span></div>
+          <div class="stat"><span>Parking alarm</span><span class="badge" id="bAl">QUIET</span></div>
+          <div class="stat"><span>Horn</span><span class="badge" id="bHn">OFF</span></div>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <section class="card chart">
+    <div class="ttl"><span>Distance behind the car · last 60 s</span><b id="chartInfo"></b></div>
+    <div class="wrap"><canvas id="chart"></canvas></div>
+  </section>
+  <section class="card log">
+    <div class="ttl"><span>Events</span><button class="pill" id="btnClear" style="height:28px;font-size:12px;letter-spacing:0;text-transform:none">Clear</button></div>
+    <ul class="events" id="events"></ul>
+  </section>
+</main>
+
+<details class="ctrl" id="ctrl">
+  <summary><svg class="i" viewBox="0 0 24 24"><path d="M4 7h10M18 7h2M4 17h4M12 17h8"/><circle cx="16" cy="7" r="2"/><circle cx="10" cy="17" r="2"/></svg>
+    Teacher controls <span>lights, horn, camera, keyboard driving</span></summary>
+  <div class="ctrl-body">
+    <button class="pill" data-l="0">Lights off</button><button class="pill" data-l="1">Lights on</button><button class="pill" data-l="2">Hazard</button>
+    <button class="pill" id="pcHorn">Hold for horn</button>
+    <button class="pill" id="pcFlash">Cam light</button>
+    <label class="pill">Radar range <select id="sRange"><option value="100">1 m</option><option value="200">2 m</option><option value="300">3 m</option><option value="400">4 m</option></select></label>
+    <label class="pill">Drive with keyboard <input class="tog" type="checkbox" id="kbDrive"></label>
+    <span style="color:var(--muted);font-size:13px"><kbd>W</kbd><kbd>A</kbd><kbd>S</kbd><kbd>D</kbd> drive · <kbd>Space</kbd> horn · <kbd>Esc</kbd> stop. Leave it off when a student drives with the phone.</span>
+  </div>
+</details>
+<div class="toast" id="toast"></div>
+
+<script>
+(() => {
+"use strict";
+const $ = id => document.getElementById(id);
+const servedByCar = (location.hostname === "192.168.4.1" || location.hostname.endsWith(".local")) && !/[?&]demo/.test(location.search);
+const demo = !servedByCar;
+const HOST = servedByCar ? location.host.replace(/:\d+$/,"") : "192.168.4.1";
+let range = 200, warn = 100, stop = 15;
+try { const s = JSON.parse(localStorage.getItem("robotcar") || "{}"); warn = s.warn || warn; stop = s.stop || stop; range = +(localStorage.getItem("rcViewRange") || 200); } catch(e) {}
+function toast(m){ const t=$("toast"); t.textContent=m; t.classList.add("show"); clearTimeout(t._h); t._h=setTimeout(()=>t.classList.remove("show"),1800); }
+const pad = n => String(n).padStart(2, "0");
+const hms = (d = new Date()) => `${pad(d.getHours())}:${pad(d.getMinutes())}:${pad(d.getSeconds())}`;
+setInterval(() => $("clock").textContent = hms(), 500);
+
+/* ================================ events log ================================ */
+const COLORS = { info:"#22d3ee", ok:"#22c55e", warn:"#f59e0b", bad:"#ef4444", light:"#fde047" };
+function log(text, kind = "info"){
+  const li = document.createElement("li");
+  li.innerHTML = `<time>${hms()}</time><span class="d" style="background:${COLORS[kind]}"></span><span></span>`;
+  li.lastChild.textContent = text;
+  const ul = $("events"); ul.prepend(li); while (ul.children.length > 80) ul.lastChild.remove();
+}
+$("btnClear").onclick = () => $("events").innerHTML = "";
+
+/* ================================ websocket ================================ */
+let ws = null, wsOk = false;
+const send = m => { if (wsOk && ws.readyState === 1) ws.send(m); };
+function setChip(id, cls, txt){ const c=$(id); c.className="chip "+cls; c.querySelector("span").innerHTML=txt; }
+function connect(){
+  if (demo) return;
+  try { ws = new WebSocket(`ws://${HOST}/ws`); } catch(e) { setTimeout(connect, 2000); return; }
+  ws.onopen = () => { wsOk = true; setChip("chWs","ok","connected"); send("R,view"); log("Viewer connected to the car", "ok"); };
+  ws.onclose = () => { if (wsOk) log("Connection to the car lost", "bad"); wsOk = false; setChip("chWs","bad","offline"); setTimeout(connect, 1500); };
+  ws.onerror = () => { try { ws.close(); } catch(e){} };
+  ws.onmessage = e => onMessage(String(e.data));
+}
+let lastPhones = -1, lastUno = -1;
+function onMessage(m){
+  const p = m.split(",");
+  if (p[0] === "D") onSensor(+p[1], +p[2], +p[3]);
+  else if (p[0] === "T") onState(+p[1], +p[2], +p[3], +p[4], +p[5]);
+  else if (p[0] === "I") {
+    const rssi = +p[1], phones = +p[2], uno = +p[3], viewers = +(p[4] || 0);
+    setChip("chCar", uno ? "ok" : "bad", uno ? "car ok" : "car not responding");
+    setChip("chDev", phones ? "ok" : "warn", `<b>${phones}</b> phone${phones === 1 ? "" : "s"} · <b>${viewers}</b> viewer${viewers === 1 ? "" : "s"}`);
+    if (phones !== lastPhones && lastPhones >= 0) log(phones > lastPhones ? "A phone connected" : "A phone disconnected", phones > lastPhones ? "ok" : "warn");
+    if (uno !== lastUno && lastUno >= 0) log(uno ? "Arduino link OK" : "Arduino not responding: check the serial wires", uno ? "ok" : "bad");
+    lastPhones = phones; lastUno = uno;
+    const c = $("chRssi");
+    if (rssi) { c.classList.remove("hidden"); setChip("chRssi", rssi > -65 ? "ok" : rssi > -78 ? "warn" : "bad", rssi + " dBm"); } else c.classList.add("hidden");
+  }
+}
+
+/* ============================== state + sensor ============================== */
+let dist = 0, angle = 90, flags = 0, lastData = 0, servoSeen = -1e9, prevFlags = 0, prevLight = -1, prevHorn = 0;
+const blips = [], hist = [];
+function zoneOf(d){
+  if (!d) return { name:"CLEAR", hex:"#22c55e", lvl:0 };
+  if (d <= stop + 5) return { name:"STOP", hex:"#ef4444", lvl:3 };
+  if (d < warn * 0.5) return { name:"WARNING", hex:"#ef4444", lvl:2 };
+  if (d < warn) return { name:"CAUTION", hex:"#f59e0b", lvl:1 };
+  return { name:"CLEAR", hex:"#22c55e", lvl:0 };
+}
+function onSensor(a, d, f){
+  angle = a; dist = d; flags = f; lastData = performance.now();
+  if (a !== 90) servoSeen = lastData;
+  blips.push({ a, d, t: lastData }); if (blips.length > 160) blips.shift();
+  const z = zoneOf(d), txt = (d ? d : "&gt;400") + "<small>cm</small>";
+  $("distNum").innerHTML = txt; $("distNum").style.color = z.hex; $("bdN").innerHTML = txt; $("bdN").style.color = z.hex;
+  $("bdZ").textContent = z.name; $("bdZ").style.color = z.hex;
+  const zEl = $("zone"); zEl.textContent = z.name; zEl.style.background = z.hex; zEl.style.color = "#0b0f14";
+  const rev = !!(f & 1), alarm = !!(f & 2), blocked = !!(f & 4), head = !!(f & 16);
+  $("tagRev").classList.toggle("hidden", !rev); $("tagBrk").classList.toggle("hidden", !blocked);
+  const hud = $("hud"); hud.classList.toggle("danger", blocked || (alarm && z.lvl === 3)); hud.classList.toggle("alarm", alarm && !hud.classList.contains("danger"));
+  const al = $("bAl"); al.textContent = blocked ? "AUTO-BRAKE" : alarm ? "BEEPING" : "QUIET"; al.className = "badge " + (blocked ? "red" : alarm ? "warn" : "ok");
+  $("hlL").setAttribute("fill", head ? "#fde047" : "#334155"); $("hlR").setAttribute("fill", head ? "#fde047" : "#334155");
+  $("beams").setAttribute("opacity", head ? 1 : 0);
+  const tl = (alarm && Date.now() % 400 < 200) || blocked ? "#ef4444" : "#3f1d24";
+  $("tlL").setAttribute("fill", tl); $("tlR").setAttribute("fill", tl); $("rvL").setAttribute("fill", rev ? "#f8fafc" : "#1f2937");
+  if ((f & 1) && !(prevFlags & 1)) log("Reversing", "warn");
+  if ((f & 4) && !(prevFlags & 4)) log(`AUTO-BRAKE: obstacle at ${d} cm`, "bad");
+  else if ((f & 2) && !(prevFlags & 2)) log(`Parking alarm: obstacle at ${d} cm`, "warn");
+  prevFlags = f;
+}
+function onState(l, r, light, hornOn, flash){
+  const pct = v => Math.round(v / 2.55);
+  $("lV").textContent = pct(l) + "%"; $("rV").textContent = pct(r) + "%";
+  const setBar = (el, v) => { const w = Math.abs(v) / 255 * 50; el.style.width = w + "%"; el.style.left = v >= 0 ? "50%" : (50 - w) + "%"; el.style.background = v >= 0 ? "#22d3ee" : "#f59e0b"; };
+  setBar($("lB"), l); setBar($("rB"), r);
+  $("arL").setAttribute("opacity", l ? 1 : 0); $("arR").setAttribute("opacity", r ? 1 : 0);
+  $("arL").setAttribute("transform", l < 0 ? "rotate(180 29 104.5)" : ""); $("arR").setAttribute("transform", r < 0 ? "rotate(180 121 104.5)" : "");
+  const avg = (l + r) / 2, turn = l - r;
+  $("motion").textContent = !l && !r ? "stopped" : Math.abs(turn) > 120 && Math.abs(avg) < 60 ? (turn > 0 ? "spinning right" : "spinning left")
+    : avg > 0 ? (turn > 60 ? "forward right" : turn < -60 ? "forward left" : "forward") : (turn > 60 ? "reverse right" : turn < -60 ? "reverse left" : "reverse");
+  const lt = $("bLt"); lt.textContent = ["OFF","ON","HAZARD"][light] || "OFF"; lt.className = "badge " + (light === 1 ? "on" : light === 2 ? "warn" : "");
+  $("tagLt").classList.toggle("hidden", !light); $("tagLt").textContent = light === 2 ? "HAZARD" : "LIGHTS";
+  const hn = $("bHn"); hn.textContent = hornOn ? "BEEP!" : "OFF"; hn.className = "badge " + (hornOn ? "warn" : "");
+  if (light !== prevLight && prevLight >= 0) log(["Headlights off","Headlights on","Hazard lights on"][light] || "Lights", "light");
+  if (hornOn && !prevHorn) log("Horn", "info");
+  prevLight = light; prevHorn = hornOn;
+  $("pcFlash").classList.toggle("on", flash > 0); flashOn = flash > 0;
+}
+setInterval(() => { hist.push({ t: Date.now(), d: performance.now() - lastData < 1000 ? dist : null }); while (hist.length && hist[0].t < Date.now() - 60000) hist.shift(); }, 200);
+
+/* ================================== video ================================== */
+const cam = $("cam"); let paused = false, retry = null, frames = 0;
+function noVideo(t){ $("novTxt").innerHTML = t; $("novideo").classList.remove("hidden"); }
+function startVideo(){
+  clearTimeout(retry);
+  if (demo) { noVideo("Camera preview<br><small>Demo mode: open http://192.168.4.1/view from a PC on the car's WiFi</small>"); return; }
+  if (paused) { cam.removeAttribute("src"); noVideo("Video paused"); return; }
+  cam.src = `http://${HOST}:81/stream?t=${Date.now()}`;
+}
+cam.onload = () => { $("novideo").classList.add("hidden"); };
+cam.onerror = () => { if (paused) return; noVideo("No video. Retrying&hellip;<br><small>Only 3 screens can watch at the same time.</small>"); retry = setTimeout(startVideo, 2500); };
+$("btnPause").onclick = () => { paused = !paused; $("btnPause").classList.toggle("on", paused); $("btnPause").querySelector("span").textContent = paused ? "Play" : "Pause"; startVideo(); };
+$("btnVidFull").onclick = () => { const el = $("screen"); (document.fullscreenElement ? document.exitFullscreen() : el.requestFullscreen()).catch(() => {}); };
+$("btnFull").onclick = () => { (document.fullscreenElement ? document.exitFullscreen() : document.documentElement.requestFullscreen()).catch(() => {}); };
+const stamp = () => { const d = new Date(); return `${d.getFullYear()}${pad(d.getMonth()+1)}${pad(d.getDate())}-${pad(d.getHours())}${pad(d.getMinutes())}${pad(d.getSeconds())}`; };
+function download(blob, name){ const a = document.createElement("a"); a.href = URL.createObjectURL(blob); a.download = name; a.click(); setTimeout(() => URL.revokeObjectURL(a.href), 4000); }
+
+// Draw the video frame + a data strip into a canvas (used for photos and recordings)
+const rc = document.createElement("canvas"), rg = rc.getContext("2d");
+function drawFrame(){
+  const w = cam.naturalWidth || 640, h = cam.naturalHeight || 480;
+  if (rc.width !== w || rc.height !== h) { rc.width = w; rc.height = h; }
+  rg.drawImage(cam, 0, 0, w, h);
+  rg.fillStyle = "rgba(0,0,0,.55)"; rg.fillRect(0, h - 28, w, 28);
+  rg.fillStyle = "#fff"; rg.font = "bold 15px system-ui"; rg.textBaseline = "middle";
+  rg.fillText(`ROBOT CAR  ${hms()}  ·  rear ${dist ? dist + " cm" : "clear"}  ·  ${$("motion").textContent}`, 10, h - 14);
+}
+$("btnSnap").onclick = () => {
+  if (demo || !cam.naturalWidth) return toast("Photos work when the video is live");
+  try { drawFrame(); rc.toBlob(b => { if (b) { download(b, `robotcar-${stamp()}.jpg`); log("Photo saved"); } }, "image/jpeg", 0.92); }
+  catch(e) { window.open(`http://${HOST}/capture`, "_blank"); }
+};
+let rec = null, recChunks = [], recT0 = 0, recTimer = null, recRaf = null;
+$("btnRec").onclick = () => {
+  if (rec) { rec.stop(); return; }
+  if (demo || !cam.naturalWidth) return toast("Recording works when the video is live");
+  try {
+    drawFrame();
+    const stream = rc.captureStream(15);
+    const type = ["video/webm;codecs=vp9","video/webm;codecs=vp8","video/webm","video/mp4"].find(t => window.MediaRecorder && MediaRecorder.isTypeSupported(t));
+    rec = new MediaRecorder(stream, type ? { mimeType: type } : {});
+  } catch(e) { rec = null; return toast("Recording is not supported in this browser"); }
+  recChunks = []; rec.ondataavailable = e => e.data.size && recChunks.push(e.data);
+  rec.onstop = () => {
+    cancelAnimationFrame(recRaf); clearInterval(recTimer);
+    download(new Blob(recChunks, { type: rec.mimeType || "video/webm" }), `robotcar-${stamp()}.${(rec.mimeType || "").includes("mp4") ? "mp4" : "webm"}`);
+    rec = null; $("btnRec").classList.remove("on"); $("btnRec").querySelector("span").textContent = "Record video"; $("tagRec").classList.add("hidden"); log("Video recording saved", "ok");
+  };
+  const loop = () => { try { drawFrame(); } catch(e){} recRaf = requestAnimationFrame(loop); }; loop();
+  rec.start(1000); recT0 = Date.now();
+  $("btnRec").classList.add("on"); $("btnRec").querySelector("span").textContent = "Stop recording"; $("tagRec").classList.remove("hidden");
+  recTimer = setInterval(() => { const s = Math.floor((Date.now() - recT0) / 1000); $("tagRec").textContent = `REC ${pad(Math.floor(s/60))}:${pad(s%60)}`; }, 500);
+  log("Recording started", "bad");
+};
+
+/* ================================== radar ================================== */
+const cv = $("radar"), g = cv.getContext("2d");
+function drawRadar(){
+  const dpr = window.devicePixelRatio || 1, W = cv.clientWidth, H = cv.clientHeight;
+  if (W && H) {
+    if (cv.width !== Math.round(W*dpr) || cv.height !== Math.round(H*dpr)) { cv.width = Math.round(W*dpr); cv.height = Math.round(H*dpr); }
+    g.setTransform(dpr, 0, 0, dpr, 0, 0); g.clearRect(0, 0, W, H);
+    const cx = W/2, R = Math.max(20, Math.min(W/2 - 14, H - 34)), cy = Math.min(H - 16, H/2 + R/2 + 6);
+    const now = performance.now(), rad = a => a * Math.PI / 180, rr = v => Math.min(R, v/range*R);
+    const pt = (a, d) => [cx + Math.cos(rad(a)) * d/range*R, cy - Math.sin(rad(a)) * d/range*R];
+    const servo = now - servoSeen < 3000; $("radarMode").textContent = servo ? "scanning" : "fixed sensor";
+    const wedge = (r0, r1, a0, a1, fill) => { g.beginPath(); g.arc(cx, cy, r1, -rad(a1), -rad(a0)); g.arc(cx, cy, r0, -rad(a0), -rad(a1), true); g.closePath(); g.fillStyle = fill; g.fill(); };
+    wedge(0, R, 0, 180, "#0b1a16"); wedge(rr(warn*.5), rr(warn), 0, 180, "rgba(245,158,11,.10)");
+    wedge(rr(stop+5), rr(warn*.5), 0, 180, "rgba(239,68,68,.10)"); wedge(0, rr(stop+5), 0, 180, "rgba(239,68,68,.25)");
+    g.strokeStyle = "rgba(34,197,94,.28)"; g.lineWidth = 1; g.fillStyle = "rgba(138,155,176,.9)"; g.font = "11px system-ui"; g.textAlign = "center";
+    const step = range <= 100 ? 25 : 50;
+    for (let d = step; d <= range; d += step) { g.beginPath(); g.arc(cx, cy, d/range*R, Math.PI, 2*Math.PI); g.stroke();
+      if ((d % (step*2) === 0 || range <= 100) && d/range*R > 34) g.fillText(d >= 100 ? (d/100) + " m" : d + "", cx + d/range*R - 12, cy + 13); }
+    for (let a = 0; a <= 180; a += 30) { const [x, y] = pt(a, range); g.beginPath(); g.moveTo(cx, cy); g.lineTo(x, y); g.stroke(); }
+    const fresh = now - lastData < 1000;
+    if (servo) {
+      const [x, y] = pt(angle, range); const grd = g.createLinearGradient(cx, cy, x, y); grd.addColorStop(0, "rgba(34,197,94,.9)"); grd.addColorStop(1, "rgba(34,197,94,.1)");
+      g.strokeStyle = grd; g.lineWidth = 2; g.beginPath(); g.moveTo(cx, cy); g.lineTo(x, y); g.stroke();
+      for (const b of blips) { const age = (now - b.t) / 3000; if (age > 1 || !b.d || b.d > range) continue; const [bx, by] = pt(b.a, b.d);
+        g.globalAlpha = 1 - age; g.fillStyle = zoneOf(b.d).hex; g.beginPath(); g.arc(bx, by, 6, 0, 2*Math.PI); g.fill(); }
+      g.globalAlpha = 1;
+    } else {
+      wedge(0, R, 75, 105, `rgba(34,211,238,${0.10 + 0.06 * Math.sin(now / 300)})`);
+      for (const b of blips) { const age = (now - b.t) / 1500; if (age > 1 || !b.d || b.d > range) continue;
+        g.globalAlpha = (1 - age) * .35; g.strokeStyle = zoneOf(b.d).hex; g.lineWidth = 3; g.beginPath(); g.arc(cx, cy, b.d/range*R, -rad(105), -rad(75)); g.stroke(); }
+      g.globalAlpha = 1;
+      if (fresh && dist && dist <= range) { const z = zoneOf(dist), r = dist/range*R;
+        g.strokeStyle = z.hex; g.lineWidth = 7; g.lineCap = "round"; g.shadowColor = z.hex; g.shadowBlur = 16;
+        g.beginPath(); g.arc(cx, cy, r, -rad(105), -rad(75)); g.stroke(); g.shadowBlur = 0; g.lineCap = "butt";
+        g.fillStyle = "#fff"; g.font = "bold 13px system-ui"; g.fillText(dist + " cm", cx, cy - r - 12); }
+    }
+    g.fillStyle = "#1f2937"; g.strokeStyle = "#22d3ee"; g.lineWidth = 1.5;
+    g.beginPath(); g.roundRect ? g.roundRect(cx - 24, cy - 4, 48, 16, 4) : g.rect(cx - 24, cy - 4, 48, 16); g.fill(); g.stroke();
+    g.fillStyle = "#ef4444"; g.fillRect(cx - 21, cy - 2, 7, 3); g.fillRect(cx + 14, cy - 2, 7, 3);
+    g.fillStyle = "rgba(138,155,176,.9)"; g.font = "10px system-ui"; g.textAlign = "left"; g.fillText("BEHIND THE CAR ▲", 8, 14);
+    if (!fresh) { g.fillStyle = "rgba(7,11,17,.6)"; g.fillRect(0, 0, W, H); g.fillStyle = "#8a9bb0"; g.textAlign = "center"; g.font = "13px system-ui"; g.fillText(demo || wsOk ? "waiting for sensor…" : "not connected", W/2, H/2); }
+  }
+  drawChart();
+  requestAnimationFrame(drawRadar);
+}
+
+/* ================================== chart ================================== */
+const ch = $("chart"), cg = ch.getContext("2d");
+function drawChart(){
+  const dpr = window.devicePixelRatio || 1, W = ch.clientWidth, H = ch.clientHeight; if (!W || !H) return;
+  if (ch.width !== Math.round(W*dpr) || ch.height !== Math.round(H*dpr)) { ch.width = Math.round(W*dpr); ch.height = Math.round(H*dpr); }
+  cg.setTransform(dpr, 0, 0, dpr, 0, 0); cg.clearRect(0, 0, W, H);
+  const L = 38, B = 20, T = 6, top = Math.max(range, warn + 20), now = Date.now();
+  const x = t => L + (W - L - 6) * (1 - (now - t) / 60000), y = d => T + (H - T - B) * (1 - Math.min(d, top) / top);
+  cg.font = "11px system-ui"; cg.fillStyle = "#64748b"; cg.strokeStyle = "#1b2636"; cg.lineWidth = 1; cg.textAlign = "right"; cg.textBaseline = "middle";
+  for (let d = 0; d <= top; d += top > 200 ? 100 : 50) { cg.beginPath(); cg.moveTo(L, y(d)); cg.lineTo(W - 6, y(d)); cg.stroke(); cg.fillText(d, L - 6, y(d)); }
+  cg.textAlign = "center"; cg.textBaseline = "alphabetic";
+  for (let s = 0; s <= 60; s += 10) { cg.textAlign = s ? (s === 60 ? "left" : "center") : "right"; cg.fillText(s ? `-${s}s` : "now", x(now - s * 1000), H - 4); }
+  const band = (d0, d1, c) => { cg.fillStyle = c; cg.fillRect(L, y(d1), W - L - 6, y(d0) - y(d1)); };
+  band(0, stop + 5, "rgba(239,68,68,.12)"); band(stop + 5, warn, "rgba(245,158,11,.07)");
+  cg.setLineDash([5, 5]); cg.strokeStyle = "rgba(245,158,11,.6)"; cg.beginPath(); cg.moveTo(L, y(warn)); cg.lineTo(W - 6, y(warn)); cg.stroke();
+  cg.strokeStyle = "rgba(239,68,68,.7)"; cg.beginPath(); cg.moveTo(L, y(stop)); cg.lineTo(W - 6, y(stop)); cg.stroke(); cg.setLineDash([]);
+  const grd = cg.createLinearGradient(0, T, 0, H - B); grd.addColorStop(0, "#22c55e"); grd.addColorStop(1 - warn / top, "#f59e0b"); grd.addColorStop(1, "#ef4444");
+  cg.strokeStyle = grd; cg.lineWidth = 2.5; cg.beginPath(); let pen = false;
+  for (const p of hist) { if (p.d === null) { pen = false; continue; } const yy = y(p.d || top); pen ? cg.lineTo(x(p.t), yy) : cg.moveTo(x(p.t), yy); pen = true; }
+  cg.stroke();
+  const vals = hist.filter(p => p.d).map(p => p.d);
+  $("chartInfo").textContent = vals.length ? `closest ${Math.min(...vals)} cm` : "";
+}
+requestAnimationFrame(drawRadar);
+
+/* ============================== teacher controls ============================== */
+let flashOn = false;
+document.querySelectorAll("[data-l]").forEach(b => b.onclick = () => { send(`L,${b.dataset.l}`); if (demo) onState(0, 0, +b.dataset.l, 0, 0); });
+const ph = $("pcHorn");
+ph.onpointerdown = () => { send("H,1"); ph.classList.add("on"); }; ph.onpointerup = ph.onpointerleave = () => { if (ph.classList.contains("on")) { send("H,0"); ph.classList.remove("on"); } };
+$("pcFlash").onclick = () => { flashOn = !flashOn; send(`K,${flashOn ? 180 : 0}`); $("pcFlash").classList.toggle("on", flashOn); };
+$("sRange").value = range; $("sRange").onchange = () => { range = +$("sRange").value; try { localStorage.setItem("rcViewRange", range); } catch(e){} };
+const keys = new Set(); let kx = 0, ky = 0;
+const kb = () => $("kbDrive").checked;
+$("kbDrive").onchange = () => { if (kb()) { send("R,phone"); log("Keyboard driving enabled on this PC", "warn"); } else { send("M,0,0"); send("R,view"); log("Keyboard driving disabled"); } };
+addEventListener("keydown", e => {
+  if (!kb()) return; const k = e.key.toLowerCase();
+  if (k === "escape") { keys.clear(); send("S"); return; }
+  if (k === " ") { if (!e.repeat) send("H,1"); e.preventDefault(); return; }
+  if (["w","a","s","d","arrowup","arrowdown","arrowleft","arrowright"].includes(k)) { keys.add(k); e.preventDefault(); }
+});
+addEventListener("keyup", e => { const k = e.key.toLowerCase(); if (k === " " && kb()) send("H,0"); keys.delete(k); });
+setInterval(() => {
+  if (!kb()) return;
+  ky = (keys.has("w")||keys.has("arrowup") ? 1 : 0) - (keys.has("s")||keys.has("arrowdown") ? 1 : 0);
+  kx = (keys.has("d")||keys.has("arrowright") ? 1 : 0) - (keys.has("a")||keys.has("arrowleft") ? 1 : 0);
+  let l = ky + kx * .7, r = ky - kx * .7; const m = Math.max(1, Math.abs(l), Math.abs(r));
+  send(`M,${Math.round(l / m * 180)},${Math.round(r / m * 180)}`);
+}, 100);
+
+/* =================================== demo =================================== */
+if (demo) {
+  $("tagDemo").classList.remove("hidden"); setChip("chWs", "warn", "demo mode"); setChip("chCar", "", "simulated");
+  setChip("chDev", "ok", "<b>1</b> phone · <b>1</b> viewer");
+  log("Demo mode: simulated data", "info");
+  let t = 0, light = 0;
+  setInterval(() => {
+    t += 0.1;
+    const phase = Math.floor(t / 6) % 4;                 // forward, reverse, turn, reverse
+    const l = [180, -140, 160, -120][phase], r = [180, -140, -60, -120][phase];
+    if (Math.floor(t * 10) % 150 === 0) { light = (light + 1) % 3; }
+    const d = Math.max(9, Math.round(110 + 95 * Math.sin(t / 2.2)));
+    const rev = (l + r) / 2 < -20, blocked = rev && d <= stop, alarm = rev && d < warn;
+    onState(blocked ? 0 : l, blocked ? 0 : r, light, 0, 0);
+    onSensor(90, d, (rev?1:0) | (alarm?2:0) | (blocked?4:0) | (light === 1 || (light === 2 && Date.now() % 1000 < 500) ? 16 : 0) | (light === 2 ? 32 : 0));
+  }, 100);
+}
+startVideo(); connect();
+})();
+</script>
+</body>
+</html>

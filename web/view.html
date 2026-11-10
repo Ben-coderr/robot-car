@@ -208,7 +208,7 @@ select{background:var(--panel2);border:1px solid var(--line);color:var(--text);b
 (() => {
 "use strict";
 const $ = id => document.getElementById(id);
-const servedByCar = location.protocol.startsWith("http") && !/[?&]demo/.test(location.search);
+const servedByCar = (location.hostname === "192.168.4.1" || location.hostname.endsWith(".local")) && !/[?&]demo/.test(location.search);
 const demo = !servedByCar;
 const HOST = servedByCar ? location.host.replace(/:\d+$/,"") : "192.168.4.1";
 let range = 200, warn = 100, stop = 15;

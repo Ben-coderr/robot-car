@@ -1,7 +1,7 @@
 <div align="center">
 
 <a href="https://github.com/Ben-coderr/robot-car">
-  <img src="docs/images/logo.png" width="850" alt="RobotCar Smart Rover Logo">
+  <img src="docs/images/logo.png" width="850" alt="RobotCar Smart Rover Logo" style="background:#ffffff; border-radius:14px; padding:6px; box-shadow:0 8px 24px rgba(0,0,0,0.12);">
 </a>
 
 <br><br>
