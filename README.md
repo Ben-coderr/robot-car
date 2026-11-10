@@ -10,10 +10,9 @@
 ### Dual-Core Architecture (ESP32-CAM + Arduino UNO) · FPV Video Stream · Rear Sonar Radar · Auto-Brake · Zero-Install Web App
 
 [![Microcontrollers](https://img.shields.io/badge/Microcontrollers-ESP32--CAM%20%7C%20Arduino%20Uno-00979D?style=for-the-badge&logo=arduino&logoColor=white)](https://www.arduino.cc/)
-[![Video Stream](https://img.shields.io/badge/Video-MJPEG%2030FPS%20Sub--100ms-E65100?style=for-the-badge&logo=webassembly&logoColor=white)](#)
-[![Networking](https://img.shields.io/badge/Network-WebSocket%20%7C%20Wi--Fi%20AP-4CAF50?style=for-the-badge&logo=wi-fi&logoColor=white)](#)
-[![Client](https://img.shields.io/badge/Client-Zero--Install%20Web%20App-1976D2?style=for-the-badge&logo=googlechrome&logoColor=white)](#)
+[![Live Web Demo](https://img.shields.io/badge/Live%20Demo-Test%20Drive%20in%20Browser-00C853?style=for-the-badge&logo=googlechrome&logoColor=white)](https://ben-coderr.github.io/robot-car/demo/)
 [![Live 3D CAD](https://img.shields.io/badge/3D%20CAD-WebGL%20%7C%20Interactive%20Viewer-9C27B0?style=for-the-badge&logo=blender&logoColor=white)](https://ben-coderr.github.io/robot-car/3d/robot_car_3d_viewer.html)
+[![Documentation](https://img.shields.io/badge/Docs-Online%20Hub-2979FF?style=for-the-badge&logo=gitbook&logoColor=white)](https://ben-coderr.github.io/robot-car/)
 [![Release](https://img.shields.io/github/v/release/Ben-coderr/robot-car?style=for-the-badge&color=FF5722)](https://github.com/Ben-coderr/robot-car/releases/latest)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg?style=for-the-badge)](LICENSE)
 
