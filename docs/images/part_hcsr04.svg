@@ -1,0 +1,35 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 257 162" width="257" height="162">
+<defs>
+  <linearGradient id="gMetal" x1="0" y1="0" x2="0" y2="1">
+    <stop offset="0" stop-color="#f3f4f6"/><stop offset=".45" stop-color="#c7cbd1"/>
+    <stop offset=".55" stop-color="#aeb3ba"/><stop offset="1" stop-color="#e5e7eb"/></linearGradient>
+  <linearGradient id="gMetalH" x1="0" y1="0" x2="1" y2="0">
+    <stop offset="0" stop-color="#e5e7eb"/><stop offset=".5" stop-color="#9ca3af"/><stop offset="1" stop-color="#e5e7eb"/></linearGradient>
+  <linearGradient id="gGold" x1="0" y1="0" x2="1" y2="1">
+    <stop offset="0" stop-color="#fde68a"/><stop offset="1" stop-color="#b45309"/></linearGradient>
+  <radialGradient id="gLens" cx=".35" cy=".35" r=".7">
+    <stop offset="0" stop-color="#93c5fd"/><stop offset=".3" stop-color="#1e3a8a"/><stop offset="1" stop-color="#020617"/></radialGradient>
+  <radialGradient id="gTrans" cx=".5" cy=".5" r=".5">
+    <stop offset="0" stop-color="#4b5563"/><stop offset=".75" stop-color="#1f2937"/><stop offset="1" stop-color="#111827"/></radialGradient>
+  <radialGradient id="gLedRed" cx=".35" cy=".3" r=".75">
+    <stop offset="0" stop-color="#fecaca"/><stop offset=".35" stop-color="#ef4444"/><stop offset="1" stop-color="#7f1d1d"/></radialGradient>
+  <radialGradient id="gLedWhite" cx=".35" cy=".3" r=".75">
+    <stop offset="0" stop-color="#ffffff"/><stop offset=".5" stop-color="#e5e7eb"/><stop offset="1" stop-color="#9ca3af"/></radialGradient>
+  <linearGradient id="gCell1" x1="0" y1="0" x2="0" y2="1">
+    <stop offset="0" stop-color="#60a5fa"/><stop offset=".5" stop-color="#1d4ed8"/><stop offset="1" stop-color="#1e3a8a"/></linearGradient>
+  <linearGradient id="gCell2" x1="0" y1="0" x2="0" y2="1">
+    <stop offset="0" stop-color="#4ade80"/><stop offset=".5" stop-color="#15803d"/><stop offset="1" stop-color="#14532d"/></linearGradient>
+  <linearGradient id="gYellow" x1="0" y1="0" x2="0" y2="1">
+    <stop offset="0" stop-color="#fde047"/><stop offset="1" stop-color="#ca8a04"/></linearGradient>
+  <linearGradient id="gCan" x1="0" y1="0" x2="0" y2="1">
+    <stop offset="0" stop-color="#f9fafb"/><stop offset=".5" stop-color="#9ca3af"/><stop offset="1" stop-color="#e5e7eb"/></linearGradient>
+  <linearGradient id="gHeat" x1="0" y1="0" x2="1" y2="0">
+    <stop offset="0" stop-color="#111827"/><stop offset=".5" stop-color="#374151"/><stop offset="1" stop-color="#111827"/></linearGradient>
+  <pattern id="pMesh" width="3" height="3" patternUnits="userSpaceOnUse">
+    <rect width="3" height="3" fill="#374151"/><circle cx="1.5" cy="1.5" r=".8" fill="#111827"/></pattern>
+  <pattern id="pTread" width="12" height="8" patternUnits="userSpaceOnUse">
+    <rect width="12" height="8" fill="#1f2937"/><path d="M0 4 L6 0 L12 4 M0 8 L6 4 L12 8" stroke="#374151" stroke-width="2" fill="none"/></pattern>
+  <filter id="fShadow" x="-10%" y="-10%" width="130%" height="130%">
+    <feDropShadow dx="2" dy="3" stdDeviation="2.5" flood-color="#000" flood-opacity=".28"/></filter>
+</defs>
+<g transform="translate(34.0,34.0) rotate(0)" opacity="1.0" filter="url(#fShadow)"><rect x="0.0" y="0.0" width="189.0" height="84.0" rx="4" fill="#1565c0" stroke="#0d47a1" stroke-width="1.5" /><circle cx="8.0" cy="8.0" r="4.0" fill="#e5e7eb" stroke="#0d47a1" stroke-width="1" /><circle cx="8.0" cy="76.0" r="4.0" fill="#e5e7eb" stroke="#0d47a1" stroke-width="1" /><circle cx="181.0" cy="8.0" r="4.0" fill="#e5e7eb" stroke="#0d47a1" stroke-width="1" /><circle cx="181.0" cy="76.0" r="4.0" fill="#e5e7eb" stroke="#0d47a1" stroke-width="1" /><circle cx="43.5" cy="38.0" r="34.0" fill="url(#gMetal)" stroke="#6b7280" stroke-width="1.5" /><circle cx="43.5" cy="38.0" r="26.0" fill="url(#pMesh)" stroke="#111" stroke-width="1.5" /><text x="43.5" y="80.0" font-family="Helvetica Neue, Helvetica, Arial, sans-serif" font-size="7" fill="#bfdbfe" text-anchor="middle" font-weight="600" >T</text><circle cx="145.5" cy="38.0" r="34.0" fill="url(#gMetal)" stroke="#6b7280" stroke-width="1.5" /><circle cx="145.5" cy="38.0" r="26.0" fill="url(#pMesh)" stroke="#111" stroke-width="1.5" /><text x="145.5" y="80.0" font-family="Helvetica Neue, Helvetica, Arial, sans-serif" font-size="7" fill="#bfdbfe" text-anchor="middle" font-weight="600" >R</text><rect x="80.5" y="6.0" width="28.0" height="12.0" rx="6" fill="url(#gMetal)" stroke="#6b7280" stroke-width="0.8" /><text x="94.5" y="36.0" font-family="Helvetica Neue, Helvetica, Arial, sans-serif" font-size="8" fill="#fff" text-anchor="middle" font-weight="800" >HC-SR04</text><rect x="73.2" y="83.7" width="42.7" height="10.7" rx="1" fill="#111" stroke="none" stroke-width="1" /><rect x="76.1" y="86.6" width="4.8" height="4.8" rx="0" fill="url(#gGold)" stroke="#78350f" stroke-width="0.4" /><rect x="86.8" y="86.6" width="4.8" height="4.8" rx="0" fill="url(#gGold)" stroke="#78350f" stroke-width="0.4" /><rect x="97.4" y="86.6" width="4.8" height="4.8" rx="0" fill="url(#gGold)" stroke="#78350f" stroke-width="0.4" /><rect x="108.1" y="86.6" width="4.8" height="4.8" rx="0" fill="url(#gGold)" stroke="#78350f" stroke-width="0.4" /><text x="80.5" y="80.0" font-family="Helvetica Neue, Helvetica, Arial, sans-serif" font-size="5" fill="#fff" text-anchor="start" font-weight="600" transform="rotate(-90 80.5 80.0)" >Vcc</text><text x="91.2" y="80.0" font-family="Helvetica Neue, Helvetica, Arial, sans-serif" font-size="5" fill="#fff" text-anchor="start" font-weight="600" transform="rotate(-90 91.2 80.0)" >Trig</text><text x="101.8" y="80.0" font-family="Helvetica Neue, Helvetica, Arial, sans-serif" font-size="5" fill="#fff" text-anchor="start" font-weight="600" transform="rotate(-90 101.8 80.0)" >Echo</text><text x="112.5" y="80.0" font-family="Helvetica Neue, Helvetica, Arial, sans-serif" font-size="5" fill="#fff" text-anchor="start" font-weight="600" transform="rotate(-90 112.5 80.0)" >Gnd</text></g></svg>

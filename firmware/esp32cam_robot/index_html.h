@@ -1,0 +1,660 @@
+#pragma once
+// AUTO-GENERATED from web/index.html by tools/build_ui.py - do not edit by hand
+static const char INDEX_HTML[] = R"rawhtml(<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="theme-color" content="#070b11">
+<title>Robot Car · Driver</title>
+<style>
+:root{
+  --bg:#070b11; --bg2:#0c121b; --panel:#101823; --panel2:#162131; --line:#223047; --line2:#2d3e58;
+  --text:#eef3f8; --muted:#8a9bb0; --accent:#22d3ee; --accent2:#0891b2; --green:#22c55e; --amber:#f59e0b;
+  --red:#ef4444; --yellow:#fde047; --radius:18px; --shadow:0 10px 30px rgba(0,0,0,.35);
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;height:100%;background:var(--bg);color:var(--text);
+  font:14px/1.35 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;overscroll-behavior:none}
+body{display:flex;flex-direction:column;min-height:100dvh;user-select:none;-webkit-user-select:none;
+  background:radial-gradient(1200px 600px at 50% -200px,#0f2233 0,transparent 60%),var(--bg)}
+button{font:inherit;color:inherit;cursor:pointer}
+svg.i{width:20px;height:20px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;flex:none}
+.hidden{display:none!important}
+
+/* ---------------- top bar ---------------- */
+.top{display:flex;align-items:center;gap:8px;padding:8px 12px;padding-top:max(8px,env(safe-area-inset-top));
+  padding-left:max(12px,env(safe-area-inset-left));padding-right:max(12px,env(safe-area-inset-right))}
+.brand{display:flex;align-items:center;gap:8px;font-weight:800;letter-spacing:.06em;font-size:14px;white-space:nowrap}
+.logo{width:28px;height:28px;border-radius:9px;display:grid;place-items:center;background:linear-gradient(135deg,var(--accent),#6366f1);color:#04121a}
+.logo svg{width:18px;height:18px}
+.chips{display:flex;gap:6px;flex:1;overflow:hidden;min-width:0}
+.chip{display:inline-flex;align-items:center;gap:6px;padding:5px 10px;border-radius:99px;background:var(--panel);
+  border:1px solid var(--line);font-size:12px;color:var(--muted);white-space:nowrap}
+.chip i{width:8px;height:8px;border-radius:50%;background:var(--muted)}
+.chip.ok i{background:var(--green);box-shadow:0 0 8px var(--green)} .chip.bad i{background:var(--red)} .chip.warn i{background:var(--amber)}
+.ibtn{width:40px;height:40px;border-radius:12px;border:1px solid var(--line);background:var(--panel);display:grid;place-items:center;flex:none}
+.ibtn.on{background:var(--accent);color:#04252b;border-color:var(--accent)}
+.stop{height:40px;padding:0 16px;border-radius:12px;border:0;background:linear-gradient(180deg,#f43f5e,#be123c);color:#fff;
+  font-weight:900;letter-spacing:.1em;display:flex;align-items:center;gap:6px;box-shadow:0 4px 16px rgba(225,29,72,.35);flex:none}
+.stop:active{transform:scale(.96)}
+
+/* ---------------- layout ---------------- */
+.layout{flex:1;display:grid;gap:10px;padding:0 10px 10px;padding-bottom:max(10px,env(safe-area-inset-bottom));
+  padding-left:max(10px,env(safe-area-inset-left));padding-right:max(10px,env(safe-area-inset-right));min-height:0;
+  grid-template-columns:minmax(210px,1fr) minmax(0,2fr) minmax(210px,1fr);grid-template-areas:"drive video side"}
+.card{background:linear-gradient(180deg,var(--panel),var(--bg2));border:1px solid var(--line);border-radius:var(--radius);
+  min-height:0;min-width:0;display:flex;flex-direction:column;overflow:hidden;box-shadow:var(--shadow)}
+.drive{grid-area:drive}.video{grid-area:video}.side{grid-area:side}
+.ttl{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:10px 12px 0;font-size:11px;font-weight:700;
+  letter-spacing:.14em;color:var(--muted);text-transform:uppercase;white-space:nowrap}
+.ttl b{color:var(--text);font-weight:700;letter-spacing:.04em;text-transform:none;font-size:12px}
+@media (orientation:portrait),(max-width:700px){
+  .layout{grid-template-columns:1fr 1fr;grid-template-rows:auto auto 1fr;grid-template-areas:"video video" "side side" "drive drive"}
+  .video .screen{aspect-ratio:4/3;flex:none}
+  .side{flex-direction:row}
+  .side .radar-box{flex:1}
+  .side .ctl{width:52%}
+  .chips .chip:nth-child(n+3){display:none}
+}
+
+/* ---------------- video ---------------- */
+.screen{position:relative;flex:1;background:#000;margin:10px;border-radius:14px;overflow:hidden;min-height:150px}
+.screen img{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;display:block}
+.novideo{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;text-align:center;
+  color:var(--muted);font-size:13px;padding:12px;background:radial-gradient(circle at 50% 40%,#132132,#05080c)}
+.novideo svg{width:42px;height:42px;opacity:.6}
+.hud{position:absolute;inset:0;pointer-events:none;border:3px solid transparent;border-radius:14px;transition:border-color .15s}
+.hud.alarm{animation:flash .5s steps(1) infinite}
+.hud.danger{border-color:var(--red);box-shadow:inset 0 0 50px rgba(239,68,68,.6)}
+@keyframes flash{50%{border-color:var(--red);box-shadow:inset 0 0 36px rgba(239,68,68,.45)}}
+.hud .tl,.hud .tr{position:absolute;top:10px;display:flex;gap:6px;flex-wrap:wrap}
+.hud .tl{left:10px}.hud .tr{right:10px}
+.tag{padding:4px 9px;border-radius:8px;font-size:11px;font-weight:800;letter-spacing:.08em;background:rgba(0,0,0,.55);color:#fff;
+  backdrop-filter:blur(4px);display:flex;align-items:center;gap:5px}
+.tag.rev{background:var(--amber);color:#1a1200}.tag.brk{background:var(--red)}.tag.lt{background:rgba(253,224,71,.9);color:#2a2000}
+.park{position:absolute;left:50%;bottom:12px;transform:translateX(-50%);display:flex;gap:3px;align-items:flex-end;
+  padding:7px 10px;border-radius:12px;background:rgba(0,0,0,.55);backdrop-filter:blur(4px)}
+.park span{width:12px;border-radius:3px;background:#2a3442;transition:background .12s}
+.park .txt{width:auto;background:none;color:#fff;font-weight:800;font-size:14px;margin-left:8px;min-width:62px;text-align:right;font-variant-numeric:tabular-nums}
+.vbar{display:flex;gap:8px;padding:0 10px 10px;flex-wrap:wrap}
+.pill{height:38px;padding:0 12px;border-radius:12px;border:1px solid var(--line);background:var(--panel2);display:flex;align-items:center;gap:7px;font-size:13px;font-weight:600}
+.pill.on{background:var(--accent);color:#04252b;border-color:var(--accent)}
+.pill.right{margin-left:auto}
+
+/* ---------------- drive ---------------- */
+.drive-body{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;padding:10px}
+.stick{position:relative;width:min(100%,210px,max(120px,calc(100dvh - 270px)));flex:none;aspect-ratio:1;border-radius:50%;touch-action:none;
+  background:radial-gradient(circle,#18263a 0 52%,#111b29 53% 100%);border:2px solid var(--line2);box-shadow:inset 0 0 30px rgba(0,0,0,.6)}
+.stick .lbl{position:absolute;font-size:10px;font-weight:800;letter-spacing:.12em;color:#5b6f8a}
+.stick .lbl.f{top:8px;left:50%;transform:translateX(-50%)} .stick .lbl.b{bottom:8px;left:50%;transform:translateX(-50%)}
+.stick .lbl.l{left:8px;top:50%;transform:translateY(-50%)} .stick .lbl.r{right:8px;top:50%;transform:translateY(-50%)}
+.knob{position:absolute;left:50%;top:50%;width:40%;aspect-ratio:1;margin:-20% 0 0 -20%;border-radius:50%;z-index:1;
+  background:radial-gradient(circle at 35% 30%,#a5f3fc,#22d3ee 45%,#0e7490);box-shadow:0 6px 18px rgba(34,211,238,.45),inset 0 -4px 8px rgba(0,0,0,.25);will-change:transform}
+.stick.active{border-color:var(--accent)}
+.dpad{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;width:min(100%,220px);touch-action:none}
+.dpad button{aspect-ratio:1;border-radius:14px;border:1px solid var(--line2);background:var(--panel2);font-size:22px;touch-action:none}
+.dpad button.act{background:var(--accent);color:#04252b}
+.dpad .mid{background:#2a1015;border-color:#5b1d22;color:#fda4af;font-size:12px;font-weight:800}
+.seg{display:flex;background:var(--bg);border:1px solid var(--line);border-radius:14px;padding:3px;gap:3px;width:100%;max-width:240px}
+.seg button{flex:1;border:0;background:transparent;border-radius:11px;padding:8px 4px;font-size:12px;font-weight:700;color:var(--muted);
+  display:flex;flex-direction:column;align-items:center;gap:2px}
+.seg button small{font-size:10px;font-weight:600;opacity:.8}
+.seg button.on{background:var(--panel2);color:var(--text);box-shadow:0 2px 8px rgba(0,0,0,.35)}
+.seg.speed button.on{background:linear-gradient(180deg,#155e75,#0e3a4a);color:#cffafe}
+.lr{font-size:11px;color:var(--muted);font-variant-numeric:tabular-nums}
+
+/* ---------------- side: radar + lights + horn ---------------- */
+.radar-box{display:flex;flex-direction:column;min-height:0;flex:1}
+.radar-wrap{position:relative;flex:1;min-height:120px}
+#radar{position:absolute;inset:0;width:100%;height:100%}
+.readout{display:flex;align-items:center;justify-content:space-between;gap:6px;padding:0 12px 8px}
+.num{font-size:30px;font-weight:900;font-variant-numeric:tabular-nums;letter-spacing:-.02em}
+.num small{font-size:13px;color:var(--muted);font-weight:600;margin-left:3px}
+.zone{padding:5px 10px;border-radius:99px;font-weight:900;font-size:11px;letter-spacing:.1em;background:var(--panel2);color:var(--muted)}
+.ctl{display:flex;flex-direction:column;gap:10px;padding:10px 12px 12px}
+.side .ctl{border-top:1px solid var(--line);margin-top:2px;padding-top:12px}
+.lights{display:grid;grid-template-columns:repeat(3,1fr);gap:6px}
+.lights button{border:1px solid var(--line);background:var(--panel2);border-radius:12px;padding:8px 2px;font-size:11px;font-weight:800;
+  display:flex;flex-direction:column;align-items:center;gap:4px;color:var(--muted)}
+.lights button svg{width:22px;height:22px}
+.lights button.on{color:#2a2000;background:linear-gradient(180deg,#fef08a,#facc15);border-color:#facc15;box-shadow:0 0 18px rgba(250,204,21,.35)}
+.lights button.on.hz{background:linear-gradient(180deg,#fdba74,#f97316);border-color:#f97316;animation:hz 1s steps(1) infinite}
+@keyframes hz{50%{filter:brightness(.65)}}
+.horn{height:58px;border-radius:16px;border:1px solid var(--line2);background:linear-gradient(180deg,#1e2c40,#142033);
+  font-weight:900;letter-spacing:.08em;display:flex;align-items:center;justify-content:center;gap:8px;touch-action:none;font-size:15px}
+.horn.on{background:linear-gradient(180deg,#67e8f9,#06b6d4);color:#04252b;border-color:var(--accent);transform:scale(.98)}
+
+/* ---------------- sheet (settings) ---------------- */
+.scrim{position:fixed;inset:0;background:rgba(0,0,0,.55);opacity:0;pointer-events:none;transition:.2s;z-index:9}
+.sheet{position:fixed;top:0;right:0;bottom:0;width:min(400px,94vw);background:var(--panel);border-left:1px solid var(--line);
+  transform:translateX(102%);transition:.25s;z-index:10;overflow-y:auto;padding:16px;padding-top:max(16px,env(safe-area-inset-top));user-select:text}
+body.set-open .sheet{transform:none} body.set-open .scrim{opacity:1;pointer-events:auto}
+.sheet h2{font-size:18px;margin:0 0 4px;display:flex;justify-content:space-between;align-items:center}
+.group{background:var(--bg2);border:1px solid var(--line);border-radius:14px;padding:4px 12px;margin-top:14px}
+.group h3{font-size:11px;letter-spacing:.14em;color:var(--accent);text-transform:uppercase;margin:10px 0 4px}
+.field{padding:10px 0;border-bottom:1px solid var(--line)} .field:last-child{border-bottom:0}
+.field .row{display:flex;justify-content:space-between;align-items:center;gap:10px;font-size:14px}
+.field .row b{color:var(--accent)}
+.field p{margin:4px 0 0;font-size:12px;color:var(--muted)}
+.field select,.field input[type=text]{width:100%;margin-top:6px;background:var(--panel2);border:1px solid var(--line);color:var(--text);border-radius:10px;padding:10px;font:inherit}
+input[type=range]{width:100%;accent-color:var(--accent);margin-top:8px}
+.tog{appearance:none;width:46px;height:28px;border-radius:99px;background:#2a3648;position:relative;transition:.2s;flex:none;margin:0}
+.tog:before{content:"";position:absolute;top:3px;left:3px;width:22px;height:22px;border-radius:50%;background:#fff;transition:.2s}
+.tog:checked{background:var(--accent)} .tog:checked:before{left:21px}
+.link{display:block;margin-top:14px;padding:12px;border-radius:12px;background:linear-gradient(135deg,#0e3a4a,#1e1b4b);border:1px solid #155e75;color:#cffafe;text-decoration:none;font-size:13px}
+.link b{display:block;font-size:14px;margin-bottom:2px}
+.note{font-size:12px;color:var(--muted);line-height:1.5}
+kbd{background:var(--panel2);border:1px solid var(--line2);border-bottom-width:2px;border-radius:5px;padding:0 5px;font-size:11px}
+
+/* ---------------- toast + onboarding ---------------- */
+.toast{position:fixed;left:50%;bottom:22px;transform:translate(-50%,10px);background:var(--panel2);border:1px solid var(--line2);
+  padding:10px 16px;border-radius:12px;z-index:20;opacity:0;transition:.2s;pointer-events:none;box-shadow:var(--shadow);font-weight:600}
+.toast.show{opacity:1;transform:translate(-50%,0)}
+.intro{position:fixed;inset:0;z-index:30;background:rgba(3,6,10,.8);backdrop-filter:blur(6px);display:grid;place-items:center;padding:16px}
+.intro .box{max-width:460px;width:100%;background:var(--panel);border:1px solid var(--line2);border-radius:22px;padding:20px;box-shadow:var(--shadow)}
+.intro h2{margin:0 0 4px;font-size:20px}.intro p{margin:0 0 12px;color:var(--muted)}
+.tips{display:grid;gap:10px;margin:12px 0 16px}
+.tip{display:flex;gap:12px;align-items:center;background:var(--bg2);border:1px solid var(--line);border-radius:14px;padding:10px 12px}
+.tip .ic{width:38px;height:38px;border-radius:11px;display:grid;place-items:center;background:var(--panel2);color:var(--accent);flex:none}
+.tip b{display:block}.tip span{font-size:12px;color:var(--muted)}
+.go{width:100%;height:48px;border-radius:14px;border:0;background:linear-gradient(180deg,var(--accent),var(--accent2));color:#04252b;font-weight:900;font-size:15px}
+@media (orientation:portrait),(max-width:700px){
+  .drive-body{flex-direction:row;justify-content:space-evenly;padding:8px}
+  .stick{width:min(56vw,190px,max(120px,calc(100dvh - 600px)))}
+  .dpad{width:min(56vw,200px)}
+  .seg{flex-direction:column;width:96px}
+  .seg button{padding:10px 4px}
+  .radar-wrap{min-height:110px}
+  .side .ctl{border-top:0;margin-top:0;padding-top:10px}
+}
+/* short landscape phones: keep radar, readout, lights and horn inside the card */
+@media (orientation:landscape) and (max-height:500px){
+  .radar-wrap{min-height:80px}
+  .num{font-size:26px}
+  .readout{padding-bottom:6px}
+  .ctl{gap:8px;padding:8px 12px 10px}
+  .side .ctl{padding-top:8px;margin-top:0}
+  .lights button{padding:5px 2px;gap:2px}
+  .lights button svg{width:18px;height:18px}
+  .horn{height:44px}
+}
+.pcbanner{display:none}
+@media (pointer:fine) and (min-width:1100px){.pcbanner{display:flex}}
+</style>
+</head>
+<body>
+
+<header class="top">
+  <div class="brand"><span class="logo"><svg class="i" viewBox="0 0 24 24"><rect x="4" y="8" width="16" height="9" rx="3"/><circle cx="8" cy="18" r="2"/><circle cx="16" cy="18" r="2"/><path d="M8 8l2-3h4l2 3"/></svg></span>ROBOT&nbsp;CAR</div>
+  <div class="chips">
+    <span class="chip bad" id="chWs"><i></i><span>offline</span></span>
+    <span class="chip" id="chCar"><i></i><span>car</span></span>
+    <span class="chip hidden" id="chRssi"><i></i><span></span></span>
+    <a class="chip pcbanner" href="view" style="text-decoration:none;color:var(--accent)" id="pcLink"><i style="background:var(--accent)"></i><span>On a PC? Open the viewer</span></a>
+  </div>
+  <button class="stop" id="btnStop" title="Emergency stop (Esc)"><svg class="i" viewBox="0 0 24 24"><rect x="6" y="6" width="12" height="12" rx="2"/></svg>STOP</button>
+  <button class="ibtn" id="btnSet" title="Settings"><svg class="i" viewBox="0 0 24 24"><path d="M4 7h10M18 7h2M4 17h4M12 17h8"/><circle cx="16" cy="7" r="2"/><circle cx="10" cy="17" r="2"/></svg></button>
+</header>
+
+<main class="layout">
+  <!-- DRIVE -->
+  <section class="card drive">
+    <div class="ttl"><span>Drive</span><span class="lr" id="lrOut">L 0 · R 0</span></div>
+    <div class="drive-body">
+      <div class="stick" id="stick"><span class="lbl f">FWD</span><span class="lbl b">REV</span><span class="lbl l">L</span><span class="lbl r">R</span><div class="knob" id="knob"></div></div>
+      <div class="dpad hidden" id="dpad">
+        <button data-x="-1" data-y="1">&#8598;</button><button data-x="0" data-y="1">&#9650;</button><button data-x="1" data-y="1">&#8599;</button>
+        <button data-x="-1" data-y="0">&#9664;</button><button class="mid" data-x="0" data-y="0">STOP</button><button data-x="1" data-y="0">&#9654;</button>
+        <button data-x="-1" data-y="-1">&#8601;</button><button data-x="0" data-y="-1">&#9660;</button><button data-x="1" data-y="-1">&#8600;</button>
+      </div>
+      <div class="seg speed" id="gears">
+        <button data-v="40">Slow<small>40%</small></button>
+        <button data-v="70">Normal<small>70%</small></button>
+        <button data-v="100">Fast<small>100%</small></button>
+      </div>
+    </div>
+  </section>
+
+  <!-- VIDEO -->
+  <section class="card video">
+    <div class="screen" id="screen">
+      <div class="novideo" id="novideo"><svg class="i" viewBox="0 0 24 24"><path d="M3 8h4l2-3h6l2 3h4v11H3z"/><circle cx="12" cy="13" r="3.5"/></svg><span id="novTxt">Connecting to camera&hellip;</span></div>
+      <img id="cam" alt="">
+      <div class="hud" id="hud">
+        <div class="tl"><span class="tag rev hidden" id="tagRev">REVERSE</span><span class="tag brk hidden" id="tagBrk">AUTO-BRAKE</span></div>
+        <div class="tr"><span class="tag lt hidden" id="tagLt">LIGHTS</span><span class="tag hidden" id="tagDemo">DEMO</span></div>
+        <div class="park" id="park"></div>
+      </div>
+    </div>
+    <div class="vbar">
+      <button class="pill" id="btnPause"><svg class="i" viewBox="0 0 24 24"><path d="M8 5v14M16 5v14"/></svg><span>Pause</span></button>
+      <button class="pill" id="btnSnap"><svg class="i" viewBox="0 0 24 24"><path d="M3 8h4l2-3h6l2 3h4v11H3z"/><circle cx="12" cy="13" r="3.5"/></svg><span>Photo</span></button>
+      <button class="pill" id="btnFlash" title="White LED on the camera board"><svg class="i" viewBox="0 0 24 24"><path d="M13 2L4 14h7l-1 8 9-12h-7z"/></svg><span>Cam light</span></button>
+      <button class="pill right" id="btnFull" title="Full screen"><svg class="i" viewBox="0 0 24 24"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"/></svg></button>
+    </div>
+  </section>
+
+  <!-- RADAR + LIGHTS + HORN -->
+  <section class="card side">
+    <div class="radar-box">
+      <div class="ttl"><span>Rear radar</span><b id="radarMode">fixed sensor</b></div>
+      <div class="radar-wrap"><canvas id="radar"></canvas></div>
+      <div class="readout"><div class="num" id="distNum">--<small>cm</small></div><div class="zone" id="zone">NO DATA</div></div>
+    </div>
+    <div class="ctl">
+      <div class="ttl" style="padding:0"><span>Headlights</span><b id="ltTxt">off</b></div>
+      <div class="lights" id="lights">
+        <button data-m="0"><svg class="i" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8"/><path d="M6.5 6.5l11 11"/></svg>OFF</button>
+        <button data-m="1"><svg class="i" viewBox="0 0 24 24"><path d="M10 6c-4 0-6 2.5-6 6s2 6 6 6h2V6z"/><path d="M15 8h6M15 12h6M15 16h6"/></svg>ON</button>
+        <button data-m="2"><svg class="i" viewBox="0 0 24 24"><path d="M12 3l10 18H2z"/><path d="M12 10v4M12 17.5v.5"/></svg>HAZARD</button>
+      </div>
+      <button class="horn" id="btnHorn"><svg class="i" viewBox="0 0 24 24"><path d="M3 10v4h4l5 4V6L7 10H3z"/><path d="M16 8.5a5 5 0 0 1 0 7M19 6a8.5 8.5 0 0 1 0 12"/></svg>HORN</button>
+    </div>
+  </section>
+</main>
+
+<div class="scrim" id="scrim"></div>
+<aside class="sheet" id="sheet">
+  <h2>Settings <button class="ibtn" id="btnClose"><svg class="i" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></svg></button></h2>
+
+  <a class="link" href="view" id="viewLink"><b>&#128421; Classroom viewer for a PC</b>On a computer connected to the same WiFi, open <span id="viewUrl">http://192.168.4.1/view</span> to show the video and radar on a big screen.</a>
+
+  <div class="group"><h3>Parking alarm</h3>
+    <div class="field"><div class="row"><span>Start beeping at</span><b id="warnVal"></b></div><input type="range" id="sWarn" min="30" max="200" step="5"></div>
+    <div class="field"><div class="row"><span>Danger / auto-brake at</span><b id="stopVal"></b></div><input type="range" id="sStop" min="5" max="60" step="1"></div>
+    <div class="field"><div class="row"><span>Auto-brake when reversing</span><input class="tog" type="checkbox" id="sBrake"></div><p>The car refuses to reverse into an obstacle.</p></div>
+    <div class="field"><div class="row"><span>Alarm also when not reversing</span><input class="tog" type="checkbox" id="sAlways"></div></div>
+    <div class="field"><div class="row"><span>Mute the car buzzer</span><input class="tog" type="checkbox" id="sMute"></div><p>The red LED still flashes.</p></div>
+    <div class="field"><div class="row"><span>Beep on this phone too</span><input class="tog" type="checkbox" id="sPhoneBeep"></div></div>
+    <div class="field"><div class="row"><span>Vibrate (Android)</span><input class="tog" type="checkbox" id="sVibe"></div></div>
+  </div>
+
+  <div class="group"><h3>Driving</h3>
+    <div class="field"><div class="row"><span>Controls</span></div>
+      <select id="sMode"><option value="joy">Joystick</option><option value="dpad">Buttons (D-pad)</option></select></div>
+    <div class="field"><div class="row"><span>Exact speed</span><b id="spdVal"></b></div><input type="range" id="sSpeed" min="30" max="100" step="5"></div>
+    <div class="field"><div class="row"><span>Turn sensitivity</span><b id="turnVal"></b></div><input type="range" id="sTurn" min="30" max="100" step="5"></div>
+  </div>
+
+  <div class="group"><h3>Camera</h3>
+    <div class="field"><div class="row"><span>Resolution</span></div><select id="sRes">
+      <option value="5">QVGA 320&times;240 (smoothest)</option><option value="8">VGA 640&times;480 (recommended)</option>
+      <option value="9">SVGA 800&times;600</option><option value="10">XGA 1024&times;768 (slow)</option></select></div>
+    <div class="field"><div class="row"><span>Picture quality</span><b id="qVal"></b></div><input type="range" id="sQual" min="10" max="40" step="1"><p>Lower number = sharper picture but slower video.</p></div>
+    <div class="field"><div class="row"><span>Cam light brightness</span><b id="flashVal"></b></div><input type="range" id="sFlash" min="10" max="255" step="5"></div>
+    <div class="field"><div class="row"><span>Flip upside down</span><input class="tog" type="checkbox" id="sVflip"></div></div>
+    <div class="field"><div class="row"><span>Mirror left / right</span><input class="tog" type="checkbox" id="sMirror"></div></div>
+  </div>
+
+  <div class="group"><h3>Radar &amp; connection</h3>
+    <div class="field"><div class="row"><span>Radar range</span></div><select id="sRange"><option value="100">1 m</option><option value="200">2 m</option><option value="300">3 m</option><option value="400">4 m</option></select></div>
+    <div class="field"><div class="row"><span>Car address</span></div><input type="text" id="sHost" inputmode="url" spellcheck="false"></div>
+    <div class="field"><button class="pill" id="btnIntro" style="width:100%;justify-content:center">Show the tips again</button></div>
+  </div>
+  <p class="note">Join WiFi <b>RobotCar</b> (password <b>12345678</b>) and open <b>http://192.168.4.1</b>.<br>
+    Keyboard: <kbd>W</kbd><kbd>A</kbd><kbd>S</kbd><kbd>D</kbd> drive · <kbd>Space</kbd> horn · <kbd>L</kbd> lights · <kbd>H</kbd> hazard · <kbd>Esc</kbd> stop</p>
+</aside>
+
+<div class="intro hidden" id="intro"><div class="box">
+  <h2>Ready to drive &#128663;</h2><p>Three things to know:</p>
+  <div class="tips">
+    <div class="tip"><div class="ic"><svg class="i" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8"/><circle cx="12" cy="12" r="3"/></svg></div><div><b>Hold and drag the joystick</b><span>Up = forward, down = reverse. Let go to stop.</span></div></div>
+    <div class="tip"><div class="ic" style="color:var(--amber)"><svg class="i" viewBox="0 0 24 24"><path d="M12 3a9 9 0 1 0 9 9"/><path d="M12 12l6-6"/></svg></div><div><b>Reversing turns on the radar alarm</b><span>Beeps get faster as you get closer. The car brakes by itself.</span></div></div>
+    <div class="tip"><div class="ic" style="color:var(--red)"><svg class="i" viewBox="0 0 24 24"><rect x="6" y="6" width="12" height="12" rx="2"/></svg></div><div><b>STOP is always at the top</b><span>The car also stops if the phone loses WiFi.</span></div></div>
+  </div>
+  <button class="go" id="btnGo">Let's go</button>
+</div></div>
+<div class="toast" id="toast"></div>
+
+<script>
+(() => {
+"use strict";
+const $ = id => document.getElementById(id);
+const buzz = ms => { try { navigator.vibrate && navigator.vibrate(ms); } catch(e){} };
+
+/* ======================= settings (saved on the phone) ======================= */
+const servedByCar = location.protocol.startsWith("http") && !/[?&]demo/.test(location.search);
+const DEFAULTS = { warn:100, stop:15, brake:true, always:false, mute:false, phoneBeep:false, vibe:true,
+  mode:"joy", turn:70, flash:180, res:8, qual:12, vflip:false, mirror:false, range:200, speed:70, intro:false,
+  host: servedByCar ? location.host : "192.168.4.1" };
+let S = {...DEFAULTS};
+try { Object.assign(S, JSON.parse(localStorage.getItem("robotcar") || "{}")); } catch(e) {}
+if (servedByCar) S.host = location.host;
+const save = () => { try { localStorage.setItem("robotcar", JSON.stringify(S)); } catch(e) {} };
+const demo = !servedByCar;
+const host = () => S.host.replace(/:\d+$/,"");
+
+function toast(msg){ const t=$("toast"); t.textContent=msg; t.classList.add("show"); clearTimeout(t._h); t._h=setTimeout(()=>t.classList.remove("show"),1800); }
+
+/* ============================== WebSocket link ============================== */
+let ws = null, wsOk = false;
+function send(msg){ if (wsOk && ws.readyState === 1) ws.send(msg); }
+function sendConfig(){ send(`C,${S.warn},${S.stop},${S.brake?1:0},${S.always?1:0},${S.mute?1:0}`); }
+
+function connect(){
+  if (demo) return;
+  try { ws = new WebSocket(`ws://${host()}/ws`); } catch(e) { setTimeout(connect, 2000); return; }
+  ws.onopen = () => { wsOk = true; setChip("chWs","ok","connected"); send("R,phone"); sendConfig(); };
+  ws.onclose = () => { wsOk = false; setChip("chWs","bad","offline"); setChip("chCar","","car"); setTimeout(connect, 1500); };
+  ws.onerror = () => { try { ws.close(); } catch(e){} };
+  ws.onmessage = e => onMessage(String(e.data));
+}
+function onMessage(m){
+  const p = m.split(",");
+  if (p[0] === "D") onSensor(+p[1], +p[2], +p[3]);
+  else if (p[0] === "T") { showLights(+p[3]); flashOn = +p[5] > 0; $("btnFlash").classList.toggle("on", flashOn); }
+  else if (p[0] === "I") {
+    const rssi = +p[1];
+    setChip("chCar", +p[3] ? "ok" : "bad", +p[3] ? "car ok" : "car not responding");
+    const c = $("chRssi");
+    if (rssi) { c.classList.remove("hidden"); setChip("chRssi", rssi > -65 ? "ok" : rssi > -78 ? "warn" : "bad", rssi + " dBm"); }
+    else c.classList.add("hidden");
+  }
+}
+function setChip(id, cls, txt){ const c=$(id); c.className="chip "+cls; c.querySelector("span").textContent=txt; }
+
+/* ================================= Driving ================================= */
+let joyX = 0, joyY = 0, keyX = 0, keyY = 0, outL = 0, outR = 0;
+function mix(){
+  let x = (keyX || joyX) * S.turn / 100, y = keyY || joyY;
+  let l = y + x, r = y - x;
+  const m = Math.max(1, Math.abs(l), Math.abs(r)); l /= m; r /= m;
+  const k = 255 * S.speed / 100;
+  outL = Math.round(l * k); outR = Math.round(r * k);
+  $("lrOut").textContent = `L ${outL} · R ${outR}`;
+}
+setInterval(() => { mix(); send(`M,${outL},${outR}`); if (demo) demoTick(); }, 100);
+
+// Joystick
+(function(){
+  const base = $("stick"), knob = $("knob"); let id = null, cx, cy, rad;
+  const set = (x, y, px, py) => {
+    knob.style.transform = `translate(${px}px,${py}px)`;
+    if (Math.hypot(x, y) < 0.12) { x = 0; y = 0; }
+    joyX = +x.toFixed(2); joyY = +y.toFixed(2); mix();
+  };
+  base.addEventListener("pointerdown", e => {
+    id = e.pointerId; base.setPointerCapture(id); base.classList.add("active");
+    const r = base.getBoundingClientRect(); cx = r.left + r.width/2; cy = r.top + r.height/2; rad = r.width * 0.34;
+    move(e); unlockAudio(); buzz(8);
+  });
+  base.addEventListener("pointermove", e => { if (e.pointerId === id) move(e); });
+  const end = e => { if (e.pointerId === id) { id = null; base.classList.remove("active"); knob.style.transition = "transform .12s"; set(0,0,0,0); setTimeout(() => knob.style.transition = "", 130); } };
+  ["pointerup","pointercancel","lostpointercapture"].forEach(t => base.addEventListener(t, end));
+  function move(e){
+    let dx = e.clientX - cx, dy = e.clientY - cy; const d = Math.hypot(dx, dy);
+    if (d > rad) { dx *= rad/d; dy *= rad/d; }
+    set(dx/rad, -dy/rad, dx, dy);
+  }
+})();
+
+// D-pad
+document.querySelectorAll("#dpad button").forEach(b => {
+  const down = e => { e.preventDefault(); b.setPointerCapture(e.pointerId); b.classList.add("act"); buzz(8);
+    joyX = +b.dataset.x; joyY = +b.dataset.y; if (joyX && joyY) joyX *= .5; mix(); unlockAudio(); };
+  const up = () => { b.classList.remove("act"); joyX = 0; joyY = 0; mix(); };
+  b.addEventListener("pointerdown", down);
+  ["pointerup","pointercancel","lostpointercapture"].forEach(t => b.addEventListener(t, up));
+});
+
+// Speed gears
+function showSpeed(){
+  document.querySelectorAll("#gears button").forEach(b => b.classList.toggle("on", +b.dataset.v === S.speed));
+  $("spdVal").textContent = S.speed + "%"; $("sSpeed").value = S.speed;
+}
+document.querySelectorAll("#gears button").forEach(b => b.onclick = () => { S.speed = +b.dataset.v; save(); showSpeed(); mix(); buzz(10); });
+
+// Emergency stop
+function emergency(){ joyX = joyY = keyX = keyY = 0; keys.clear(); mix(); send("S"); send("M,0,0"); hornOff(); buzz([30,40,30]); toast("Stopped"); }
+$("btnStop").onclick = emergency;
+
+// Horn (hold)
+const horn = $("btnHorn");
+const hornOn = e => { e && e.preventDefault(); horn.classList.add("on"); send("H,1"); unlockAudio(); buzz(10); };
+const hornOff = () => { if (horn.classList.contains("on")) { horn.classList.remove("on"); send("H,0"); } };
+horn.addEventListener("pointerdown", e => { horn.setPointerCapture(e.pointerId); hornOn(e); });
+["pointerup","pointercancel","lostpointercapture"].forEach(t => horn.addEventListener(t, hornOff));
+
+// Headlights: 0 off, 1 on, 2 hazard (the UNO drives 2 white LEDs at the front)
+let lightMode = 0;
+const LT = ["off", "on", "hazard"];
+function showLights(m){
+  lightMode = m;
+  document.querySelectorAll("#lights button").forEach(b => { const on = +b.dataset.m === m && m > 0; b.classList.toggle("on", on); b.classList.toggle("hz", on && m === 2); });
+  $("ltTxt").textContent = LT[m] || "off";
+  $("tagLt").classList.toggle("hidden", m === 0); $("tagLt").textContent = m === 2 ? "HAZARD" : "LIGHTS";
+}
+function setLights(m){ showLights(m); send(`L,${m}`); buzz(10); }
+document.querySelectorAll("#lights button").forEach(b => b.onclick = () => setLights(+b.dataset.m === lightMode && lightMode ? 0 : +b.dataset.m));
+
+// Camera flash LED (on the ESP32-CAM board)
+let flashOn = false;
+$("btnFlash").onclick = () => { flashOn = !flashOn; $("btnFlash").classList.toggle("on", flashOn); send(`K,${flashOn ? S.flash : 0}`); buzz(10); };
+
+// Keyboard (for testing on a PC)
+const keys = new Set();
+function keyUpdate(){
+  keyY = (keys.has("w")||keys.has("arrowup") ? 1 : 0) - (keys.has("s")||keys.has("arrowdown") ? 1 : 0);
+  keyX = (keys.has("d")||keys.has("arrowright") ? 1 : 0) - (keys.has("a")||keys.has("arrowleft") ? 1 : 0);
+  mix();
+}
+addEventListener("keydown", e => {
+  if (e.target.tagName === "INPUT" && e.target.type === "text") return;
+  const k = e.key.toLowerCase();
+  if (k === "escape") { emergency(); return; }
+  if (k === " ") { if (!e.repeat) hornOn(); e.preventDefault(); return; }
+  if (k === "l" && !e.repeat) { setLights(lightMode === 1 ? 0 : 1); return; }
+  if (k === "h" && !e.repeat) { setLights(lightMode === 2 ? 0 : 2); return; }
+  if (["w","a","s","d","arrowup","arrowdown","arrowleft","arrowright"].includes(k)) { keys.add(k); keyUpdate(); e.preventDefault(); }
+});
+addEventListener("keyup", e => { const k = e.key.toLowerCase(); if (k === " ") hornOff(); keys.delete(k); keyUpdate(); });
+document.addEventListener("visibilitychange", () => { if (document.hidden) { joyX=joyY=keyX=keyY=0; keys.clear(); mix(); send("M,0,0"); hornOff(); } });
+
+/* ================================== Video ================================== */
+const cam = $("cam"); let videoPaused = false, retry = null;
+function noVideo(txt){ $("novTxt").innerHTML = txt; $("novideo").classList.remove("hidden"); }
+function startVideo(){
+  clearTimeout(retry);
+  if (demo) { noVideo("Camera preview<br><small>Demo mode: open the app from the car to see live video</small>"); return; }
+  if (videoPaused) { cam.removeAttribute("src"); noVideo("Video paused"); return; }
+  cam.src = `http://${host()}:81/stream?t=${Date.now()}`;
+}
+cam.onload = () => $("novideo").classList.add("hidden");
+cam.onerror = () => { if (videoPaused) return; noVideo("No video. Retrying&hellip;"); retry = setTimeout(startVideo, 2000); };
+$("btnPause").onclick = () => {
+  videoPaused = !videoPaused; $("btnPause").querySelector("span").textContent = videoPaused ? "Play" : "Pause";
+  $("btnPause").classList.toggle("on", videoPaused); startVideo();
+};
+$("btnSnap").onclick = () => {
+  if (demo) return toast("Photo works when connected to the car");
+  const a = document.createElement("a");
+  a.href = `http://${host()}/capture?t=${Date.now()}`; a.target = "_blank"; a.rel = "noopener"; a.click();
+};
+
+/* ============================== Sensor + alarm ============================== */
+let dist = 0, angle = 90, flags = 0, lastData = 0, servoSeen = -1e9;
+const blips = [], parkBars = [];
+(function(){ const p = $("park"); for (let i = 0; i < 8; i++) { const s = document.createElement("span"); s.style.height = (8 + i*3) + "px"; p.appendChild(s); parkBars.push(s); }
+  const t = document.createElement("span"); t.className = "txt"; t.id = "parkTxt"; p.appendChild(t); })();
+
+function zoneOf(d){
+  if (!d) return { name:"CLEAR", hex:"#22c55e", lvl:0 };
+  if (d <= S.stop + 5) return { name:"STOP", hex:"#ef4444", lvl:3 };
+  if (d < S.warn * 0.5) return { name:"WARNING", hex:"#ef4444", lvl:2 };
+  if (d < S.warn) return { name:"CAUTION", hex:"#f59e0b", lvl:1 };
+  return { name:"CLEAR", hex:"#22c55e", lvl:0 };
+}
+
+function onSensor(a, d, f){
+  angle = a; dist = d; flags = f; lastData = performance.now();
+  if (a !== 90) servoSeen = lastData;
+  blips.push({ a, d, t: lastData }); if (blips.length > 120) blips.shift();
+  const z = zoneOf(d);
+  $("distNum").innerHTML = (d ? d : "&gt;400") + "<small>cm</small>"; $("distNum").style.color = z.hex;
+  const zEl = $("zone"); zEl.textContent = z.name; zEl.style.background = z.hex; zEl.style.color = "#0b0f14";
+  const reversing = !!(f & 1), alarm = !!(f & 2), blocked = !!(f & 4);
+  $("tagRev").classList.toggle("hidden", !reversing);
+  $("tagBrk").classList.toggle("hidden", !blocked);
+  const hud = $("hud");
+  hud.classList.toggle("danger", blocked || (alarm && z.lvl === 3));
+  hud.classList.toggle("alarm", alarm && !hud.classList.contains("danger"));
+  const frac = d ? Math.max(0, Math.min(1, 1 - (d - S.stop) / (S.warn - S.stop))) : 0;
+  const lit = d && d < S.warn ? Math.ceil(frac * 8) : 0;
+  parkBars.forEach((s, i) => s.style.background = i < lit ? (i < 3 ? "#22c55e" : i < 6 ? "#f59e0b" : "#ef4444") : "#2a3442");
+  $("parkTxt").textContent = d ? d + " cm" : "clear";
+  alarmNow = alarm; alarmDist = d;
+}
+
+/* Phone beep + vibration (same rhythm as the car buzzer) */
+let actx = null, gain = null, beepState = false, alarmNow = false, alarmDist = 0;
+function unlockAudio(){
+  if (actx || !S.phoneBeep) return;
+  try {
+    actx = new (window.AudioContext || window.webkitAudioContext)();
+    const osc = actx.createOscillator(); gain = actx.createGain(); osc.frequency.value = 2200; gain.gain.value = 0;
+    osc.connect(gain).connect(actx.destination); osc.start();
+  } catch(e) { actx = null; }
+}
+setInterval(() => {
+  let on = false;
+  if (alarmNow && alarmDist && performance.now() - lastData < 800) {
+    if (alarmDist <= S.stop + 5) on = true;
+    else {
+      const c = Math.max(S.stop + 5, Math.min(S.warn, alarmDist));
+      const period = 120 + (c - (S.stop + 5)) * (900 - 120) / Math.max(1, S.warn - (S.stop + 5));
+      on = (Date.now() % period) < period / 2;
+    }
+  }
+  if (on !== beepState) {
+    beepState = on;
+    if (gain && S.phoneBeep) gain.gain.setTargetAtTime(on ? 0.15 : 0, actx.currentTime, 0.005);
+    if (on && S.vibe && navigator.vibrate) navigator.vibrate(alarmDist <= S.stop + 5 ? 200 : 40);
+  }
+}, 20);
+
+/* ================================== Radar ================================== */
+const cv = $("radar"), g = cv.getContext("2d");
+function drawRadar(){
+  const dpr = window.devicePixelRatio || 1, W = cv.clientWidth, H = cv.clientHeight;
+  if (!W || !H) return requestAnimationFrame(drawRadar);
+  if (cv.width !== Math.round(W*dpr) || cv.height !== Math.round(H*dpr)) { cv.width = Math.round(W*dpr); cv.height = Math.round(H*dpr); }
+  g.setTransform(dpr, 0, 0, dpr, 0, 0); g.clearRect(0, 0, W, H);
+  const cx = W/2, R = Math.max(20, Math.min(W/2 - 10, H - 30)), cy = Math.min(H - 14, H/2 + R/2 + 4);
+  const range = +S.range, now = performance.now(), rad = a => a * Math.PI / 180;
+  const pt = (a, d) => [cx + Math.cos(rad(a)) * d/range*R, cy - Math.sin(rad(a)) * d/range*R];
+  const servo = now - servoSeen < 3000;
+  $("radarMode").textContent = servo ? "scanning" : "fixed sensor";
+  const wedge = (r0, r1, a0, a1, fill) => { g.beginPath(); g.arc(cx, cy, r1, -rad(a1), -rad(a0)); g.arc(cx, cy, r0, -rad(a0), -rad(a1), true); g.closePath(); g.fillStyle = fill; g.fill(); };
+  const rr = v => Math.min(R, v/range*R);
+  wedge(0, R, 0, 180, "#0b1a16");
+  wedge(rr(S.warn*0.5), rr(S.warn), 0, 180, "rgba(245,158,11,.10)");
+  wedge(rr(S.stop+5), rr(S.warn*0.5), 0, 180, "rgba(239,68,68,.10)");
+  wedge(0, rr(S.stop+5), 0, 180, "rgba(239,68,68,.25)");
+  g.strokeStyle = "rgba(34,197,94,.28)"; g.lineWidth = 1; g.fillStyle = "rgba(138,155,176,.9)"; g.font = "10px system-ui"; g.textAlign = "center";
+  const step = range <= 100 ? 25 : 50;
+  for (let d = step; d <= range; d += step) {
+    g.beginPath(); g.arc(cx, cy, d/range*R, Math.PI, 2*Math.PI); g.stroke();
+    if ((d % (step*2) === 0 || range <= 100) && d/range*R > 30) g.fillText(d >= 100 ? (d/100) + "m" : d + "", cx + d/range*R - 10, cy + 11);
+  }
+  for (let a = 0; a <= 180; a += 30) { const [x, y] = pt(a, range); g.beginPath(); g.moveTo(cx, cy); g.lineTo(x, y); g.stroke(); }
+  const fresh = now - lastData < 1000;
+  if (servo) {
+    const [x, y] = pt(angle, range); const grd = g.createLinearGradient(cx, cy, x, y);
+    grd.addColorStop(0, "rgba(34,197,94,.9)"); grd.addColorStop(1, "rgba(34,197,94,.1)");
+    g.strokeStyle = grd; g.lineWidth = 2; g.beginPath(); g.moveTo(cx, cy); g.lineTo(x, y); g.stroke();
+    for (const b of blips) { const age = (now - b.t) / 3000; if (age > 1 || !b.d || b.d > range) continue;
+      const [bx, by] = pt(b.a, b.d); g.globalAlpha = 1 - age; g.fillStyle = zoneOf(b.d).hex; g.beginPath(); g.arc(bx, by, 5, 0, 2*Math.PI); g.fill(); }
+    g.globalAlpha = 1;
+  } else {
+    wedge(0, R, 75, 105, `rgba(34,211,238,${0.10 + 0.06 * Math.sin(now / 300)})`);
+    for (const b of blips) { const age = (now - b.t) / 1500; if (age > 1 || !b.d || b.d > range) continue;
+      g.globalAlpha = (1 - age) * 0.35; g.strokeStyle = zoneOf(b.d).hex; g.lineWidth = 3; g.beginPath(); g.arc(cx, cy, b.d/range*R, -rad(105), -rad(75)); g.stroke(); }
+    g.globalAlpha = 1;
+    if (fresh && dist && dist <= range) {
+      const z = zoneOf(dist), r = dist/range*R;
+      g.strokeStyle = z.hex; g.lineWidth = 6; g.lineCap = "round"; g.shadowColor = z.hex; g.shadowBlur = 14;
+      g.beginPath(); g.arc(cx, cy, r, -rad(105), -rad(75)); g.stroke(); g.shadowBlur = 0; g.lineCap = "butt";
+    }
+  }
+  g.fillStyle = "#1f2937"; g.strokeStyle = "#22d3ee"; g.lineWidth = 1.5;
+  g.beginPath(); g.roundRect ? g.roundRect(cx - 20, cy - 4, 40, 14, 4) : g.rect(cx - 20, cy - 4, 40, 14); g.fill(); g.stroke();
+  g.fillStyle = "#ef4444"; g.fillRect(cx - 17, cy - 2, 6, 3); g.fillRect(cx + 11, cy - 2, 6, 3);
+  if (!fresh) { g.fillStyle = "rgba(7,11,17,.6)"; g.fillRect(0, 0, W, H); g.fillStyle = "#8a9bb0"; g.textAlign = "center"; g.font = "12px system-ui"; g.fillText(demo || wsOk ? "waiting for sensor…" : "not connected", W/2, H/2); }
+  requestAnimationFrame(drawRadar);
+}
+requestAnimationFrame(drawRadar);
+
+/* ================================ Settings UI ================================ */
+function bind(id, key, type, label, fmt, after){
+  const el = $(id);
+  if (type === "check") el.checked = !!S[key]; else el.value = S[key];
+  const show = () => label && ($(label).textContent = fmt ? fmt(S[key]) : S[key]);
+  show();
+  el.addEventListener(type === "range" ? "input" : "change", () => {
+    const v = el.value.trim();
+    S[key] = type === "check" ? el.checked : (type === "text" || isNaN(+v) ? v : +v);
+    show(); save(); after && after();
+  });
+}
+const cfgChanged = () => { if (S.stop + 10 > S.warn) { S.warn = S.stop + 10; $("sWarn").value = S.warn; $("warnVal").textContent = S.warn + " cm"; } sendConfig(); };
+bind("sWarn","warn","range","warnVal", v => v + " cm", cfgChanged);
+bind("sStop","stop","range","stopVal", v => v + " cm", cfgChanged);
+bind("sBrake","brake","check",null,null,cfgChanged);
+bind("sAlways","always","check",null,null,cfgChanged);
+bind("sMute","mute","check",null,null,cfgChanged);
+bind("sPhoneBeep","phoneBeep","check",null,null,() => { if (S.phoneBeep) unlockAudio(); });
+bind("sVibe","vibe","check");
+bind("sMode","mode","select",null,null,applyMode);
+bind("sSpeed","speed","range","spdVal", v => v + "%", () => { showSpeed(); mix(); });
+bind("sTurn","turn","range","turnVal", v => v + "%");
+bind("sFlash","flash","range","flashVal", v => Math.round(v/2.55) + "%", () => flashOn && send(`K,${S.flash}`));
+bind("sRes","res","select",null,null,() => send(`F,${S.res}`));
+bind("sQual","qual","range","qVal",null,() => send(`Q,${S.qual}`));
+bind("sVflip","vflip","check",null,null,() => send(`V,${S.vflip?1:0}`));
+bind("sMirror","mirror","check",null,null,() => send(`X,${S.mirror?1:0}`));
+bind("sRange","range","select");
+bind("sHost","host","text",null,null,() => { try { ws && ws.close(); } catch(e){} startVideo(); });
+$("sHost").disabled = servedByCar;
+$("viewUrl").textContent = `http://${host()}/view`;
+if (demo) {  }
+
+function applyMode(){ $("stick").classList.toggle("hidden", S.mode !== "joy"); $("dpad").classList.toggle("hidden", S.mode === "joy"); }
+applyMode(); showSpeed(); showLights(0);
+
+const openSet = o => document.body.classList.toggle("set-open", o);
+$("btnSet").onclick = () => openSet(true);
+$("btnClose").onclick = $("scrim").onclick = () => openSet(false);
+$("btnFull").onclick = async () => {
+  try {
+    if (!document.fullscreenElement) { await document.documentElement.requestFullscreen(); try { await screen.orientation.lock("landscape"); } catch(e){} }
+    else await document.exitFullscreen();
+  } catch(e) { toast("Full screen not supported here: use “Add to Home screen”"); }
+};
+const intro = o => $("intro").classList.toggle("hidden", !o);
+$("btnGo").onclick = () => { S.intro = true; save(); intro(false); unlockAudio(); };
+$("btnIntro").onclick = () => { openSet(false); intro(true); };
+if (!S.intro && !/[?&]nointro/.test(location.search)) intro(true);
+
+/* =================================== Demo =================================== */
+let demoT = 0;
+function demoTick(){
+  demoT += 0.1;
+  const rev = (outL + outR) / 2 < -20;
+  const d = Math.max(8, Math.round(120 + 100 * Math.sin(demoT / 3)));
+  const blocked = S.brake && rev && d <= S.stop, alarm = (rev || S.always) && d < S.warn;
+  onSensor(90, d, (rev?1:0) | (alarm?2:0) | (blocked?4:0));
+}
+if (demo) {
+  $("tagDemo").classList.remove("hidden");
+  setChip("chWs", "warn", "demo mode"); setChip("chCar", "", "simulated");
+}
+startVideo();
+connect();
+})();
+</script>
+</body>
+</html>
+)rawhtml";
