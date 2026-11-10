@@ -20,7 +20,7 @@
 
 ---
 
-## ⚡ Fundamental Electrical Safety Rules
+## Fundamental Electrical Safety Rules
 
 1. **Power Isolation During Assembly**: Always disconnect the battery harness or remove the 18650 cells while wiring.
 2. **Polarity Verification**: Verify the battery terminal polarity with a digital multimeter before closing the main power switch for the first time.
@@ -51,7 +51,7 @@ Connect the high-capacity Li-ion battery pack through the master rocker switch i
 | L298N +12V (2nd wire in clamp) | **Arduino UNO VIN Pin** | 22 AWG Red | Feeds Arduino onboard 5V regulator |
 | L298N GND (2nd wire in clamp) | **Breadboard Negative (−) Rail** | 22 AWG Black | Establishes master common ground |
 
-> 📌 **L298N Jumper Configuration**:
+> **L298N Jumper Configuration**:
 > * **Remove the ENA and ENB black jumpers**: Speed control requires PWM from the Arduino.
 > * **Keep the 5V-EN jumper installed**: Powers the internal L298N logic gates.
 > * **Leave the L298N +5V screw terminal empty**: The 5V logic bus is provided cleanly by the Arduino Uno.
@@ -72,7 +72,7 @@ Wire the 4 TT motors into parallel pairs (left pair and right pair) and solder 1
 | **Left Front + Left Rear** | **OUT1 & OUT2** | Twisted 22 AWG pair | Connected in parallel |
 | **Right Front + Right Rear** | **OUT3 & OUT4** | Twisted 22 AWG pair | Connected in parallel |
 
-> 💡 **EMI Noise Filter**: DC brush motors generate high-frequency electromagnetic noise when commutating. Soldering a **100 nF ("104") ceramic capacitor** across the positive and negative solder tabs of each motor absorbs brush arcing and prevents microcontroller lockups.
+> **EMI Noise Suppression**: DC brush motors generate high-frequency electromagnetic noise when commutating. Soldering a **100 nF ("104") ceramic capacitor** across the positive and negative solder tabs of each motor absorbs brush arcing and prevents microcontroller lockups.
 
 ---
 

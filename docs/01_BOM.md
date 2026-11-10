@@ -38,7 +38,7 @@
 | **18650 Battery Holder** | 2-cell series holder with 22 AWG silicone leads | 1 | Secure battery housing |
 | **Power Switch** | SPST Rocker or slide switch, rated ≥ 3A DC | 1 | Master DC power disconnect |
 
-> ⚠️ **No External Buck Converter Required**: The dual 18650 pack (7.4V–8.4V) feeds the L298N `+12V` input, and a parallel branch feeds the Arduino UNO `VIN` pin. The onboard low-dropout regulator on the Arduino Uno cleanly produces the 5V logic rail for all sensors and the ESP32-CAM.
+> **Note: No External Buck Converter Required**: The dual 18650 pack (7.4V–8.4V) feeds the L298N `+12V` input, and a parallel branch feeds the Arduino UNO `VIN` pin. The onboard low-dropout regulator on the Arduino Uno cleanly produces the 5V logic rail for all sensors and the ESP32-CAM.
 
 ---
 
@@ -99,4 +99,4 @@ The power distribution network is designed to balance inductive motor loads agai
 | Active Buzzer & Status LEDs | 5V (UNO Reg) | 0 mA | 25 mA | 65 mA |
 | **Total 5V Logic Bus Demand** | **5V** | **~167 mA** | **~270 mA** | **< 490 mA (Within Limits)** |
 
-> 💡 **Engineering Tip**: The Arduino UNO onboard linear regulator safely supplies up to 500 mA when powered from 7.4V–8.4V. The massive **2200 µF capacitor** acts as a local energy reservoir, absorbing the millisecond 350 mA RF spikes produced by the ESP32-CAM during WiFi packet transmission.
+> **Engineering Note**: The Arduino UNO onboard linear regulator safely supplies up to 500 mA when powered from 7.4V–8.4V. The massive **2200 µF capacitor** acts as a local energy reservoir, absorbing the millisecond 350 mA RF spikes produced by the ESP32-CAM during WiFi packet transmission.

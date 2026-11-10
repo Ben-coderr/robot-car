@@ -8,32 +8,32 @@
 
 The robot car requires **zero app installation**. Any mobile phone, tablet, or desktop PC connects directly to the vehicle's onboard Wi-Fi Access Point and controls it through a standard modern web browser (Safari, Chrome, Firefox, Edge).
 
-### Phone Driver Interface (Portrait & Landscape Modes)
+### Phone Driver Interface (Portrait and Landscape Modes)
 <div align="center">
   <table border="0">
     <tr>
       <td align="center" width="48%">
-        <b>📱 Mobile Portrait Driving Mode</b><br><br>
+        <b>Mobile Portrait Driving Mode</b><br><br>
         <img src="images/app_portrait.png" width="95%" alt="Mobile Portrait App">
       </td>
       <td align="center" width="48%">
-        <b>📱 Mobile Landscape Driving Mode</b><br><br>
+        <b>Mobile Landscape Driving Mode</b><br><br>
         <img src="images/app_landscape.png" width="95%" alt="Mobile Landscape App">
       </td>
     </tr>
   </table>
 </div>
 
-### Desktop Classroom Observation Dashboard & Settings Panel
+### Desktop Classroom Observation Dashboard and Settings Panel
 <div align="center">
   <table border="0">
     <tr>
       <td align="center" width="55%">
-        <b>🖥️ Classroom Observation Viewer (<code>/view</code>)</b><br><br>
+        <b>Classroom Observation Viewer (<code>/view</code>)</b><br><br>
         <img src="images/app_pc_view.png" width="95%" alt="Desktop Classroom Viewer">
       </td>
       <td align="center" width="45%">
-        <b>⚙️ Interactive Vehicle Settings Panel</b><br><br>
+        <b>Vehicle Settings Panel</b><br><br>
         <img src="images/app_settings.png" width="95%" alt="Settings Panel">
       </td>
     </tr>

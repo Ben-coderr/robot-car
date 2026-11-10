@@ -6,7 +6,7 @@
 
 <br><br>
 
-# 🚗 Autonomous & Teleoperated 4WD Smart Rover
+# Autonomous and Teleoperated 4WD Smart Rover
 ### Dual-Core Architecture (ESP32-CAM + Arduino UNO) · FPV Video Stream · Rear Sonar Radar · Auto-Brake · Zero-Install Web App
 
 [![Microcontrollers](https://img.shields.io/badge/Microcontrollers-ESP32--CAM%20%7C%20Arduino%20Uno-00979D?style=for-the-badge&logo=arduino&logoColor=white)](https://www.arduino.cc/)
@@ -28,36 +28,36 @@
 
 ---
 
-## 📑 Table of Contents
+## Table of Contents
 
-* [✨ Key Features](#-key-features)
-* [🏗️ System Architecture & Data Flow](#-system-architecture--data-flow)
-* [⚡ Complete Electrical Wiring & Schematic](#-complete-electrical-wiring--schematic)
-* [📐 Mechanical Layout & 3D Assembly](#-mechanical-layout--3d-assembly)
-* [📱 Zero-Install Web Application](#-zero-install-web-application)
-* [🧩 Hardware Bill of Materials (BOM)](#-hardware-bill-of-materials-bom)
-* [🔌 Complete Pinout Mapping](#-complete-pinout-mapping)
-* [🚀 Quick Start & Firmware Upload Guide](#-quick-start--firmware-upload-guide)
-* [🧪 Progressive Hardware Diagnostic Tests](#-progressive-hardware-diagnostic-tests)
-* [📚 Complete PDF Handbooks Library](#-complete-pdf-handbooks-library)
-* [📂 Repository Structure](#-repository-structure)
-* [📜 License](#-license)
-
----
-
-## ✨ Key Features
-
-* **🎥 Ultra-Low Latency FPV Video**: AI-Thinker ESP32-CAM module delivers real-time MJPEG video over local Wi-Fi with sub-100ms latency.
-* **📱 Zero-Install Teleoperation App**: Accessible from any smartphone, tablet, or PC browser via `http://192.168.4.1` with touch joystick, speed gears, camera settings, and keyboard hotkeys.
-* **🖥️ Dedicated Classroom Observation Viewer**: Dual-screen web experience at `http://192.168.4.1/view` offering synchronized instrument gauges, telemetry graphs, and client tracking for up to 3 screens.
-* **🛡️ Rear Ultrasonic Parking Radar & Auto-Brake**: Rear-mounted HC-SR04 sonar with an active acoustic beeper and red flashing beacon. Features **hardware auto-braking** that stops reversing if an obstacle is within 15 cm.
-* **💡 High-Intensity Lighting & Hazard System**: Dual front white headlights with **OFF / ON / HAZARD** flasher modes and white rear reverse indicator LED.
-* **⚙️ Dual-Microcontroller Architecture**: Distributes wireless networking (ESP32) and real-time motor control (Arduino Uno) across dedicated hardware with hardware watchdog fail-safes.
-* **🔋 Single Battery Supply (No Buck Converter)**: Runs on 2× 18650 Li-ion cells (7.4V nominal) directly feeding the L298N motor driver and Arduino Uno VIN pin, with a 2200 µF buffer capacitor preventing brownout resets.
+* [Key Features](#key-features)
+* [System Architecture and Data Flow](#system-architecture-and-data-flow)
+* [Electrical Wiring and Schematic](#electrical-wiring-and-schematic)
+* [Mechanical Layout and 3D Assembly](#mechanical-layout-and-3d-assembly)
+* [Zero-Install Web Application](#zero-install-web-application)
+* [Hardware Bill of Materials (BOM)](#hardware-bill-of-materials-bom)
+* [Complete Pinout Mapping](#complete-pinout-mapping)
+* [Quick Start and Firmware Upload Guide](#quick-start-and-firmware-upload-guide)
+* [Progressive Hardware Diagnostic Tests](#progressive-hardware-diagnostic-tests)
+* [PDF Handbooks Library](#pdf-handbooks-library)
+* [Repository Structure](#repository-structure)
+* [License](#license)
 
 ---
 
-## 🏗️ System Architecture & Data Flow
+## Key Features
+
+* **Ultra-Low Latency FPV Video**: AI-Thinker ESP32-CAM module delivers real-time MJPEG video over local Wi-Fi with sub-100ms latency.
+* **Zero-Install Teleoperation App**: Accessible from any smartphone, tablet, or PC browser via `http://192.168.4.1` with touch joystick, speed gears, camera settings, and keyboard hotkeys.
+* **Dedicated Classroom Observation Viewer**: Dual-screen web experience at `http://192.168.4.1/view` offering synchronized instrument gauges, telemetry graphs, and client tracking for up to 3 screens.
+* **Rear Ultrasonic Parking Radar and Auto-Brake**: Rear-mounted HC-SR04 sonar with an active acoustic beeper and red flashing beacon. Features **hardware auto-braking** that stops reversing if an obstacle is within 15 cm.
+* **High-Intensity Lighting and Hazard System**: Dual front white headlights with **OFF / ON / HAZARD** flasher modes and white rear reverse indicator LED.
+* **Dual-Microcontroller Architecture**: Distributes wireless networking (ESP32) and real-time motor control (Arduino Uno) across dedicated hardware with hardware watchdog fail-safes.
+* **Single Battery Supply (No Buck Converter)**: Runs on 2× 18650 Li-ion cells (7.4V nominal) directly feeding the L298N motor driver and Arduino Uno VIN pin, with a 2200 µF buffer capacitor preventing brownout resets.
+
+---
+
+## System Architecture and Data Flow
 
 ```
 ┌─────────────────────────────────┐
@@ -102,7 +102,7 @@
 
 ---
 
-## ⚡ Complete Electrical Wiring & Schematic
+## Electrical Wiring and Schematic
 
 The robot car uses a single 7.4V battery pack (2× 18650 cells in series) without requiring an external buck converter. The battery directly powers the L298N motor driver and the Arduino Uno `VIN` pin. The Arduino Uno's onboard linear regulator produces the 5V logic bus for all sensors and the ESP32-CAM, buffered by a **2200 µF 16V low-ESR capacitor**.
 
@@ -121,7 +121,7 @@ The robot car uses a single 7.4V battery pack (2× 18650 cells in series) withou
 
 ---
 
-## 📐 Mechanical Layout & 3D Assembly
+## Mechanical Layout and 3D Assembly
 
 The vehicle is built on a double-decker acrylic 4WD chassis with dedicated spatial separation between high-current inductive components and sensitive radio-frequency electronics:
 
@@ -134,7 +134,7 @@ The vehicle is built on a double-decker acrylic 4WD chassis with dedicated spati
 
 ---
 
-## 📱 Zero-Install Web Application
+## Zero-Install Web Application
 
 No app store downloads or native compilation required. Connect to the car's Wi-Fi network and open `http://192.168.4.1` in Safari, Chrome, Firefox, or Edge.
 
@@ -142,21 +142,21 @@ No app store downloads or native compilation required. Connect to the car's Wi-F
   <table border="0">
     <tr>
       <td align="center" width="50%">
-        <b>📱 Mobile Driver Interface (Portrait)</b><br><br>
+        <b>Mobile Driver Interface (Portrait)</b><br><br>
         <img src="docs/images/app_portrait.png" width="90%" alt="Mobile Portrait Driving Mode">
       </td>
       <td align="center" width="50%">
-        <b>📱 Mobile Driver Interface (Landscape)</b><br><br>
+        <b>Mobile Driver Interface (Landscape)</b><br><br>
         <img src="docs/images/app_landscape.png" width="90%" alt="Mobile Landscape Driving Mode">
       </td>
     </tr>
     <tr>
       <td align="center" width="50%">
-        <b>🖥️ Classroom Observation Viewer (<code>/view</code>)</b><br><br>
+        <b>Classroom Observation Viewer (<code>/view</code>)</b><br><br>
         <img src="docs/images/app_pc_view.png" width="90%" alt="Classroom PC Viewer">
       </td>
       <td align="center" width="50%">
-        <b>⚙️ Real-Time Settings & Calibration Panel</b><br><br>
+        <b>Real-Time Settings and Calibration Panel</b><br><br>
         <img src="docs/images/app_settings.png" width="90%" alt="Vehicle Settings Panel">
       </td>
     </tr>
@@ -165,7 +165,7 @@ No app store downloads or native compilation required. Connect to the car's Wi-F
 
 ---
 
-## 🧩 Hardware Bill of Materials (BOM)
+## Hardware Bill of Materials (BOM)
 
 For complete shopping links and price estimates, see [`docs/01_BOM.md`](docs/01_BOM.md) and [`docs/pdf/Shopping_List_Robot_Car.pdf`](docs/pdf/Shopping_List_Robot_Car.pdf).
 
@@ -190,7 +190,7 @@ For complete shopping links and price estimates, see [`docs/01_BOM.md`](docs/01_
 
 ---
 
-## 🔌 Complete Pinout Mapping
+## Complete Pinout Mapping
 
 | Arduino UNO Pin | Subsystem | Connected Device | Logic Voltage | Function |
 |:---:|:---:|:---|:---:|:---|
@@ -213,7 +213,7 @@ For complete shopping links and price estimates, see [`docs/01_BOM.md`](docs/01_
 
 ---
 
-## 🚀 Quick Start & Firmware Upload Guide
+## Quick Start and Firmware Upload Guide
 
 ### 1. Arduino IDE Setup
 1. Install **Arduino IDE 2.x** from [arduino.cc](https://www.arduino.cc/en/software).
@@ -227,14 +227,14 @@ For complete shopping links and price estimates, see [`docs/01_BOM.md`](docs/01_
 * **Arduino UNO**: Open `firmware/uno_controller/uno_controller.ino`, select **Board: Arduino Uno**, and click **Upload**.
 * **ESP32-CAM**: Open `firmware/esp32cam_robot/esp32cam_robot.ino`, select **Board: AI Thinker ESP32-CAM**, set **Partition Scheme: Huge APP (3MB No OTA)**, and click **Upload** via the ESP32-CAM-MB daughterboard.
 
-### 3. Connect & Drive
+### 3. Connect and Drive
 1. Turn on the vehicle battery switch.
 2. Connect your mobile phone or PC to Wi-Fi SSID **`RobotCar`** (Password: **`12345678`**).
 3. Open **`http://192.168.4.1`** to drive, or **`http://192.168.4.1/view`** for classroom observation!
 
 ---
 
-## 🧪 Progressive Hardware Diagnostic Tests
+## Progressive Hardware Diagnostic Tests
 
 The project includes six progressive diagnostic test sketches in the `tests/` directory to systematically verify each component before full operation:
 
@@ -250,25 +250,25 @@ tests/
 
 ---
 
-## 📚 Complete PDF Handbooks Library
+## PDF Handbooks Library
 
 The `docs/pdf/` directory contains complete, classroom-ready illustrated documentation:
 
 | Document | File Path | Scope & Content |
 |:---|:---|:---|
-| 📖 **Complete Handbook** | [`docs/pdf/00_Robot_Car_Complete_Handbook.pdf`](docs/pdf/00_Robot_Car_Complete_Handbook.pdf) | Comprehensive student manual (all modules combined) |
-| 🛒 **Shopping & Parts List** | [`docs/pdf/Shopping_List_Robot_Car.pdf`](docs/pdf/Shopping_List_Robot_Car.pdf) | Complete parts bill with specifications and supplier links |
-| 🔌 **Illustrated Wiring Guide** | [`docs/pdf/02_Wiring_Guide.pdf`](docs/pdf/02_Wiring_Guide.pdf) | Step-by-step visual wiring walkthrough |
-| 🖼️ **Large Wiring Poster** | [`docs/pdf/Robot_Car_Wiring_Poster.pdf`](docs/pdf/Robot_Car_Wiring_Poster.pdf) | High-resolution printable A3 workbench wiring poster |
-| 🛠️ **Assembly Guide** | [`docs/pdf/03_Assembly_Guide.pdf`](docs/pdf/03_Assembly_Guide.pdf) | Mechanical chassis assembly and component layout |
-| 💻 **Software & App Guide** | [`docs/pdf/04_Software_and_App_Guide.pdf`](docs/pdf/04_Software_and_App_Guide.pdf) | Arduino IDE setup, firmware upload, and web app operation |
-| 🩺 **Testing & Troubleshooting** | [`docs/pdf/05_Testing_and_Troubleshooting.pdf`](docs/pdf/05_Testing_and_Troubleshooting.pdf) | Bench testing protocols and fault diagnosis |
-| ⚙️ **Technical Reference** | [`docs/pdf/06_Technical_Reference.pdf`](docs/pdf/06_Technical_Reference.pdf) | Protocol specifications, math, and code architecture |
-| 🎓 **Arduino Warm-Up Lessons** | [`docs/pdf/07_Warm_Up_Learn_Arduino.pdf`](docs/pdf/07_Warm_Up_Learn_Arduino.pdf) | Introductory programming lessons for beginners |
+| **Complete Handbook** | [`docs/pdf/00_Robot_Car_Complete_Handbook.pdf`](docs/pdf/00_Robot_Car_Complete_Handbook.pdf) | Comprehensive student manual (all modules combined) |
+| **Shopping and Parts List** | [`docs/pdf/Shopping_List_Robot_Car.pdf`](docs/pdf/Shopping_List_Robot_Car.pdf) | Complete parts bill with specifications and supplier links |
+| **Illustrated Wiring Guide** | [`docs/pdf/02_Wiring_Guide.pdf`](docs/pdf/02_Wiring_Guide.pdf) | Step-by-step visual wiring walkthrough |
+| **Large Wiring Poster** | [`docs/pdf/Robot_Car_Wiring_Poster.pdf`](docs/pdf/Robot_Car_Wiring_Poster.pdf) | High-resolution printable A3 workbench wiring poster |
+| **Assembly Guide** | [`docs/pdf/03_Assembly_Guide.pdf`](docs/pdf/03_Assembly_Guide.pdf) | Mechanical chassis assembly and component layout |
+| **Software and App Guide** | [`docs/pdf/04_Software_and_App_Guide.pdf`](docs/pdf/04_Software_and_App_Guide.pdf) | Arduino IDE setup, firmware upload, and web app operation |
+| **Testing and Troubleshooting** | [`docs/pdf/05_Testing_and_Troubleshooting.pdf`](docs/pdf/05_Testing_and_Troubleshooting.pdf) | Bench testing protocols and fault diagnosis |
+| **Technical Reference** | [`docs/pdf/06_Technical_Reference.pdf`](docs/pdf/06_Technical_Reference.pdf) | Protocol specifications, math, and code architecture |
+| **Arduino Warm-Up Lessons** | [`docs/pdf/07_Warm_Up_Learn_Arduino.pdf`](docs/pdf/07_Warm_Up_Learn_Arduino.pdf) | Introductory programming lessons for beginners |
 
 ---
 
-## 📂 Repository Structure
+## Repository Structure
 
 ```
 robot-car/
@@ -301,6 +301,6 @@ robot-car/
 
 ---
 
-## 📜 License
+## License
 
 This project is licensed under the permissive **MIT License**. You are free to study, build, modify, distribute, and integrate this project for educational and commercial purposes.
