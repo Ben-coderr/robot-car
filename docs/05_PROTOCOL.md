@@ -43,6 +43,7 @@ Connected clients open a persistent, full-duplex WebSocket connection at `ws://1
 | `M,<left>,<right>` | Left/Right: `-255` to `+255` | Every 100 ms while driving | Forwarded to Arduino | Proportional differential steering speeds |
 | `S` | None | On release / Stop tap | Forwarded to Arduino | Immediate emergency stop; sets all PWM to 0 |
 | `H,<state>` | `<state>`: `0` (Off) or `1` (On) | On touch down / up | Forwarded to Arduino | Acoustic horn trigger |
+| `P,<state>` | `<state>`: `0` (Off) or `1` (On) | On song button click | Forwarded to Arduino | Plays retro 8-bit melody on physical buzzer & phone |
 | `L,<mode>` | `<mode>`: `0` (Off), `1` (On), `2` (Hazard) | On button toggle | Forwarded to Arduino | Front headlights operating mode |
 | `C,<warn>,<stop>,<brk>,<alw>,<mute>` | cm thresholds and boolean flags | Periodic (every 3 sec) | Forwarded to Arduino | Parking radar configuration and alarm parameters |
 | `K,<brightness>` | `<brightness>`: `0` to `255` | On slider change | ESP32 Internal | High-power camera flash LED (pin IO4) PWM |
