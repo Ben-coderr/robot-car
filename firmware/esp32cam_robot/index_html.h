@@ -1,312 +1,895 @@
 #pragma once
 // AUTO-GENERATED from web/index.html by tools/build_ui.py - do not edit by hand
 static const char INDEX_HTML[] = R"rawhtml(<!doctype html>
-<html lang="en">
+<html lang="en" data-theme="light">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
 <meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
 <meta name="mobile-web-app-capable" content="yes">
-<meta name="theme-color" content="#070b11">
-<title>Robot Car · Driver</title>
+<meta name="theme-color" content="#ffffff" id="metaThemeColor">
+<title>Rover Telemetry &amp; Flight Deck</title>
 <style>
-:root{
-  --bg:#070b11; --bg2:#0c121b; --panel:#101823; --panel2:#162131; --line:#223047; --line2:#2d3e58;
-  --text:#eef3f8; --muted:#8a9bb0; --accent:#22d3ee; --accent2:#0891b2; --green:#22c55e; --amber:#f59e0b;
-  --red:#ef4444; --yellow:#fde047; --radius:18px; --shadow:0 10px 30px rgba(0,0,0,.35);
+:root {
+  --font: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", "Segoe UI", Roboto, "Helvetica Neue", sans-serif;
+  --mono: ui-monospace, "SF Mono", Menlo, Monaco, Consolas, monospace;
+
+  /* LIGHT THEME (White / Platinum / Electric Sapphire) */
+  --bg: #f8fafc;
+  --bg-subtle: #f1f5f9;
+  --panel: #ffffff;
+  --panel-subtle: #f8fafc;
+  --panel-active: #e2e8f0;
+  --border: #e2e8f0;
+  --border-strong: #cbd5e1;
+  --border-focus: #2563eb;
+  --text: #0f172a;
+  --text-muted: #64748b;
+  --text-dim: #94a3b8;
+
+  --accent: #2563eb;
+  --accent-hover: #1d4ed8;
+  --accent-subtle: #eff6ff;
+  --accent-border: #bfdbfe;
+  --accent-glow: rgba(37, 99, 235, 0.2);
+
+  --success: #10b981;
+  --success-bg: #ecfdf5;
+  --warning: #f59e0b;
+  --warning-bg: #fffbeb;
+  --danger: #ef4444;
+  --danger-bg: #fef2f2;
+
+  --radius-xs: 6px;
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 16px;
+  --radius-full: 9999px;
+
+  --shadow-sm: 0 1px 3px rgba(0,0,0,0.05);
+  --shadow-md: 0 4px 6px -1px rgba(0,0,0,0.06), 0 2px 4px -2px rgba(0,0,0,0.04);
+  --shadow-lg: 0 12px 24px -4px rgba(0,0,0,0.08);
+
+  --radar-bg: #f8fafc;
+  --radar-grid: rgba(148, 163, 184, 0.28);
+  --radar-beam: rgba(37, 99, 235, 0.35);
+
+  --stick-base: #f1f5f9;
+  --stick-border: #cbd5e1;
+  --knob-bg: #ffffff;
+  --knob-border: #94a3b8;
+  --knob-indicator: #2563eb;
+  --knob-shadow: 0 6px 18px rgba(0,0,0,0.12), 0 2px 4px rgba(0,0,0,0.06);
 }
-*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
-html,body{margin:0;height:100%;background:var(--bg);color:var(--text);
-  font:14px/1.35 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;overscroll-behavior:none}
-body{display:flex;flex-direction:column;min-height:100dvh;user-select:none;-webkit-user-select:none;
-  background:radial-gradient(1200px 600px at 50% -200px,#0f2233 0,transparent 60%),var(--bg)}
-button{font:inherit;color:inherit;cursor:pointer}
-svg.i{width:20px;height:20px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;flex:none}
-.hidden{display:none!important}
 
-/* ---------------- top bar ---------------- */
-.top{display:flex;align-items:center;gap:8px;padding:8px 12px;padding-top:max(8px,env(safe-area-inset-top));
-  padding-left:max(12px,env(safe-area-inset-left));padding-right:max(12px,env(safe-area-inset-right))}
-.brand{display:flex;align-items:center;gap:8px;font-weight:800;letter-spacing:.06em;font-size:14px;white-space:nowrap}
-.logo{width:28px;height:28px;border-radius:9px;display:grid;place-items:center;background:linear-gradient(135deg,var(--accent),#6366f1);color:#04121a}
-.logo svg{width:18px;height:18px}
-.chips{display:flex;gap:6px;flex:1;overflow:hidden;min-width:0}
-.chip{display:inline-flex;align-items:center;gap:6px;padding:5px 10px;border-radius:99px;background:var(--panel);
-  border:1px solid var(--line);font-size:12px;color:var(--muted);white-space:nowrap}
-.chip i{width:8px;height:8px;border-radius:50%;background:var(--muted)}
-.chip.ok i{background:var(--green);box-shadow:0 0 8px var(--green)} .chip.bad i{background:var(--red)} .chip.warn i{background:var(--amber)}
-.ibtn{width:40px;height:40px;border-radius:12px;border:1px solid var(--line);background:var(--panel);display:grid;place-items:center;flex:none}
-.ibtn.on{background:var(--accent);color:#04252b;border-color:var(--accent)}
-.stop{height:40px;padding:0 16px;border-radius:12px;border:0;background:linear-gradient(180deg,#f43f5e,#be123c);color:#fff;
-  font-weight:900;letter-spacing:.1em;display:flex;align-items:center;gap:6px;box-shadow:0 4px 16px rgba(225,29,72,.35);flex:none}
-.stop:active{transform:scale(.96)}
+[data-theme="dark"] {
+  /* OBSIDIAN STEALTH DARK THEME */
+  --bg: #090b10;
+  --bg-subtle: #0f141d;
+  --panel: #131924;
+  --panel-subtle: #171f2e;
+  --panel-active: #222d42;
+  --border: #232d3f;
+  --border-strong: #334155;
+  --border-focus: #06b6d4;
+  --text: #f8fafc;
+  --text-muted: #94a3b8;
+  --text-dim: #64748b;
 
-/* ---------------- layout ---------------- */
-.layout{flex:1;display:grid;gap:10px;padding:0 10px 10px;padding-bottom:max(10px,env(safe-area-inset-bottom));
-  padding-left:max(10px,env(safe-area-inset-left));padding-right:max(10px,env(safe-area-inset-right));min-height:0;
-  grid-template-columns:minmax(210px,1fr) minmax(0,2fr) minmax(210px,1fr);grid-template-areas:"drive video side"}
-.card{background:linear-gradient(180deg,var(--panel),var(--bg2));border:1px solid var(--line);border-radius:var(--radius);
-  min-height:0;min-width:0;display:flex;flex-direction:column;overflow:hidden;box-shadow:var(--shadow)}
-.drive{grid-area:drive}.video{grid-area:video}.side{grid-area:side}
-.ttl{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:10px 12px 0;font-size:11px;font-weight:700;
-  letter-spacing:.14em;color:var(--muted);text-transform:uppercase;white-space:nowrap}
-.ttl b{color:var(--text);font-weight:700;letter-spacing:.04em;text-transform:none;font-size:12px}
-@media (orientation:portrait),(max-width:700px){
-  .layout{grid-template-columns:1fr 1fr;grid-template-rows:auto auto 1fr;grid-template-areas:"video video" "side side" "drive drive"}
-  .video .screen{aspect-ratio:4/3;flex:none}
-  .side{flex-direction:row}
-  .side .radar-box{flex:1}
-  .side .ctl{width:52%}
-  .chips .chip:nth-child(n+3){display:none}
+  --accent: #06b6d4;
+  --accent-hover: #0891b2;
+  --accent-subtle: rgba(6, 182, 212, 0.12);
+  --accent-border: rgba(6, 182, 212, 0.35);
+  --accent-glow: rgba(6, 182, 212, 0.3);
+
+  --success: #10b981;
+  --success-bg: rgba(16, 185, 129, 0.14);
+  --warning: #f59e0b;
+  --warning-bg: rgba(245, 158, 11, 0.14);
+  --danger: #f43f5e;
+  --danger-bg: rgba(244, 63, 94, 0.16);
+
+  --shadow-sm: 0 2px 4px rgba(0,0,0,0.4);
+  --shadow-md: 0 6px 16px rgba(0,0,0,0.5);
+  --shadow-lg: 0 16px 32px rgba(0,0,0,0.6);
+
+  --radar-bg: #0b1018;
+  --radar-grid: rgba(6, 182, 212, 0.22);
+  --radar-beam: rgba(6, 182, 212, 0.45);
+
+  --stick-base: #0f141d;
+  --stick-border: #232d3f;
+  --knob-bg: #1a2233;
+  --knob-border: #06b6d4;
+  --knob-indicator: #06b6d4;
+  --knob-shadow: 0 8px 24px rgba(0,0,0,0.65), 0 0 14px rgba(6, 182, 212, 0.35);
 }
 
-/* ---------------- video ---------------- */
-.screen{position:relative;flex:1;background:#000;margin:10px;border-radius:14px;overflow:hidden;min-height:150px}
-.screen img{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;display:block}
-.novideo{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;text-align:center;
-  color:var(--muted);font-size:13px;padding:12px;background:radial-gradient(circle at 50% 40%,#132132,#05080c)}
-.novideo svg{width:42px;height:42px;opacity:.6}
-.hud{position:absolute;inset:0;pointer-events:none;border:3px solid transparent;border-radius:14px;transition:border-color .15s}
-.hud.alarm{animation:flash .5s steps(1) infinite}
-.hud.danger{border-color:var(--red);box-shadow:inset 0 0 50px rgba(239,68,68,.6)}
-@keyframes flash{50%{border-color:var(--red);box-shadow:inset 0 0 36px rgba(239,68,68,.45)}}
-.hud .tl,.hud .tr{position:absolute;top:10px;display:flex;gap:6px;flex-wrap:wrap}
-.hud .tl{left:10px}.hud .tr{right:10px}
-.tag{padding:4px 9px;border-radius:8px;font-size:11px;font-weight:800;letter-spacing:.08em;background:rgba(0,0,0,.55);color:#fff;
-  backdrop-filter:blur(4px);display:flex;align-items:center;gap:5px}
-.tag.rev{background:var(--amber);color:#1a1200}.tag.brk{background:var(--red)}.tag.lt{background:rgba(253,224,71,.9);color:#2a2000}
-.park{position:absolute;left:50%;bottom:12px;transform:translateX(-50%);display:flex;gap:3px;align-items:flex-end;
-  padding:7px 10px;border-radius:12px;background:rgba(0,0,0,.55);backdrop-filter:blur(4px)}
-.park span{width:12px;border-radius:3px;background:#2a3442;transition:background .12s}
-.park .txt{width:auto;background:none;color:#fff;font-weight:800;font-size:14px;margin-left:8px;min-width:62px;text-align:right;font-variant-numeric:tabular-nums}
-.vbar{display:flex;gap:8px;padding:0 10px 10px;flex-wrap:wrap}
-.pill{height:38px;padding:0 12px;border-radius:12px;border:1px solid var(--line);background:var(--panel2);display:flex;align-items:center;gap:7px;font-size:13px;font-weight:600}
-.pill.on{background:var(--accent);color:#04252b;border-color:var(--accent)}
-.pill.right{margin-left:auto}
+* { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
 
-/* ---------------- drive ---------------- */
-.drive-body{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;padding:10px}
-.stick{position:relative;width:min(100%,210px,max(120px,calc(100dvh - 270px)));flex:none;aspect-ratio:1;border-radius:50%;touch-action:none;
-  background:radial-gradient(circle,#18263a 0 52%,#111b29 53% 100%);border:2px solid var(--line2);box-shadow:inset 0 0 30px rgba(0,0,0,.6)}
-.stick .lbl{position:absolute;font-size:10px;font-weight:800;letter-spacing:.12em;color:#5b6f8a}
-.stick .lbl.f{top:8px;left:50%;transform:translateX(-50%)} .stick .lbl.b{bottom:8px;left:50%;transform:translateX(-50%)}
-.stick .lbl.l{left:8px;top:50%;transform:translateY(-50%)} .stick .lbl.r{right:8px;top:50%;transform:translateY(-50%)}
-.knob{position:absolute;left:50%;top:50%;width:40%;aspect-ratio:1;margin:-20% 0 0 -20%;border-radius:50%;z-index:1;
-  background:radial-gradient(circle at 35% 30%,#a5f3fc,#22d3ee 45%,#0e7490);box-shadow:0 6px 18px rgba(34,211,238,.45),inset 0 -4px 8px rgba(0,0,0,.25);will-change:transform}
-.stick.active{border-color:var(--accent)}
-.dpad{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;width:min(100%,220px);touch-action:none}
-.dpad button{aspect-ratio:1;border-radius:14px;border:1px solid var(--line2);background:var(--panel2);font-size:22px;touch-action:none}
-.dpad button.act{background:var(--accent);color:#04252b}
-.dpad .mid{background:#2a1015;border-color:#5b1d22;color:#fda4af;font-size:12px;font-weight:800}
-.seg{display:flex;background:var(--bg);border:1px solid var(--line);border-radius:14px;padding:3px;gap:3px;width:100%;max-width:240px}
-.seg button{flex:1;border:0;background:transparent;border-radius:11px;padding:8px 4px;font-size:12px;font-weight:700;color:var(--muted);
-  display:flex;flex-direction:column;align-items:center;gap:2px}
-.seg button small{font-size:10px;font-weight:600;opacity:.8}
-.seg button.on{background:var(--panel2);color:var(--text);box-shadow:0 2px 8px rgba(0,0,0,.35)}
-.seg.speed button.on{background:linear-gradient(180deg,#155e75,#0e3a4a);color:#cffafe}
-.lr{font-size:11px;color:var(--muted);font-variant-numeric:tabular-nums}
-
-/* ---------------- side: radar + lights + horn ---------------- */
-.radar-box{display:flex;flex-direction:column;min-height:0;flex:1}
-.radar-wrap{position:relative;flex:1;min-height:120px}
-#radar{position:absolute;inset:0;width:100%;height:100%}
-.readout{display:flex;align-items:center;justify-content:space-between;gap:6px;padding:0 12px 8px}
-.num{font-size:30px;font-weight:900;font-variant-numeric:tabular-nums;letter-spacing:-.02em}
-.num small{font-size:13px;color:var(--muted);font-weight:600;margin-left:3px}
-.zone{padding:5px 10px;border-radius:99px;font-weight:900;font-size:11px;letter-spacing:.1em;background:var(--panel2);color:var(--muted)}
-.ctl{display:flex;flex-direction:column;gap:10px;padding:10px 12px 12px}
-.side .ctl{border-top:1px solid var(--line);margin-top:2px;padding-top:12px}
-.lights{display:grid;grid-template-columns:repeat(3,1fr);gap:6px}
-.lights button{border:1px solid var(--line);background:var(--panel2);border-radius:12px;padding:8px 2px;font-size:11px;font-weight:800;
-  display:flex;flex-direction:column;align-items:center;gap:4px;color:var(--muted)}
-.lights button svg{width:22px;height:22px}
-.lights button.on{color:#2a2000;background:linear-gradient(180deg,#fef08a,#facc15);border-color:#facc15;box-shadow:0 0 18px rgba(250,204,21,.35)}
-.lights button.on.hz{background:linear-gradient(180deg,#fdba74,#f97316);border-color:#f97316;animation:hz 1s steps(1) infinite}
-@keyframes hz{50%{filter:brightness(.65)}}
-.horn{height:58px;border-radius:16px;border:1px solid var(--line2);background:linear-gradient(180deg,#1e2c40,#142033);
-  font-weight:900;letter-spacing:.08em;display:flex;align-items:center;justify-content:center;gap:8px;touch-action:none;font-size:15px}
-.horn.on{background:linear-gradient(180deg,#67e8f9,#06b6d4);color:#04252b;border-color:var(--accent);transform:scale(.98)}
-
-/* ---------------- sheet (settings) ---------------- */
-.scrim{position:fixed;inset:0;background:rgba(0,0,0,.55);opacity:0;pointer-events:none;transition:.2s;z-index:9}
-.sheet{position:fixed;top:0;right:0;bottom:0;width:min(400px,94vw);background:var(--panel);border-left:1px solid var(--line);
-  transform:translateX(102%);transition:.25s;z-index:10;overflow-y:auto;padding:16px;padding-top:max(16px,env(safe-area-inset-top));user-select:text}
-body.set-open .sheet{transform:none} body.set-open .scrim{opacity:1;pointer-events:auto}
-.sheet h2{font-size:18px;margin:0 0 4px;display:flex;justify-content:space-between;align-items:center}
-.group{background:var(--bg2);border:1px solid var(--line);border-radius:14px;padding:4px 12px;margin-top:14px}
-.group h3{font-size:11px;letter-spacing:.14em;color:var(--accent);text-transform:uppercase;margin:10px 0 4px}
-.field{padding:10px 0;border-bottom:1px solid var(--line)} .field:last-child{border-bottom:0}
-.field .row{display:flex;justify-content:space-between;align-items:center;gap:10px;font-size:14px}
-.field .row b{color:var(--accent)}
-.field p{margin:4px 0 0;font-size:12px;color:var(--muted)}
-.field select,.field input[type=text]{width:100%;margin-top:6px;background:var(--panel2);border:1px solid var(--line);color:var(--text);border-radius:10px;padding:10px;font:inherit}
-input[type=range]{width:100%;accent-color:var(--accent);margin-top:8px}
-.tog{appearance:none;width:46px;height:28px;border-radius:99px;background:#2a3648;position:relative;transition:.2s;flex:none;margin:0}
-.tog:before{content:"";position:absolute;top:3px;left:3px;width:22px;height:22px;border-radius:50%;background:#fff;transition:.2s}
-.tog:checked{background:var(--accent)} .tog:checked:before{left:21px}
-.link{display:block;margin-top:14px;padding:12px;border-radius:12px;background:linear-gradient(135deg,#0e3a4a,#1e1b4b);border:1px solid #155e75;color:#cffafe;text-decoration:none;font-size:13px}
-.link b{display:block;font-size:14px;margin-bottom:2px}
-.note{font-size:12px;color:var(--muted);line-height:1.5}
-kbd{background:var(--panel2);border:1px solid var(--line2);border-bottom-width:2px;border-radius:5px;padding:0 5px;font-size:11px}
-
-/* ---------------- toast + onboarding ---------------- */
-.toast{position:fixed;left:50%;bottom:22px;transform:translate(-50%,10px);background:var(--panel2);border:1px solid var(--line2);
-  padding:10px 16px;border-radius:12px;z-index:20;opacity:0;transition:.2s;pointer-events:none;box-shadow:var(--shadow);font-weight:600}
-.toast.show{opacity:1;transform:translate(-50%,0)}
-.intro{position:fixed;inset:0;z-index:30;background:rgba(3,6,10,.8);backdrop-filter:blur(6px);display:grid;place-items:center;padding:16px}
-.intro .box{max-width:460px;width:100%;background:var(--panel);border:1px solid var(--line2);border-radius:22px;padding:20px;box-shadow:var(--shadow)}
-.intro h2{margin:0 0 4px;font-size:20px}.intro p{margin:0 0 12px;color:var(--muted)}
-.tips{display:grid;gap:10px;margin:12px 0 16px}
-.tip{display:flex;gap:12px;align-items:center;background:var(--bg2);border:1px solid var(--line);border-radius:14px;padding:10px 12px}
-.tip .ic{width:38px;height:38px;border-radius:11px;display:grid;place-items:center;background:var(--panel2);color:var(--accent);flex:none}
-.tip b{display:block}.tip span{font-size:12px;color:var(--muted)}
-.go{width:100%;height:48px;border-radius:14px;border:0;background:linear-gradient(180deg,var(--accent),var(--accent2));color:#04252b;font-weight:900;font-size:15px}
-@media (orientation:portrait),(max-width:700px){
-  .drive-body{flex-direction:row;justify-content:space-evenly;padding:8px}
-  .stick{width:min(56vw,190px,max(120px,calc(100dvh - 600px)))}
-  .dpad{width:min(56vw,200px)}
-  .seg{flex-direction:column;width:96px}
-  .seg button{padding:10px 4px}
-  .radar-wrap{min-height:110px}
-  .side .ctl{border-top:0;margin-top:0;padding-top:10px}
+/* STRICT MOBILE VIEWPORT LOCK (NO ACCIDENTAL SCROLLING) */
+html, body {
+  margin: 0; padding: 0; width: 100%; height: 100%;
+  max-height: 100dvh; max-width: 100vw;
+  overflow: hidden; position: fixed; inset: 0;
+  background: var(--bg); color: var(--text);
+  font-family: var(--font); font-size: 13px; line-height: 1.3;
+  touch-action: none; overscroll-behavior: none;
+  user-select: none; -webkit-user-select: none; -webkit-touch-callout: none;
+  transition: background-color .25s ease, color .25s ease;
 }
-/* short landscape phones: keep radar, readout, lights and horn inside the card */
-@media (orientation:landscape) and (max-height:500px){
-  .radar-wrap{min-height:80px}
-  .num{font-size:26px}
-  .readout{padding-bottom:6px}
-  .ctl{gap:8px;padding:8px 12px 10px}
-  .side .ctl{padding-top:8px;margin-top:0}
-  .lights button{padding:5px 2px;gap:2px}
-  .lights button svg{width:18px;height:18px}
-  .horn{height:44px}
+
+body {
+  display: flex; flex-direction: column;
 }
-.pcbanner{display:none}
-@media (pointer:fine) and (min-width:1100px){.pcbanner{display:flex}}
+
+button { font: inherit; color: inherit; cursor: pointer; border: 0; outline: none; }
+svg.icon { width: 17px; height: 17px; stroke: currentColor; fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; flex: none; }
+.hidden { display: none !important; }
+
+/* ---------------- Top Telemetry Header ---------------- */
+.header {
+  height: 44px; display: flex; align-items: center; justify-content: space-between;
+  padding: 0 12px; background: var(--panel); border-bottom: 1px solid var(--border);
+  padding-top: max(0px, env(safe-area-inset-top));
+  padding-left: max(10px, env(safe-area-inset-left));
+  padding-right: max(10px, env(safe-area-inset-right));
+  flex: none; z-index: 10; box-shadow: var(--shadow-sm);
+}
+
+.brand {
+  display: flex; align-items: center; gap: 8px; font-weight: 800; font-size: 12px;
+  letter-spacing: .08em; text-transform: uppercase; white-space: nowrap; flex: none;
+}
+.brand-badge {
+  width: 26px; height: 26px; border-radius: var(--radius-xs);
+  background: linear-gradient(135deg, var(--accent), #4f46e5);
+  color: #fff; display: grid; place-items: center; box-shadow: 0 2px 6px var(--accent-glow);
+}
+.brand-badge svg { width: 15px; height: 15px; }
+.brand-title { font-weight: 800; }
+
+.status-bar {
+  display: flex; align-items: center; gap: 5px; overflow-x: auto;
+  scrollbar-width: none; margin: 0 6px;
+}
+.status-bar::-webkit-scrollbar { display: none; }
+
+.pill {
+  display: inline-flex; align-items: center; gap: 5px; padding: 3px 8px;
+  border-radius: var(--radius-full); background: var(--panel-subtle);
+  border: 1px solid var(--border); font-size: 10px; font-weight: 700;
+  color: var(--text-muted); white-space: nowrap; font-family: var(--mono);
+}
+.pill .dot { width: 6px; height: 6px; border-radius: 50%; background: var(--text-dim); }
+.pill.ok .dot { background: var(--success); box-shadow: 0 0 5px var(--success); }
+.pill.warn .dot { background: var(--warning); box-shadow: 0 0 5px var(--warning); }
+.pill.bad .dot { background: var(--danger); box-shadow: 0 0 5px var(--danger); }
+.pill.action { color: var(--accent); cursor: pointer; text-decoration: none; border-color: var(--accent-border); }
+
+.nav-actions { display: flex; align-items: center; gap: 6px; flex: none; }
+.btn-icon {
+  width: 34px; height: 34px; border-radius: var(--radius-sm);
+  background: var(--panel-subtle); border: 1px solid var(--border);
+  color: var(--text-muted); display: grid; place-items: center;
+  transition: all .15s ease;
+}
+.btn-icon:hover { color: var(--text); border-color: var(--border-strong); background: var(--panel-active); }
+.btn-icon:active { transform: scale(.94); }
+.btn-icon.active { background: var(--accent-subtle); color: var(--accent); border-color: var(--accent-border); }
+
+.btn-estop {
+  height: 34px; padding: 0 12px; border-radius: var(--radius-sm);
+  background: linear-gradient(180deg, #ef4444, #dc2626); color: #ffffff;
+  font-weight: 800; font-size: 11px; letter-spacing: .08em; text-transform: uppercase;
+  display: flex; align-items: center; gap: 5px; box-shadow: 0 2px 8px rgba(239, 68, 68, 0.35);
+  transition: transform .1s ease, filter .15s ease;
+}
+.btn-estop:hover { filter: brightness(1.08); }
+.btn-estop:active { transform: scale(.95); }
+
+/* ---------------- COCKPIT LAYOUT ---------------- */
+.cockpit {
+  flex: 1; display: flex; flex-direction: column; min-height: 0; min-width: 0;
+  padding: 8px; gap: 8px;
+  padding-bottom: max(8px, env(safe-area-inset-bottom));
+  padding-left: max(8px, env(safe-area-inset-left));
+  padding-right: max(8px, env(safe-area-inset-right));
+}
+
+/* Card base */
+.card {
+  background: var(--panel); border: 1px solid var(--border); border-radius: var(--radius-md);
+  box-shadow: var(--shadow-sm); display: flex; flex-direction: column; overflow: hidden; min-height: 0;
+  position: relative;
+}
+.card-header {
+  display: flex; align-items: center; justify-content: space-between; gap: 6px;
+  padding: 6px 10px; border-bottom: 1px solid var(--border);
+  font-size: 10px; font-weight: 800; letter-spacing: .08em; text-transform: uppercase;
+  color: var(--text-muted); background: var(--panel-subtle); flex: none;
+}
+.card-header .metric {
+  font-family: var(--mono); color: var(--text); font-size: 11px;
+  font-weight: 700; text-transform: none; letter-spacing: 0;
+}
+
+/* ---------------- UPPER SECTION: OPTICAL FEED ---------------- */
+.deck-optics {
+  flex: 0 0 42%; min-height: 160px; max-height: 50%;
+  display: flex; flex-direction: column;
+}
+
+.viewport {
+  position: relative; flex: 1; background: #000; margin: 6px;
+  border-radius: var(--radius-sm); overflow: hidden; min-height: 0;
+  box-shadow: inset 0 0 16px rgba(0,0,0,0.6);
+}
+.viewport img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: contain; display: block; }
+
+/* HUD Overlay */
+.viewport-hud {
+  position: absolute; inset: 0; pointer-events: none; border: 2px solid transparent;
+  border-radius: var(--radius-sm); transition: border-color .15s;
+}
+.viewport-hud.alarm { border-color: var(--warning); box-shadow: inset 0 0 25px rgba(245, 158, 11, 0.35); }
+.viewport-hud.danger { border-color: var(--danger); box-shadow: inset 0 0 40px rgba(239, 68, 68, 0.55); }
+
+.bracket { position: absolute; width: 12px; height: 12px; border-color: rgba(255,255,255,0.4); border-style: solid; }
+.bracket.tl { top: 6px; left: 6px; border-width: 2px 0 0 2px; }
+.bracket.tr { top: 6px; right: 6px; border-width: 2px 2px 0 0; }
+.bracket.bl { bottom: 6px; left: 6px; border-width: 0 0 2px 2px; }
+.bracket.br { bottom: 6px; right: 6px; border-width: 0 2px 2px 0; }
+
+.hud-top-left { position: absolute; top: 8px; left: 8px; display: flex; gap: 4px; flex-wrap: wrap; }
+.hud-top-right { position: absolute; top: 8px; right: 8px; display: flex; gap: 4px; flex-wrap: wrap; }
+.hud-tag {
+  padding: 3px 6px; border-radius: var(--radius-xs); font-size: 9px; font-weight: 800;
+  font-family: var(--mono); letter-spacing: .06em; background: rgba(0, 0, 0, 0.68);
+  color: #ffffff; backdrop-filter: blur(4px); border: 1px solid rgba(255, 255, 255, 0.15);
+}
+.hud-tag.rev { background: var(--warning); color: #1a1200; border-color: var(--warning); }
+.hud-tag.brake { background: var(--danger); color: #ffffff; border-color: var(--danger); }
+.hud-tag.lights { background: #facc15; color: #1a1200; border-color: #facc15; }
+
+.hud-proximity {
+  position: absolute; left: 50%; bottom: 8px; transform: translateX(-50%);
+  display: flex; align-items: center; gap: 4px; padding: 4px 10px; border-radius: var(--radius-full);
+  background: rgba(0, 0, 0, 0.72); backdrop-filter: blur(6px); border: 1px solid rgba(255, 255, 255, 0.2);
+}
+.proximity-bars { display: flex; gap: 2px; align-items: flex-end; }
+.proximity-bars span { width: 6px; border-radius: 1px; background: rgba(255,255,255,0.25); transition: background .12s; }
+.proximity-dist { margin-left: 6px; font-family: var(--mono); font-weight: 800; font-size: 11px; color: #fff; min-width: 50px; }
+
+.no-video-overlay {
+  position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center;
+  justify-content: center; gap: 6px; text-align: center; color: var(--text-dim); padding: 12px;
+  background: var(--panel-subtle);
+}
+.no-video-overlay svg { width: 32px; height: 32px; opacity: .5; color: var(--text-muted); }
+.no-video-overlay p { margin: 0; font-size: 11px; font-weight: 600; color: var(--text-muted); }
+.no-video-overlay small { font-size: 9px; color: var(--text-dim); line-height: 1.3; max-width: 260px; }
+
+/* Viewport Toolbar */
+.viewport-toolbar {
+  display: flex; gap: 5px; padding: 0 6px 6px; align-items: center; flex: none;
+}
+.btn-ctrl {
+  height: 28px; padding: 0 8px; border-radius: var(--radius-xs); background: var(--panel-subtle);
+  border: 1px solid var(--border); font-size: 11px; font-weight: 700; color: var(--text-muted);
+  display: inline-flex; align-items: center; gap: 4px; transition: all .15s;
+}
+.btn-ctrl svg { width: 14px; height: 14px; }
+.btn-ctrl:hover { color: var(--text); border-color: var(--border-strong); background: var(--panel-active); }
+.btn-ctrl:active { transform: scale(.95); }
+.btn-ctrl.active { background: var(--accent-subtle); color: var(--accent); border-color: var(--accent-border); }
+.btn-ctrl.right { margin-left: auto; }
+
+/* ---------------- LOWER SECTION: DUAL COCKPIT DECK ---------------- */
+.deck-controls {
+  flex: 1; display: grid; grid-template-columns: 1fr 1fr; gap: 8px; min-height: 0;
+}
+
+/* LEFT COLUMN: DYNAMICS & JOYSTICK */
+.deck-drive {
+  display: flex; flex-direction: column; justify-content: space-between;
+  padding: 8px; gap: 6px; align-items: center;
+}
+
+/* Power Meters */
+.power-meters {
+  width: 100%; display: grid; grid-template-columns: 1fr 1fr; gap: 6px;
+  font-family: var(--mono); font-size: 10px; flex: none;
+}
+.meter-card {
+  background: var(--panel-subtle); border: 1px solid var(--border);
+  border-radius: var(--radius-xs); padding: 4px 6px; display: flex; flex-direction: column; gap: 2px;
+}
+.meter-card .meter-label { display: flex; justify-content: space-between; font-weight: 700; color: var(--text-muted); }
+.meter-bar-track { height: 4px; background: var(--border); border-radius: 2px; overflow: hidden; position: relative; }
+.meter-bar-fill { height: 100%; width: 0%; background: var(--accent); transition: width .08s linear, background-color .15s; }
+
+/* Precision Joystick Gimbal */
+.gimbal-frame {
+  position: relative; width: min(100%, 150px, calc(100% - 10px));
+  aspect-ratio: 1; border-radius: 50%; touch-action: none; flex: 1; max-height: 160px;
+  background: radial-gradient(circle, var(--stick-base) 0%, var(--bg) 100%);
+  border: 2px solid var(--stick-border); box-shadow: inset 0 2px 8px rgba(0,0,0,0.06);
+  margin: auto; display: flex; align-items: center; justify-content: center;
+}
+.gimbal-crosshair { position: absolute; inset: 0; pointer-events: none; }
+.gimbal-crosshair::before, .gimbal-crosshair::after { content: ""; position: absolute; background: var(--border); }
+.gimbal-crosshair::before { left: 50%; top: 8px; bottom: 8px; width: 1px; transform: translateX(-50%); }
+.gimbal-crosshair::after { top: 50%; left: 8px; right: 8px; height: 1px; transform: translateY(-50%); }
+
+.gimbal-label {
+  position: absolute; font-size: 8px; font-weight: 800; font-family: var(--mono);
+  color: var(--text-dim); letter-spacing: .08em; pointer-events: none;
+}
+.gimbal-label.fwd { top: 4px; left: 50%; transform: translateX(-50%); }
+.gimbal-label.rev { bottom: 4px; left: 50%; transform: translateX(-50%); }
+.gimbal-label.left { left: 6px; top: 50%; transform: translateY(-50%); }
+.gimbal-label.right { right: 6px; top: 50%; transform: translateY(-50%); }
+
+.gimbal-puck {
+  position: absolute; left: 50%; top: 50%; width: 38%; aspect-ratio: 1;
+  margin: -19% 0 0 -19%; border-radius: 50%; z-index: 2;
+  background: var(--knob-bg); border: 2px solid var(--knob-border);
+  box-shadow: var(--knob-shadow); will-change: transform;
+  display: flex; align-items: center; justify-content: center;
+}
+.gimbal-puck::after {
+  content: ""; width: 8px; height: 8px; border-radius: 50%;
+  background: var(--knob-indicator); box-shadow: 0 0 6px var(--accent-glow);
+}
+.gimbal-frame.active { border-color: var(--accent); }
+
+/* Tactical D-Pad Matrix (Alternate mode) */
+.dpad-matrix { display: grid; grid-template-columns: repeat(3, 1fr); gap: 4px; width: min(100%, 150px); margin: auto; }
+.dpad-btn {
+  aspect-ratio: 1; border-radius: var(--radius-xs); background: var(--panel-subtle);
+  border: 1px solid var(--border); font-size: 16px; display: grid; place-items: center;
+  color: var(--text-muted); font-weight: 700; transition: all .1s;
+}
+.dpad-btn:active, .dpad-btn.pressed { background: var(--accent); color: #fff; border-color: var(--accent); transform: scale(.95); }
+.dpad-btn.center { background: var(--danger-bg); border-color: var(--danger); color: var(--danger); font-size: 9px; font-weight: 800; font-family: var(--mono); }
+
+/* Drive Profile Transmission Gears */
+.segmented-gears {
+  display: flex; background: var(--panel-subtle); border: 1px solid var(--border);
+  border-radius: var(--radius-sm); padding: 2px; gap: 2px; width: 100%; flex: none;
+}
+.gear-btn {
+  flex: 1; padding: 5px 2px; border-radius: var(--radius-xs); background: transparent;
+  font-size: 9px; font-weight: 800; color: var(--text-muted); text-align: center;
+  transition: all .15s ease;
+}
+.gear-btn small { display: block; font-size: 8px; font-family: var(--mono); opacity: .75; }
+.gear-btn.active {
+  background: var(--panel); color: var(--accent);
+  box-shadow: var(--shadow-sm); border: 1px solid var(--border);
+}
+
+/* RIGHT COLUMN: RADAR & AUX TACTICAL */
+.deck-tactical {
+  display: flex; flex-direction: column; justify-content: space-between;
+  padding: 8px; gap: 6px;
+}
+
+/* Sonar radar module */
+.sonar-card {
+  display: flex; flex-direction: column; flex: 1; min-height: 0; background: var(--panel-subtle);
+  border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 4px 6px; overflow: hidden;
+}
+.radar-box { position: relative; flex: 1; min-height: 60px; }
+#radar { position: absolute; inset: 0; width: 100%; height: 100%; }
+
+.sonar-meta {
+  display: flex; align-items: baseline; justify-content: space-between;
+  padding-top: 2px; border-top: 1px solid var(--border); flex: none;
+}
+.sonar-dist {
+  font-family: var(--mono); font-size: 20px; font-weight: 800; letter-spacing: -.02em; line-height: 1;
+}
+.sonar-dist small { font-size: 10px; color: var(--text-muted); font-weight: 600; margin-left: 2px; }
+.sonar-tag {
+  padding: 2px 6px; border-radius: var(--radius-full); font-size: 9px; font-weight: 800;
+  letter-spacing: .06em; font-family: var(--mono); background: var(--border); color: var(--text-muted);
+}
+
+/* Lighting row */
+.light-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 4px; flex: none; }
+.light-btn {
+  border: 1px solid var(--border); background: var(--panel-subtle); border-radius: var(--radius-xs);
+  padding: 6px 2px; font-size: 9px; font-weight: 800; color: var(--text-muted);
+  display: flex; flex-direction: column; align-items: center; gap: 3px; transition: all .15s;
+}
+.light-btn svg { width: 14px; height: 14px; }
+.light-btn:hover { background: var(--panel-active); color: var(--text); }
+.light-btn.active {
+  background: var(--accent-subtle); color: var(--accent); border-color: var(--accent-border);
+}
+.light-btn.active.hz {
+  background: var(--warning-bg); color: var(--warning); border-color: var(--warning);
+  animation: hazardBlink 1s infinite steps(1);
+}
+@keyframes hazardBlink { 50% { filter: brightness(0.6); } }
+
+/* Audio Action Vector: Acoustic Horn & Retro Buzzer Song */
+.audio-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  width: 100%;
+}
+.btn-horn, .btn-song {
+  height: 44px; border-radius: var(--radius-sm); border: 1px solid var(--border);
+  background: linear-gradient(180deg, var(--panel-subtle), var(--bg-subtle));
+  color: var(--text); font-weight: 800; font-size: 11px; letter-spacing: .08em;
+  display: flex; align-items: center; justify-content: center; gap: 6px;
+  box-shadow: var(--shadow-sm); transition: all .12s ease; flex: 1; cursor: pointer;
+  user-select: none; -webkit-user-select: none;
+}
+.btn-horn { touch-action: none; }
+.btn-horn svg, .btn-song svg { width: 17px; height: 17px; fill: none; stroke: currentColor; stroke-width: 2; }
+.btn-horn:active, .btn-horn.active {
+  background: linear-gradient(180deg, var(--accent), var(--accent-hover));
+  color: #fff; border-color: var(--accent); transform: scale(.98);
+  box-shadow: 0 0 12px var(--accent-glow);
+}
+.btn-song:active { transform: scale(.97); }
+.btn-song.playing {
+  background: linear-gradient(135deg, #8b5cf6, #6366f1);
+  color: #fff; border-color: #8b5cf6;
+  box-shadow: 0 0 14px rgba(139, 92, 246, 0.5);
+  animation: pulseSong 1.1s infinite ease-in-out;
+}
+@keyframes pulseSong {
+  0%, 100% { box-shadow: 0 0 8px rgba(139, 92, 246, 0.4); transform: scale(1); }
+  50% { box-shadow: 0 0 16px rgba(139, 92, 246, 0.75); transform: scale(1.02); }
+}
+
+/* ---------------- LANDSCAPE COCKPIT MODE (GAMEPAD STYLE) ---------------- */
+@media (orientation: landscape) and (max-height: 550px) {
+  .cockpit {
+    flex-direction: row; padding: 6px; gap: 6px;
+  }
+  .deck-optics {
+    flex: 1; max-height: none; order: 2; height: 100%;
+  }
+  .deck-controls {
+    display: contents;
+  }
+  .deck-drive {
+    order: 1; width: clamp(160px, 28vw, 220px); flex: none; height: 100%;
+    background: var(--panel); border: 1px solid var(--border); border-radius: var(--radius-md);
+  }
+  .deck-tactical {
+    order: 3; width: clamp(160px, 28vw, 220px); flex: none; height: 100%;
+    background: var(--panel); border: 1px solid var(--border); border-radius: var(--radius-md);
+  }
+  .gimbal-frame { width: min(100%, 130px); }
+  .btn-horn, .btn-song { height: 38px; }
+}
+
+/* ---------------- DESKTOP COCKPIT MODE ---------------- */
+@media (min-width: 820px) and (min-height: 550px) {
+  .cockpit {
+    flex-direction: row; padding: 12px; gap: 12px;
+  }
+  .deck-optics {
+    flex: 1.5; max-height: none; order: 2; height: 100%;
+  }
+  .deck-controls {
+    display: contents;
+  }
+  .deck-drive {
+    order: 1; width: 260px; flex: none; height: 100%;
+    background: var(--panel); border: 1px solid var(--border); border-radius: var(--radius-lg);
+    padding: 12px;
+  }
+  .deck-tactical {
+    order: 3; width: 280px; flex: none; height: 100%;
+    background: var(--panel); border: 1px solid var(--border); border-radius: var(--radius-lg);
+    padding: 12px;
+  }
+  .gimbal-frame { width: 170px; }
+  .btn-horn, .btn-song { height: 48px; font-size: 12px; }
+}
+
+/* ---------------- SETTINGS DRAWER ---------------- */
+.scrim { position: fixed; inset: 0; background: rgba(0,0,0,0.5); opacity: 0; pointer-events: none; transition: .25s; z-index: 40; }
+.sheet {
+  position: fixed; top: 0; right: 0; bottom: 0; width: min(400px, 92vw);
+  background: var(--panel); border-left: 1px solid var(--border);
+  transform: translateX(102%); transition: transform .3s cubic-bezier(0.16, 1, 0.3, 1);
+  z-index: 50; overflow-y: auto; padding: 16px;
+  padding-top: max(16px, env(safe-area-inset-top)); box-shadow: var(--shadow-lg);
+  touch-action: pan-y;
+}
+body.sheet-open .sheet { transform: translateX(0); }
+body.sheet-open .scrim { opacity: 1; pointer-events: auto; }
+
+.sheet-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px; padding-bottom: 10px; border-bottom: 1px solid var(--border); }
+.sheet-header h2 { margin: 0; font-size: 16px; font-weight: 800; letter-spacing: -.01em; }
+.pref-group { background: var(--panel-subtle); border: 1px solid var(--border); border-radius: var(--radius-md); padding: 12px; margin-bottom: 12px; }
+.pref-group h3 { margin: 0 0 10px; font-size: 10px; font-weight: 800; text-transform: uppercase; letter-spacing: .1em; color: var(--accent); }
+.pref-row { display: flex; justify-content: space-between; align-items: center; padding: 8px 0; border-bottom: 1px solid var(--border); }
+.pref-row:last-child { border-bottom: 0; }
+.pref-row span { font-weight: 600; font-size: 12px; }
+.pref-row b { font-family: var(--mono); color: var(--accent); font-size: 12px; }
+
+input[type="range"] { width: 100%; accent-color: var(--accent); margin-top: 6px; }
+select, input[type="text"] {
+  width: 100%; margin-top: 4px; background: var(--panel); border: 1px solid var(--border);
+  color: var(--text); border-radius: var(--radius-xs); padding: 6px 8px; font-family: inherit; font-size: 12px;
+}
+
+/* Custom Toggle Switch */
+.switch { position: relative; display: inline-block; width: 40px; height: 24px; flex: none; }
+.switch input { opacity: 0; width: 0; height: 0; }
+.slider {
+  position: absolute; cursor: pointer; inset: 0; background-color: var(--border-strong);
+  transition: .25s; border-radius: 24px;
+}
+.slider::before {
+  position: absolute; content: ""; height: 18px; width: 18px; left: 3px; bottom: 3px;
+  background-color: white; transition: .25s; border-radius: 50%; box-shadow: 0 1px 3px rgba(0,0,0,0.3);
+}
+input:checked + .slider { background-color: var(--accent); }
+input:checked + .slider::before { transform: translateX(16px); }
+
+/* Quick Toast Message */
+.toast {
+  position: fixed; left: 50%; bottom: 20px; transform: translate(-50%, 15px);
+  background: var(--panel); color: var(--text); border: 1px solid var(--border);
+  padding: 8px 16px; border-radius: var(--radius-full); font-weight: 700; font-size: 11px;
+  font-family: var(--mono); box-shadow: var(--shadow-lg); opacity: 0; pointer-events: none;
+  transition: all .2s cubic-bezier(0.16, 1, 0.3, 1); z-index: 60;
+}
+.toast.show { opacity: 1; transform: translate(-50%, 0); }
 </style>
 </head>
 <body>
 
-<header class="top">
-  <div class="brand"><span class="logo"><svg class="i" viewBox="0 0 24 24"><rect x="4" y="8" width="16" height="9" rx="3"/><circle cx="8" cy="18" r="2"/><circle cx="16" cy="18" r="2"/><path d="M8 8l2-3h4l2 3"/></svg></span>ROBOT&nbsp;CAR</div>
-  <div class="chips">
-    <span class="chip bad" id="chWs"><i></i><span>offline</span></span>
-    <span class="chip" id="chCar"><i></i><span>car</span></span>
-    <span class="chip hidden" id="chRssi"><i></i><span></span></span>
-    <a class="chip pcbanner" href="view" style="text-decoration:none;color:var(--accent)" id="pcLink"><i style="background:var(--accent)"></i><span>On a PC? Open the viewer</span></a>
+<!-- TOP TELEMETRY BAR -->
+<header class="header">
+  <div class="brand">
+    <div class="brand-badge">
+      <svg class="icon" viewBox="0 0 24 24"><polygon points="12 2 2 7 12 12 22 7 12 2"/><polyline points="2 17 12 22 22 17"/><polyline points="2 12 12 17 22 12"/></svg>
+    </div>
+    <span class="brand-title">ROVER</span>
   </div>
-  <button class="stop" id="btnStop" title="Emergency stop (Esc)"><svg class="i" viewBox="0 0 24 24"><rect x="6" y="6" width="12" height="12" rx="2"/></svg>STOP</button>
-  <button class="ibtn" id="btnSet" title="Settings"><svg class="i" viewBox="0 0 24 24"><path d="M4 7h10M18 7h2M4 17h4M12 17h8"/><circle cx="16" cy="7" r="2"/><circle cx="10" cy="17" r="2"/></svg></button>
+
+  <div class="status-bar">
+    <div class="pill bad" id="chWs"><span class="dot"></span><span>OFFLINE</span></div>
+    <div class="pill" id="chCar"><span class="dot"></span><span>MCU STANDBY</span></div>
+    <div class="pill hidden" id="chRssi"><span class="dot"></span><span id="rssiVal">-- dBm</span></div>
+    <a class="pill action hidden" href="view" id="pcLink"><span class="dot" style="background:var(--accent)"></span><span>PC VIEW</span></a>
+  </div>
+
+  <div class="nav-actions">
+    <button class="btn-icon" id="btnTheme" title="Toggle Theme (White / Dark)">
+      <svg class="icon" id="iconSun" viewBox="0 0 24 24"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
+      <svg class="icon hidden" id="iconMoon" viewBox="0 0 24 24"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+    </button>
+    <button class="btn-estop" id="btnStop" title="Emergency Braking (Esc)">
+      <svg class="icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg>
+      <span>E-STOP</span>
+    </button>
+    <button class="btn-icon" id="btnSet" title="Preferences">
+      <svg class="icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+    </button>
+  </div>
 </header>
 
-<main class="layout">
-  <!-- DRIVE -->
-  <section class="card drive">
-    <div class="ttl"><span>Drive</span><span class="lr" id="lrOut">L 0 · R 0</span></div>
-    <div class="drive-body">
-      <div class="stick" id="stick"><span class="lbl f">FWD</span><span class="lbl b">REV</span><span class="lbl l">L</span><span class="lbl r">R</span><div class="knob" id="knob"></div></div>
-      <div class="dpad hidden" id="dpad">
-        <button data-x="-1" data-y="1">&#8598;</button><button data-x="0" data-y="1">&#9650;</button><button data-x="1" data-y="1">&#8599;</button>
-        <button data-x="-1" data-y="0">&#9664;</button><button class="mid" data-x="0" data-y="0">STOP</button><button data-x="1" data-y="0">&#9654;</button>
-        <button data-x="-1" data-y="-1">&#8601;</button><button data-x="0" data-y="-1">&#9660;</button><button data-x="1" data-y="-1">&#8600;</button>
-      </div>
-      <div class="seg speed" id="gears">
-        <button data-v="40">Slow<small>40%</small></button>
-        <button data-v="70">Normal<small>70%</small></button>
-        <button data-v="100">Fast<small>100%</small></button>
-      </div>
-    </div>
-  </section>
+<!-- COCKPIT PANELS -->
+<main class="cockpit">
 
-  <!-- VIDEO -->
-  <section class="card video">
-    <div class="screen" id="screen">
-      <div class="novideo" id="novideo"><svg class="i" viewBox="0 0 24 24"><path d="M3 8h4l2-3h6l2 3h4v11H3z"/><circle cx="12" cy="13" r="3.5"/></svg><span id="novTxt">Connecting to camera&hellip;</span></div>
+  <!-- UPPER SECTION: OPTICAL SENSOR FEED (CAMERA) -->
+  <section class="card deck-optics">
+    <div class="card-header">
+      <span>Optical Stream</span>
+      <span class="metric" id="opticsMetric">LIVE HUD</span>
+    </div>
+    <div class="viewport" id="screen">
+      <div class="no-video-overlay" id="novideo">
+        <svg class="icon" viewBox="0 0 24 24"><path d="M23 7l-7 5 7 5V7z"/><rect x="1" y="5" width="15" height="14" rx="2" ry="2"/></svg>
+        <p id="novTxt">CONNECTING OPTICAL STREAM&hellip;</p>
+        <small>Connect phone Wi-Fi to "RobotCar" (pwd: 12345678)</small>
+      </div>
       <img id="cam" alt="">
-      <div class="hud" id="hud">
-        <div class="tl"><span class="tag rev hidden" id="tagRev">REVERSE</span><span class="tag brk hidden" id="tagBrk">AUTO-BRAKE</span></div>
-        <div class="tr"><span class="tag lt hidden" id="tagLt">LIGHTS</span><span class="tag hidden" id="tagDemo">DEMO</span></div>
-        <div class="park" id="park"></div>
+
+      <!-- Tactical HUD Overlay -->
+      <div class="viewport-hud" id="hud">
+        <div class="bracket tl"></div>
+        <div class="bracket tr"></div>
+        <div class="bracket bl"></div>
+        <div class="bracket br"></div>
+
+        <div class="hud-top-left">
+          <span class="hud-tag rev hidden" id="tagRev">REVERSE</span>
+          <span class="hud-tag brake hidden" id="tagBrk">BRAKE</span>
+        </div>
+        <div class="hud-top-right">
+          <span class="hud-tag lights hidden" id="tagLt">BEAMS</span>
+          <span class="hud-tag hidden" id="tagDemo">SIM</span>
+        </div>
+
+        <div class="hud-proximity" id="park">
+          <div class="proximity-bars" id="proximityBars"></div>
+          <span class="proximity-dist" id="parkTxt">CLEAR</span>
+        </div>
       </div>
     </div>
-    <div class="vbar">
-      <button class="pill" id="btnPause"><svg class="i" viewBox="0 0 24 24"><path d="M8 5v14M16 5v14"/></svg><span>Pause</span></button>
-      <button class="pill" id="btnSnap"><svg class="i" viewBox="0 0 24 24"><path d="M3 8h4l2-3h6l2 3h4v11H3z"/><circle cx="12" cy="13" r="3.5"/></svg><span>Photo</span></button>
-      <button class="pill" id="btnFlash" title="White LED on the camera board"><svg class="i" viewBox="0 0 24 24"><path d="M13 2L4 14h7l-1 8 9-12h-7z"/></svg><span>Cam light</span></button>
-      <button class="pill right" id="btnFull" title="Full screen"><svg class="i" viewBox="0 0 24 24"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"/></svg></button>
+
+    <!-- Optics Control Bar -->
+    <div class="viewport-toolbar">
+      <button class="btn-ctrl" id="btnPause">
+        <svg class="icon" viewBox="0 0 24 24"><rect x="6" y="4" width="4" height="16"/><rect x="14" y="4" width="4" height="16"/></svg>
+        <span>Pause</span>
+      </button>
+      <button class="btn-ctrl" id="btnSnap">
+        <svg class="icon" viewBox="0 0 24 24"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
+        <span>Photo</span>
+      </button>
+      <button class="btn-ctrl" id="btnFlash" title="High-Intensity Aux LED">
+        <svg class="icon" viewBox="0 0 24 24"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+        <span>Light</span>
+      </button>
+      <button class="btn-ctrl right" id="btnFull" title="Full Screen Viewport">
+        <svg class="icon" viewBox="0 0 24 24"><path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"/></svg>
+      </button>
     </div>
   </section>
 
-  <!-- RADAR + LIGHTS + HORN -->
-  <section class="card side">
-    <div class="radar-box">
-      <div class="ttl"><span>Rear radar</span><b id="radarMode">fixed sensor</b></div>
-      <div class="radar-wrap"><canvas id="radar"></canvas></div>
-      <div class="readout"><div class="num" id="distNum">--<small>cm</small></div><div class="zone" id="zone">NO DATA</div></div>
-    </div>
-    <div class="ctl">
-      <div class="ttl" style="padding:0"><span>Headlights</span><b id="ltTxt">off</b></div>
-      <div class="lights" id="lights">
-        <button data-m="0"><svg class="i" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8"/><path d="M6.5 6.5l11 11"/></svg>OFF</button>
-        <button data-m="1"><svg class="i" viewBox="0 0 24 24"><path d="M10 6c-4 0-6 2.5-6 6s2 6 6 6h2V6z"/><path d="M15 8h6M15 12h6M15 16h6"/></svg>ON</button>
-        <button data-m="2"><svg class="i" viewBox="0 0 24 24"><path d="M12 3l10 18H2z"/><path d="M12 10v4M12 17.5v.5"/></svg>HAZARD</button>
+  <!-- LOWER SECTION: DUAL CONTROLLER DECK -->
+  <div class="deck-controls">
+
+    <!-- LEFT THUMB DECK: PROPULSION & STEERING -->
+    <section class="card deck-drive">
+      <div class="card-header" style="width:100%">
+        <span>Propulsion</span>
+        <span class="metric" id="lrOut">L: 0% · R: 0%</span>
       </div>
-      <button class="horn" id="btnHorn"><svg class="i" viewBox="0 0 24 24"><path d="M3 10v4h4l5 4V6L7 10H3z"/><path d="M16 8.5a5 5 0 0 1 0 7M19 6a8.5 8.5 0 0 1 0 12"/></svg>HORN</button>
-    </div>
-  </section>
+
+      <!-- Power Meters -->
+      <div class="power-meters">
+        <div class="meter-card">
+          <div class="meter-label"><span>PORT</span><span id="lPwrTxt">0%</span></div>
+          <div class="meter-bar-track"><div class="meter-bar-fill" id="lPwrBar"></div></div>
+        </div>
+        <div class="meter-card">
+          <div class="meter-label"><span>STBD</span><span id="rPwrTxt">0%</span></div>
+          <div class="meter-bar-track"><div class="meter-bar-fill" id="rPwrBar"></div></div>
+        </div>
+      </div>
+
+      <!-- Precision Joystick Gimbal -->
+      <div class="gimbal-frame" id="stick">
+        <div class="gimbal-crosshair"></div>
+        <span class="gimbal-label fwd">FWD</span>
+        <span class="gimbal-label rev">REV</span>
+        <span class="gimbal-label left">L</span>
+        <span class="gimbal-label right">R</span>
+        <div class="gimbal-puck" id="knob"></div>
+      </div>
+
+      <!-- D-Pad Directional Matrix (Alternate Mode) -->
+      <div class="dpad-matrix hidden" id="dpad">
+        <button class="dpad-btn" data-x="-1" data-y="1">&#8598;</button>
+        <button class="dpad-btn" data-x="0" data-y="1">&#9650;</button>
+        <button class="dpad-btn" data-x="1" data-y="1">&#8599;</button>
+        <button class="dpad-btn" data-x="-1" data-y="0">&#9664;</button>
+        <button class="dpad-btn center" data-x="0" data-y="0">STOP</button>
+        <button class="dpad-btn" data-x="1" data-y="0">&#9654;</button>
+        <button class="dpad-btn" data-x="-1" data-y="-1">&#8601;</button>
+        <button class="dpad-btn" data-x="0" data-y="-1">&#9660;</button>
+        <button class="dpad-btn" data-x="1" data-y="-1">&#8600;</button>
+      </div>
+
+      <!-- Transmission Gears -->
+      <div class="segmented-gears" id="gears">
+        <button class="gear-btn" data-v="40">ECO<small>40%</small></button>
+        <button class="gear-btn active" data-v="70">COMFORT<small>70%</small></button>
+        <button class="gear-btn" data-v="100">SPORT<small>100%</small></button>
+      </div>
+    </section>
+
+    <!-- RIGHT THUMB DECK: RADAR & AUX TACTICAL -->
+    <section class="card deck-tactical">
+      <div class="card-header" style="width:100%">
+        <span>Sonar Radar</span>
+        <span class="metric" id="radarMode">ACTIVE</span>
+      </div>
+
+      <!-- Radar Canvas & Distance Readout -->
+      <div class="sonar-card">
+        <div class="radar-box">
+          <canvas id="radar"></canvas>
+        </div>
+        <div class="sonar-meta">
+          <div class="sonar-dist" id="distNum">--<small>cm</small></div>
+          <div class="sonar-tag" id="zone">CLEAR</div>
+        </div>
+      </div>
+
+      <!-- Lighting Mode Vector -->
+      <div class="light-row" id="lights">
+        <button class="light-btn" data-m="0">
+          <svg class="icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="4.93" y1="4.93" x2="19.07" y2="19.07"/></svg>
+          <span>OFF</span>
+        </button>
+        <button class="light-btn" data-m="1">
+          <svg class="icon" viewBox="0 0 24 24"><path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"/></svg>
+          <span>BEAMS</span>
+        </button>
+        <button class="light-btn" data-m="2">
+          <svg class="icon" viewBox="0 0 24 24"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+          <span>HAZARD</span>
+        </button>
+      </div>
+
+      <!-- Audio Controls: Acoustic Horn & Retro Buzzer Melody -->
+      <div class="audio-row">
+        <button class="btn-horn" id="btnHorn" title="Acoustic Horn (Spacebar)">
+          <svg class="icon" viewBox="0 0 24 24"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"/></svg>
+          <span>HORN</span>
+        </button>
+        <button class="btn-song" id="btnSong" title="Play Retro Melody on Buzzer (M)">
+          <svg class="icon" viewBox="0 0 24 24"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg>
+          <span id="songTxt">PLAY SONG</span>
+        </button>
+      </div>
+    </section>
+
+  </div>
+
 </main>
 
+<!-- SETTINGS DRAWER -->
 <div class="scrim" id="scrim"></div>
 <aside class="sheet" id="sheet">
-  <h2>Settings <button class="ibtn" id="btnClose"><svg class="i" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></svg></button></h2>
-
-  <a class="link" href="view" id="viewLink"><b>&#128421; Classroom viewer for a PC</b>On a computer connected to the same WiFi, open <span id="viewUrl">http://192.168.4.1/view</span> to show the video and radar on a big screen.</a>
-
-  <div class="group"><h3>Parking alarm</h3>
-    <div class="field"><div class="row"><span>Start beeping at</span><b id="warnVal"></b></div><input type="range" id="sWarn" min="30" max="200" step="5"></div>
-    <div class="field"><div class="row"><span>Danger / auto-brake at</span><b id="stopVal"></b></div><input type="range" id="sStop" min="5" max="60" step="1"></div>
-    <div class="field"><div class="row"><span>Auto-brake when reversing</span><input class="tog" type="checkbox" id="sBrake"></div><p>The car refuses to reverse into an obstacle.</p></div>
-    <div class="field"><div class="row"><span>Alarm also when not reversing</span><input class="tog" type="checkbox" id="sAlways"></div></div>
-    <div class="field"><div class="row"><span>Mute the car buzzer</span><input class="tog" type="checkbox" id="sMute"></div><p>The red LED still flashes.</p></div>
-    <div class="field"><div class="row"><span>Beep on this phone too</span><input class="tog" type="checkbox" id="sPhoneBeep"></div></div>
-    <div class="field"><div class="row"><span>Vibrate (Android)</span><input class="tog" type="checkbox" id="sVibe"></div></div>
+  <div class="sheet-header">
+    <h2>Cockpit Calibration</h2>
+    <button class="btn-icon" id="btnClose">
+      <svg class="icon" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+    </button>
   </div>
 
-  <div class="group"><h3>Driving</h3>
-    <div class="field"><div class="row"><span>Controls</span></div>
-      <select id="sMode"><option value="joy">Joystick</option><option value="dpad">Buttons (D-pad)</option></select></div>
-    <div class="field"><div class="row"><span>Exact speed</span><b id="spdVal"></b></div><input type="range" id="sSpeed" min="30" max="100" step="5"></div>
-    <div class="field"><div class="row"><span>Turn sensitivity</span><b id="turnVal"></b></div><input type="range" id="sTurn" min="30" max="100" step="5"></div>
+  <div class="pref-group">
+    <h3>Interface Theme</h3>
+    <div class="pref-row">
+      <span>Color Theme</span>
+      <select id="sTheme">
+        <option value="light">Architectural White (Light)</option>
+        <option value="dark">Obsidian Stealth (Dark)</option>
+      </select>
+    </div>
   </div>
 
-  <div class="group"><h3>Camera</h3>
-    <div class="field"><div class="row"><span>Resolution</span></div><select id="sRes">
-      <option value="5">QVGA 320&times;240 (smoothest)</option><option value="8">VGA 640&times;480 (recommended)</option>
-      <option value="9">SVGA 800&times;600</option><option value="10">XGA 1024&times;768 (slow)</option></select></div>
-    <div class="field"><div class="row"><span>Picture quality</span><b id="qVal"></b></div><input type="range" id="sQual" min="10" max="40" step="1"><p>Lower number = sharper picture but slower video.</p></div>
-    <div class="field"><div class="row"><span>Cam light brightness</span><b id="flashVal"></b></div><input type="range" id="sFlash" min="10" max="255" step="5"></div>
-    <div class="field"><div class="row"><span>Flip upside down</span><input class="tog" type="checkbox" id="sVflip"></div></div>
-    <div class="field"><div class="row"><span>Mirror left / right</span><input class="tog" type="checkbox" id="sMirror"></div></div>
+  <div class="pref-group">
+    <h3>Drive Dynamics &amp; Calibration</h3>
+    <div class="pref-row">
+      <span>Invert Drive (Forward &#8596; Reverse)</span>
+      <label class="switch"><input type="checkbox" id="sInvertDrive"><span class="slider"></span></label>
+    </div>
+    <div class="pref-row">
+      <span>Invert Steering (Left &#8596; Right)</span>
+      <label class="switch"><input type="checkbox" id="sInvertSteer"><span class="slider"></span></label>
+    </div>
+    <div class="pref-row">
+      <span>Swap Left &amp; Right Motor Channels</span>
+      <label class="switch"><input type="checkbox" id="sSwapMotors"><span class="slider"></span></label>
+    </div>
+    <div class="pref-row">
+      <span>Controller Style</span>
+      <select id="sMode">
+        <option value="joy">Precision Vector Joystick</option>
+        <option value="dpad">Directional Tactical Matrix</option>
+      </select>
+    </div>
+    <div class="pref-row">
+      <span>Target Velocity Ceiling</span>
+      <b id="spdVal">70%</b>
+    </div>
+    <input type="range" id="sSpeed" min="30" max="100" step="5">
+
+    <div class="pref-row">
+      <span>Yaw Steering Sensitivity</span>
+      <b id="turnVal">70%</b>
+    </div>
+    <input type="range" id="sTurn" min="30" max="100" step="5">
   </div>
 
-  <div class="group"><h3>Radar &amp; connection</h3>
-    <div class="field"><div class="row"><span>Radar range</span></div><select id="sRange"><option value="100">1 m</option><option value="200">2 m</option><option value="300">3 m</option><option value="400">4 m</option></select></div>
-    <div class="field"><div class="row"><span>Car address</span></div><input type="text" id="sHost" inputmode="url" spellcheck="false"></div>
-    <div class="field"><button class="pill" id="btnIntro" style="width:100%;justify-content:center">Show the tips again</button></div>
+  <div class="pref-group">
+    <h3>Collision Avoidance &amp; Radar</h3>
+    <div class="pref-row">
+      <span>Caution Proximity Threshold</span>
+      <b id="warnVal">100 cm</b>
+    </div>
+    <input type="range" id="sWarn" min="30" max="200" step="5">
+
+    <div class="pref-row">
+      <span>Critical Emergency Stop</span>
+      <b id="stopVal">15 cm</b>
+    </div>
+    <input type="range" id="sStop" min="5" max="60" step="1">
+
+    <div class="pref-row">
+      <span>Autonomous Reverse Braking</span>
+      <label class="switch"><input type="checkbox" id="sBrake"><span class="slider"></span></label>
+    </div>
+    <div class="pref-row">
+      <span>Continuous Proximity Ping</span>
+      <label class="switch"><input type="checkbox" id="sAlways"><span class="slider"></span></label>
+    </div>
+    <div class="pref-row">
+      <span>Mute Physical Chassis Buzzer</span>
+      <label class="switch"><input type="checkbox" id="sMute"><span class="slider"></span></label>
+    </div>
+    <div class="pref-row">
+      <span>Synchronize Phone Audio Horn &amp; Chime</span>
+      <label class="switch"><input type="checkbox" id="sPhoneBeep"><span class="slider"></span></label>
+    </div>
+    <div class="pref-row">
+      <span>Haptic Motor Vibration</span>
+      <label class="switch"><input type="checkbox" id="sVibe"><span class="slider"></span></label>
+    </div>
   </div>
-  <p class="note">Join WiFi <b>RobotCar</b> (password <b>12345678</b>) and open <b>http://192.168.4.1</b>.<br>
-    Keyboard: <kbd>W</kbd><kbd>A</kbd><kbd>S</kbd><kbd>D</kbd> drive · <kbd>Space</kbd> horn · <kbd>L</kbd> lights · <kbd>H</kbd> hazard · <kbd>Esc</kbd> stop</p>
+
+  <div class="pref-group">
+    <h3>Optical Sensor Calibration</h3>
+    <div class="pref-row">
+      <span>Stream Resolution</span>
+      <select id="sRes">
+        <option value="5" selected>QVGA (320x240) - High Speed (30 FPS)</option>
+        <option value="6">CIF (400x296) - Balanced</option>
+        <option value="8">VGA (640x480) - HD (Lower FPS)</option>
+      </select>
+    </div>
+    <div class="pref-row">
+      <span>Stream Compression Quality</span>
+      <b id="qVal">55</b>
+    </div>
+    <input type="range" id="sQual" min="25" max="85" step="5">
+
+    <div class="pref-row">
+      <span>Aux LED Intensity</span>
+      <b id="flashVal">70%</b>
+    </div>
+    <input type="range" id="sFlash" min="10" max="255" step="5">
+
+    <div class="pref-row">
+      <span>Invert Optical Vertical Axis</span>
+      <label class="switch"><input type="checkbox" id="sVflip"><span class="slider"></span></label>
+    </div>
+    <div class="pref-row">
+      <span>Mirror Horizontal Axis</span>
+      <label class="switch"><input type="checkbox" id="sMirror"><span class="slider"></span></label>
+    </div>
+  </div>
+
+  <div class="pref-group">
+    <h3>Network &amp; Diagnostics</h3>
+    <div class="pref-row">
+      <span>Sonar Horizon Range</span>
+      <select id="sRange">
+        <option value="100">1.0 Meter</option>
+        <option value="200">2.0 Meters</option>
+        <option value="300">3.0 Meters</option>
+        <option value="400">4.0 Meters</option>
+      </select>
+    </div>
+    <div class="pref-row">
+      <span>Host Gateway IP</span>
+      <input type="text" id="sHost" spellcheck="false">
+    </div>
+  </div>
 </aside>
 
-<div class="intro hidden" id="intro"><div class="box">
-  <h2>Ready to drive &#128663;</h2><p>Three things to know:</p>
-  <div class="tips">
-    <div class="tip"><div class="ic"><svg class="i" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8"/><circle cx="12" cy="12" r="3"/></svg></div><div><b>Hold and drag the joystick</b><span>Up = forward, down = reverse. Let go to stop.</span></div></div>
-    <div class="tip"><div class="ic" style="color:var(--amber)"><svg class="i" viewBox="0 0 24 24"><path d="M12 3a9 9 0 1 0 9 9"/><path d="M12 12l6-6"/></svg></div><div><b>Reversing turns on the radar alarm</b><span>Beeps get faster as you get closer. The car brakes by itself.</span></div></div>
-    <div class="tip"><div class="ic" style="color:var(--red)"><svg class="i" viewBox="0 0 24 24"><rect x="6" y="6" width="12" height="12" rx="2"/></svg></div><div><b>STOP is always at the top</b><span>The car also stops if the phone loses WiFi.</span></div></div>
-  </div>
-  <button class="go" id="btnGo">Let's go</button>
-</div></div>
+<!-- QUICK TOAST -->
 <div class="toast" id="toast"></div>
 
 <script>
@@ -315,128 +898,406 @@ kbd{background:var(--panel2);border:1px solid var(--line2);border-bottom-width:2
 const $ = id => document.getElementById(id);
 const buzz = ms => { try { navigator.vibrate && navigator.vibrate(ms); } catch(e){} };
 
-/* ======================= settings (saved on the phone) ======================= */
+/* ================================= Theme Engine ================================= */
+let currentTheme = localStorage.getItem("rcTheme") || "light";
+function applyTheme(theme) {
+  currentTheme = theme;
+  document.documentElement.setAttribute("data-theme", theme);
+  localStorage.setItem("rcTheme", theme);
+  const isLight = theme === "light";
+  $("metaThemeColor").setAttribute("content", isLight ? "#ffffff" : "#090b10");
+  $("iconSun").classList.toggle("hidden", isLight);
+  $("iconMoon").classList.toggle("hidden", !isLight);
+  if ($("sTheme")) $("sTheme").value = theme;
+  requestAnimationFrame(drawRadar);
+}
+$("btnTheme").onclick = () => applyTheme(currentTheme === "light" ? "dark" : "light");
+if ($("sTheme")) $("sTheme").onchange = e => applyTheme(e.target.value);
+applyTheme(currentTheme);
+
+/* ============================== Storage & Settings ============================== */
 const servedByCar = (location.hostname === "192.168.4.1" || location.hostname.endsWith(".local")) && !/[?&]demo/.test(location.search);
-const DEFAULTS = { warn:100, stop:15, brake:true, always:false, mute:false, phoneBeep:false, vibe:true,
-  mode:"joy", turn:70, flash:180, res:8, qual:12, vflip:false, mirror:false, range:200, speed:70, intro:false,
-  host: servedByCar ? location.host : "192.168.4.1" };
-let S = {...DEFAULTS};
+const DEFAULTS = {
+  warn: 100, stop: 15, brake: true, always: false, mute: false, phoneBeep: true, vibe: true,
+  invertDrive: false, invertSteer: false, swapMotors: false,
+  mode: "joy", turn: 70, flash: 180, res: 5, qual: 55, vflip: false, mirror: false, range: 200, speed: 70,
+  host: servedByCar ? location.host : "192.168.4.1"
+};
+let S = { ...DEFAULTS };
 try { Object.assign(S, JSON.parse(localStorage.getItem("robotcar") || "{}")); } catch(e) {}
+// Reset to clean un-inverted defaults on first load of this update
+if (localStorage.getItem("rcDriveV3") !== "1") {
+  S.invertDrive = false;
+  S.invertSteer = false;
+  S.swapMotors = false;
+  localStorage.setItem("rcDriveV3", "1");
+}
+// Protect high frame rate (30 FPS): default to QVGA (5) if previous session cached VGA (8)
+if (S.res > 6 && !localStorage.getItem("rcResManuallySet")) { S.res = 5; }
+if (!S.qual || S.qual < 25 || S.qual > 75) { S.qual = 55; }
 if (servedByCar) S.host = location.host;
 const save = () => { try { localStorage.setItem("robotcar", JSON.stringify(S)); } catch(e) {} };
 const demo = !servedByCar;
-const host = () => S.host.replace(/:\d+$/,"");
+const host = () => S.host.replace(/:\d+$/, "");
 
-function toast(msg){ const t=$("toast"); t.textContent=msg; t.classList.add("show"); clearTimeout(t._h); t._h=setTimeout(()=>t.classList.remove("show"),1800); }
+function toast(msg) {
+  const t = $("toast"); t.textContent = msg; t.classList.add("show");
+  clearTimeout(t._h); t._h = setTimeout(() => t.classList.remove("show"), 2000);
+}
 
-/* ============================== WebSocket link ============================== */
+/* ============================== WebSocket Telemetry ============================== */
 let ws = null, wsOk = false;
-function send(msg){ if (wsOk && ws.readyState === 1) ws.send(msg); }
-function sendConfig(){ send(`C,${S.warn},${S.stop},${S.brake?1:0},${S.always?1:0},${S.mute?1:0}`); }
+function send(msg) { if (wsOk && ws.readyState === 1) ws.send(msg); }
+function sendConfig() { send(`C,${S.warn},${S.stop},${S.brake?1:0},${S.always?1:0},${S.mute?1:0},${S.invertDrive?1:0}`); }
 
-function connect(){
+function connect() {
   if (demo) return;
   try { ws = new WebSocket(`ws://${host()}/ws`); } catch(e) { setTimeout(connect, 2000); return; }
-  ws.onopen = () => { wsOk = true; setChip("chWs","ok","connected"); send("R,phone"); sendConfig(); };
-  ws.onclose = () => { wsOk = false; setChip("chWs","bad","offline"); setChip("chCar","","car"); setTimeout(connect, 1500); };
+  ws.onopen = () => {
+    wsOk = true;
+    setChip("chWs", "ok", "LINKED");
+    send("R,phone");
+    sendConfig();
+  };
+  ws.onclose = () => {
+    wsOk = false;
+    setChip("chWs", "bad", "OFFLINE");
+    setChip("chCar", "", "STANDBY");
+    setTimeout(connect, 1500);
+  };
   ws.onerror = () => { try { ws.close(); } catch(e){} };
   ws.onmessage = e => onMessage(String(e.data));
 }
-function onMessage(m){
+
+function onMessage(m) {
   const p = m.split(",");
   if (p[0] === "D") onSensor(+p[1], +p[2], +p[3]);
-  else if (p[0] === "T") { showLights(+p[3]); flashOn = +p[5] > 0; $("btnFlash").classList.toggle("on", flashOn); }
+  else if (p[0] === "T") {
+    showLights(+p[3]);
+    flashOn = +p[5] > 0;
+    $("btnFlash").classList.toggle("active", flashOn);
+  }
   else if (p[0] === "I") {
     const rssi = +p[1];
-    setChip("chCar", +p[3] ? "ok" : "bad", +p[3] ? "car ok" : "car not responding");
+    setChip("chCar", +p[3] ? "ok" : "bad", +p[3] ? "MCU OK" : "MCU LOST");
     const c = $("chRssi");
-    if (rssi) { c.classList.remove("hidden"); setChip("chRssi", rssi > -65 ? "ok" : rssi > -78 ? "warn" : "bad", rssi + " dBm"); }
-    else c.classList.add("hidden");
+    if (rssi) {
+      c.classList.remove("hidden");
+      setChip("chRssi", rssi > -65 ? "ok" : rssi > -78 ? "warn" : "bad", rssi + " dBm");
+    } else c.classList.add("hidden");
   }
 }
-function setChip(id, cls, txt){ const c=$(id); c.className="chip "+cls; c.querySelector("span").textContent=txt; }
 
-/* ================================= Driving ================================= */
+function setChip(id, cls, txt) {
+  const c = $(id);
+  c.className = "pill " + cls;
+  c.querySelector("span:last-child").textContent = txt;
+}
+
+/* ============================== Dynamics & Mixing ============================== */
 let joyX = 0, joyY = 0, keyX = 0, keyY = 0, outL = 0, outR = 0;
-function mix(){
-  let x = (keyX || joyX) * S.turn / 100, y = keyY || joyY;
+function mix() {
+  const driveDir = S.invertDrive ? -1 : 1;
+  const steerDir = S.invertSteer ? -1 : 1;
+
+  // UP on joystick / W / ArrowUp is positive y (+1) -> Forward
+  let y = driveDir * (keyY || joyY);
+  // RIGHT on joystick / D / ArrowRight is positive x (+1) -> Turn Right
+  let x = steerDir * (keyX || joyX) * (S.turn / 100);
+
+  // Differential Drive:
+  // Pivot Right (x > 0): Left track faster, Right track slower (l > r) -> vehicle turns Right
+  // Pivot Left  (x < 0): Left track slower, Right track faster (l < r) -> vehicle turns Left
   let l = y + x, r = y - x;
-  const m = Math.max(1, Math.abs(l), Math.abs(r)); l /= m; r /= m;
+  const m = Math.max(1, Math.abs(l), Math.abs(r));
+  l /= m; r /= m;
+
+  // Hardware channel swap if L298N left/right motor wires were plugged into opposite sides
+  if (S.swapMotors) {
+    const tmp = l; l = r; r = tmp;
+  }
+
   const k = 255 * S.speed / 100;
-  outL = Math.round(l * k); outR = Math.round(r * k);
-  $("lrOut").textContent = `L ${outL} · R ${outR}`;
+  outL = Math.round(l * k);
+  outR = Math.round(r * k);
+
+  const pwrPort = Math.round(outL / 2.55);
+  const pwrStbd = Math.round(outR / 2.55);
+
+  $("lrOut").textContent = `L: ${pwrPort > 0 ? "+" : ""}${pwrPort}% · R: ${pwrStbd > 0 ? "+" : ""}${pwrStbd}%`;
+  $("lPwrTxt").textContent = `${pwrPort}%`;
+  $("rPwrTxt").textContent = `${pwrStbd}%`;
+  $("lPwrBar").style.width = Math.abs(pwrPort) + "%";
+  $("rPwrBar").style.width = Math.abs(pwrStbd) + "%";
+  $("lPwrBar").style.background = pwrPort < 0 ? "var(--warning)" : "var(--accent)";
+  $("rPwrBar").style.background = pwrStbd < 0 ? "var(--warning)" : "var(--accent)";
 }
 setInterval(() => { mix(); send(`M,${outL},${outR}`); if (demo) demoTick(); }, 100);
 
-// Joystick
+// Joystick Gimbal Interactions
 (function(){
-  const base = $("stick"), knob = $("knob"); let id = null, cx, cy, rad;
+  const base = $("stick"), knob = $("knob");
+  let id = null, cx, cy, rad;
   const set = (x, y, px, py) => {
     knob.style.transform = `translate(${px}px,${py}px)`;
     if (Math.hypot(x, y) < 0.12) { x = 0; y = 0; }
-    joyX = +x.toFixed(2); joyY = +y.toFixed(2); mix();
+    joyX = +x.toFixed(2);
+    joyY = +y.toFixed(2);
+    mix();
   };
   base.addEventListener("pointerdown", e => {
     id = e.pointerId; base.setPointerCapture(id); base.classList.add("active");
-    const r = base.getBoundingClientRect(); cx = r.left + r.width/2; cy = r.top + r.height/2; rad = r.width * 0.34;
-    move(e); unlockAudio(); buzz(8);
+    const r = base.getBoundingClientRect();
+    cx = r.left + r.width/2; cy = r.top + r.height/2; rad = r.width * 0.35;
+    move(e); initAudio(); buzz(12);
   });
   base.addEventListener("pointermove", e => { if (e.pointerId === id) move(e); });
-  const end = e => { if (e.pointerId === id) { id = null; base.classList.remove("active"); knob.style.transition = "transform .12s"; set(0,0,0,0); setTimeout(() => knob.style.transition = "", 130); } };
-  ["pointerup","pointercancel","lostpointercapture"].forEach(t => base.addEventListener(t, end));
-  function move(e){
-    let dx = e.clientX - cx, dy = e.clientY - cy; const d = Math.hypot(dx, dy);
-    if (d > rad) { dx *= rad/d; dy *= rad/d; }
-    set(dx/rad, -dy/rad, dx, dy);
+  const end = e => {
+    if (e.pointerId === id) {
+      id = null; base.classList.remove("active");
+      knob.style.transition = "transform .15s cubic-bezier(0.16, 1, 0.3, 1)";
+      set(0, 0, 0, 0);
+      setTimeout(() => knob.style.transition = "", 160);
+    }
+  };
+  ["pointerup", "pointercancel", "lostpointercapture"].forEach(t => base.addEventListener(t, end));
+  function move(e) {
+    let dx = e.clientX - cx, dy = e.clientY - cy;
+    const d = Math.hypot(dx, dy);
+    if (d > rad) { dx *= rad / d; dy *= rad / d; }
+    set(dx / rad, -dy / rad, dx, dy);
   }
 })();
 
-// D-pad
+// D-Pad Directional Matrix
 document.querySelectorAll("#dpad button").forEach(b => {
-  const down = e => { e.preventDefault(); b.setPointerCapture(e.pointerId); b.classList.add("act"); buzz(8);
-    joyX = +b.dataset.x; joyY = +b.dataset.y; if (joyX && joyY) joyX *= .5; mix(); unlockAudio(); };
-  const up = () => { b.classList.remove("act"); joyX = 0; joyY = 0; mix(); };
+  const down = e => {
+    e.preventDefault(); b.setPointerCapture(e.pointerId); b.classList.add("pressed"); buzz(10);
+    joyX = +b.dataset.x; joyY = +b.dataset.y;
+    if (joyX && joyY) joyX *= .5;
+    mix(); initAudio();
+  };
+  const up = () => { b.classList.remove("pressed"); joyX = 0; joyY = 0; mix(); };
   b.addEventListener("pointerdown", down);
-  ["pointerup","pointercancel","lostpointercapture"].forEach(t => b.addEventListener(t, up));
+  ["pointerup", "pointercancel", "lostpointercapture"].forEach(t => b.addEventListener(t, up));
 });
 
-// Speed gears
-function showSpeed(){
-  document.querySelectorAll("#gears button").forEach(b => b.classList.toggle("on", +b.dataset.v === S.speed));
-  $("spdVal").textContent = S.speed + "%"; $("sSpeed").value = S.speed;
+// Speed Gears
+function showSpeed() {
+  document.querySelectorAll("#gears button").forEach(b => b.classList.toggle("active", +b.dataset.v === S.speed));
+  $("spdVal").textContent = S.speed + "%";
+  $("sSpeed").value = S.speed;
 }
-document.querySelectorAll("#gears button").forEach(b => b.onclick = () => { S.speed = +b.dataset.v; save(); showSpeed(); mix(); buzz(10); });
+document.querySelectorAll("#gears button").forEach(b => b.onclick = () => {
+  S.speed = +b.dataset.v; save(); showSpeed(); mix(); buzz(10);
+});
 
-// Emergency stop
-function emergency(){ joyX = joyY = keyX = keyY = 0; keys.clear(); mix(); send("S"); send("M,0,0"); hornOff(); buzz([30,40,30]); toast("Stopped"); }
+// Emergency Stop
+function emergency() {
+  joyX = joyY = keyX = keyY = 0;
+  if (songPlaying) playSong(false);
+  keys.clear(); mix(); send("S"); send("M,0,0");
+  hornOff(); buzz([40, 50, 40]); toast("E-STOP TRIGGERED");
+}
 $("btnStop").onclick = emergency;
 
-// Horn (hold)
-const horn = $("btnHorn");
-const hornOn = e => { e && e.preventDefault(); horn.classList.add("on"); send("H,1"); unlockAudio(); buzz(10); };
-const hornOff = () => { if (horn.classList.contains("on")) { horn.classList.remove("on"); send("H,0"); } };
-horn.addEventListener("pointerdown", e => { horn.setPointerCapture(e.pointerId); hornOn(e); });
-["pointerup","pointercancel","lostpointercapture"].forEach(t => horn.addEventListener(t, hornOff));
+/* ========================= Audio Engine (Horn, Sonar Chime & Retro Song) ========================= */
+let actx = null, hornGain = null, hornOsc1 = null, hornOsc2 = null;
+let sonarGain = null, sonarOsc = null, beepState = false, alarmNow = false, alarmDist = 0;
+let musicGain = null, musicOsc = null, songPlaying = false, songTimeouts = [];
 
-// Headlights: 0 off, 1 on, 2 hazard (the UNO drives 2 white LEDs at the front)
-let lightMode = 0;
-const LT = ["off", "on", "hazard"];
-function showLights(m){
-  lightMode = m;
-  document.querySelectorAll("#lights button").forEach(b => { const on = +b.dataset.m === m && m > 0; b.classList.toggle("on", on); b.classList.toggle("hz", on && m === 2); });
-  $("ltTxt").textContent = LT[m] || "off";
-  $("tagLt").classList.toggle("hidden", m === 0); $("tagLt").textContent = m === 2 ? "HAZARD" : "LIGHTS";
+function initAudio() {
+  if (actx) {
+    if (actx.state === "suspended") actx.resume();
+    return;
+  }
+  try {
+    actx = new (window.AudioContext || window.webkitAudioContext)();
+    
+    // Dual-tone Automotive Horn Synthesizer (440Hz + 554Hz)
+    hornGain = actx.createGain();
+    hornGain.gain.setValueAtTime(0, actx.currentTime);
+
+    hornOsc1 = actx.createOscillator();
+    hornOsc1.type = "sawtooth";
+    hornOsc1.frequency.setValueAtTime(440, actx.currentTime);
+
+    hornOsc2 = actx.createOscillator();
+    hornOsc2.type = "sawtooth";
+    hornOsc2.frequency.setValueAtTime(554, actx.currentTime);
+
+    const filter = actx.createBiquadFilter();
+    filter.type = "lowpass";
+    filter.frequency.setValueAtTime(1400, actx.currentTime);
+
+    hornOsc1.connect(hornGain);
+    hornOsc2.connect(hornGain);
+    hornGain.connect(filter);
+    filter.connect(actx.destination);
+
+    hornOsc1.start();
+    hornOsc2.start();
+
+    // Ultrasonic Sonar Beep Oscillator (2400Hz)
+    sonarGain = actx.createGain();
+    sonarGain.gain.setValueAtTime(0, actx.currentTime);
+
+    sonarOsc = actx.createOscillator();
+    sonarOsc.type = "sine";
+    sonarOsc.frequency.setValueAtTime(2400, actx.currentTime);
+    sonarOsc.connect(sonarGain);
+    sonarGain.connect(actx.destination);
+    sonarOsc.start();
+
+    // 8-bit Retro Music Synthesizer (Chiptune Square Wave)
+    musicGain = actx.createGain();
+    musicGain.gain.setValueAtTime(0, actx.currentTime);
+
+    musicOsc = actx.createOscillator();
+    musicOsc.type = "square";
+    musicOsc.frequency.setValueAtTime(440, actx.currentTime);
+
+    const mFilter = actx.createBiquadFilter();
+    mFilter.type = "lowpass";
+    mFilter.frequency.setValueAtTime(2400, actx.currentTime);
+
+    musicOsc.connect(mFilter);
+    mFilter.connect(musicGain);
+    musicGain.connect(actx.destination);
+    musicOsc.start();
+  } catch(e) { actx = null; }
 }
-function setLights(m){ showLights(m); send(`L,${m}`); buzz(10); }
+
+function playPhoneHorn(on) {
+  if (!S.phoneBeep) return;
+  initAudio();
+  if (!hornGain || !actx) return;
+  const t = actx.currentTime;
+  if (on) {
+    hornGain.gain.cancelScheduledValues(t);
+    hornGain.gain.setTargetAtTime(0.4, t, 0.02);
+  } else {
+    hornGain.gain.cancelScheduledValues(t);
+    hornGain.gain.setTargetAtTime(0, t, 0.04);
+  }
+}
+
+// Acoustic Horn Interactions
+const horn = $("btnHorn");
+const hornOn = e => {
+  if (e) e.preventDefault();
+  if (songPlaying) playSong(false);
+  horn.classList.add("active");
+  send("H,1");
+  playPhoneHorn(true);
+  buzz([60, 40, 60]);
+};
+const hornOff = () => {
+  if (horn.classList.contains("active")) {
+    horn.classList.remove("active");
+    send("H,0");
+    playPhoneHorn(false);
+  }
+};
+horn.addEventListener("pointerdown", e => { horn.setPointerCapture(e.pointerId); hornOn(e); });
+["pointerup", "pointercancel", "lostpointercapture"].forEach(t => horn.addEventListener(t, hornOff));
+
+// Retro Buzzer Melody Player (Super Mario Bros 8-bit Theme - High Octave)
+const SONG_NOTES = [
+  // Opening fanfare (E6, C6, G6, G5)
+  [1319, 120], [0, 40], [1319, 120], [0, 160], [1319, 120], [0, 160],
+  [1047, 120], [0, 40], [1319, 160], [0, 140], [1568, 240], [0, 200],
+  [784, 240],  [0, 240],
+  // Main theme phrase
+  [1047, 180], [0, 80], [784, 180],  [0, 80], [659, 180],  [0, 80],
+  [880, 160],  [0, 40], [988, 160],  [0, 40], [932, 140],  [0, 40],
+  [880, 160],  [0, 40], [784, 140],  [1319, 140], [1568, 140],
+  [1760, 200], [0, 50], [1397, 140], [1568, 140], [0, 50],
+  [1319, 160], [0, 40], [1047, 140], [1175, 140], [988, 240], [0, 80]
+];
+
+function stopWebSong() {
+  songTimeouts.forEach(t => clearTimeout(t));
+  songTimeouts = [];
+  if (musicGain && actx) {
+    const now = actx.currentTime;
+    musicGain.gain.cancelScheduledValues(now);
+    musicGain.gain.setValueAtTime(0, now);
+  }
+}
+
+function playSong(play) {
+  stopWebSong();
+  songPlaying = play;
+  $("btnSong").classList.toggle("playing", songPlaying);
+  $("songTxt").textContent = songPlaying ? "STOP" : "PLAY SONG";
+  send(`P,${songPlaying ? 1 : 0}`);
+
+  if (songPlaying) {
+    initAudio();
+    buzz(30);
+    toast("PLAYING MARIO THEME 🎵");
+
+    if (actx && musicGain && musicOsc) {
+      let t = actx.currentTime + 0.05;
+      let totalDurMs = 0;
+      SONG_NOTES.forEach(([freq, dur]) => {
+        const sec = dur / 1000;
+        if (freq > 0) {
+          musicOsc.frequency.setValueAtTime(freq, t);
+          musicGain.gain.setValueAtTime(0.2, t);
+          musicGain.gain.setValueAtTime(0.2, t + sec * 0.82);
+          musicGain.gain.setValueAtTime(0, t + sec);
+        } else {
+          musicGain.gain.setValueAtTime(0, t);
+        }
+        t += sec;
+        totalDurMs += dur;
+      });
+
+      const endTid = setTimeout(() => {
+        if (songPlaying) {
+          songPlaying = false;
+          $("btnSong").classList.remove("playing");
+          $("songTxt").textContent = "PLAY SONG";
+          stopWebSong();
+        }
+      }, totalDurMs + 100);
+      songTimeouts.push(endTid);
+    }
+  } else {
+    buzz(15);
+    toast("SONG STOPPED");
+  }
+}
+$("btnSong").onclick = () => playSong(!songPlaying);
+
+// Headlight Beams
+let lightMode = 0;
+const LT_NAMES = ["OFF", "ACTIVE BEAMS", "HAZARD"];
+function showLights(m) {
+  lightMode = m;
+  document.querySelectorAll("#lights button").forEach(b => {
+    const on = +b.dataset.m === m && m > 0;
+    b.classList.toggle("active", on);
+    b.classList.toggle("hz", on && m === 2);
+  });
+  $("tagLt").classList.toggle("hidden", m === 0);
+  $("tagLt").textContent = m === 2 ? "HAZARD" : "BEAMS";
+}
+function setLights(m) { showLights(m); send(`L,${m}`); buzz(10); }
 document.querySelectorAll("#lights button").forEach(b => b.onclick = () => setLights(+b.dataset.m === lightMode && lightMode ? 0 : +b.dataset.m));
 
-// Camera flash LED (on the ESP32-CAM board)
+// High-Intensity Cam Auxiliary LED
 let flashOn = false;
-$("btnFlash").onclick = () => { flashOn = !flashOn; $("btnFlash").classList.toggle("on", flashOn); send(`K,${flashOn ? S.flash : 0}`); buzz(10); };
+$("btnFlash").onclick = () => {
+  flashOn = !flashOn; $("btnFlash").classList.toggle("active", flashOn);
+  send(`K,${flashOn ? S.flash : 0}`); buzz(10);
+};
 
-// Keyboard (for testing on a PC)
+// Keyboard Drive (PC Support)
 const keys = new Set();
-function keyUpdate(){
+function keyUpdate() {
   keyY = (keys.has("w")||keys.has("arrowup") ? 1 : 0) - (keys.has("s")||keys.has("arrowdown") ? 1 : 0);
   keyX = (keys.has("d")||keys.has("arrowright") ? 1 : 0) - (keys.has("a")||keys.has("arrowleft") ? 1 : 0);
   mix();
@@ -448,76 +1309,128 @@ addEventListener("keydown", e => {
   if (k === " ") { if (!e.repeat) hornOn(); e.preventDefault(); return; }
   if (k === "l" && !e.repeat) { setLights(lightMode === 1 ? 0 : 1); return; }
   if (k === "h" && !e.repeat) { setLights(lightMode === 2 ? 0 : 2); return; }
+  if (k === "m" && !e.repeat) { playSong(!songPlaying); return; }
   if (["w","a","s","d","arrowup","arrowdown","arrowleft","arrowright"].includes(k)) { keys.add(k); keyUpdate(); e.preventDefault(); }
 });
 addEventListener("keyup", e => { const k = e.key.toLowerCase(); if (k === " ") hornOff(); keys.delete(k); keyUpdate(); });
-document.addEventListener("visibilitychange", () => { if (document.hidden) { joyX=joyY=keyX=keyY=0; keys.clear(); mix(); send("M,0,0"); hornOff(); } });
+document.addEventListener("visibilitychange", () => {
+  if (document.hidden) { joyX = joyY = keyX = keyY = 0; keys.clear(); mix(); send("M,0,0"); hornOff(); }
+});
 
-/* ================================== Video ================================== */
-const cam = $("cam"); let videoPaused = false, retry = null;
-function noVideo(txt){ $("novTxt").innerHTML = txt; $("novideo").classList.remove("hidden"); }
-function startVideo(){
+/* ================================= Video Engine ================================= */
+const cam = $("cam");
+let videoPaused = false, retry = null;
+function noVideo(txt) { $("novTxt").innerHTML = txt; $("novideo").classList.remove("hidden"); }
+function startVideo() {
   clearTimeout(retry);
-  if (demo) { noVideo("Camera preview<br><small>Demo mode: open the app from the car to see live video</small>"); return; }
-  if (videoPaused) { cam.removeAttribute("src"); noVideo("Video paused"); return; }
+  if (demo) { noVideo("Camera simulation<br><small>Connect phone Wi-Fi to 'RobotCar' for live telemetry</small>"); return; }
+  if (videoPaused) { cam.removeAttribute("src"); noVideo("OPTICAL STREAM PAUSED"); return; }
   cam.src = `http://${host()}:81/stream?t=${Date.now()}`;
 }
-cam.onload = () => $("novideo").classList.add("hidden");
-cam.onerror = () => { if (videoPaused) return; noVideo("No video. Retrying&hellip;"); retry = setTimeout(startVideo, 2000); };
+let frameCount = 0, lastFpsTime = performance.now();
+cam.onload = () => {
+  $("novideo").classList.add("hidden");
+  frameCount++;
+  const now = performance.now();
+  if (now - lastFpsTime >= 1000) {
+    const fps = Math.round((frameCount * 1000) / (now - lastFpsTime));
+    frameCount = 0;
+    lastFpsTime = now;
+    $("opticsMetric").textContent = `${fps} FPS · LIVE`;
+  }
+};
+cam.onerror = () => {
+  if (videoPaused) return;
+  fetch(`http://${host()}/status`)
+    .then(r => r.json())
+    .then(st => {
+      if (!st.camOk || st.framesize === -1) {
+        noVideo("CAMERA HARDWARE NOT DETECTED<br><small>1. Check ribbon cable latch &amp; pin orientation<br>2. Arduino IDE Board: <b>AI Thinker ESP32-CAM</b><br>3. Tools &rarr; PSRAM: <b>Enabled</b></small>");
+        retry = setTimeout(startVideo, 4000);
+      } else {
+        noVideo("CONNECTING STREAM&hellip;");
+        retry = setTimeout(startVideo, 1500);
+      }
+    })
+    .catch(() => {
+      noVideo("RECONNECTING OPTICAL STREAM&hellip;");
+      retry = setTimeout(startVideo, 2500);
+    });
+};
 $("btnPause").onclick = () => {
-  videoPaused = !videoPaused; $("btnPause").querySelector("span").textContent = videoPaused ? "Play" : "Pause";
-  $("btnPause").classList.toggle("on", videoPaused); startVideo();
+  videoPaused = !videoPaused;
+  $("btnPause").querySelector("span").textContent = videoPaused ? "Resume" : "Pause";
+  $("btnPause").classList.toggle("active", videoPaused);
+  startVideo();
 };
 $("btnSnap").onclick = () => {
-  if (demo) return toast("Photo works when connected to the car");
+  if (demo) return toast("Photo requires active rover link");
   const a = document.createElement("a");
-  a.href = `http://${host()}/capture?t=${Date.now()}`; a.target = "_blank"; a.rel = "noopener"; a.click();
+  a.href = `http://${host()}/capture?t=${Date.now()}`;
+  a.target = "_blank"; a.rel = "noopener"; a.click();
+};
+$("btnFull").onclick = async () => {
+  try {
+    if (!document.fullscreenElement) {
+      await document.documentElement.requestFullscreen();
+      try { await screen.orientation.lock("landscape"); } catch(e){}
+    } else await document.exitFullscreen();
+  } catch(e) { toast("Fullscreen mode active"); }
 };
 
-/* ============================== Sensor + alarm ============================== */
+/* ============================== Spatial Sonar Radar ============================== */
 let dist = 0, angle = 90, flags = 0, lastData = 0, servoSeen = -1e9;
 const blips = [], parkBars = [];
-(function(){ const p = $("park"); for (let i = 0; i < 8; i++) { const s = document.createElement("span"); s.style.height = (8 + i*3) + "px"; p.appendChild(s); parkBars.push(s); }
-  const t = document.createElement("span"); t.className = "txt"; t.id = "parkTxt"; p.appendChild(t); })();
+(function(){
+  const p = $("proximityBars");
+  for (let i = 0; i < 8; i++) {
+    const s = document.createElement("span");
+    s.style.height = (4 + i*2) + "px";
+    p.appendChild(s);
+    parkBars.push(s);
+  }
+})();
 
-function zoneOf(d){
-  if (!d) return { name:"CLEAR", hex:"#22c55e", lvl:0 };
-  if (d <= S.stop + 5) return { name:"STOP", hex:"#ef4444", lvl:3 };
-  if (d < S.warn * 0.5) return { name:"WARNING", hex:"#ef4444", lvl:2 };
-  if (d < S.warn) return { name:"CAUTION", hex:"#f59e0b", lvl:1 };
-  return { name:"CLEAR", hex:"#22c55e", lvl:0 };
+function zoneOf(d) {
+  if (!d) return { name: "CLEAR", hex: "var(--success)", lvl: 0 };
+  if (d <= S.stop + 5) return { name: "STOP", hex: "var(--danger)", lvl: 3 };
+  if (d < S.warn * 0.5) return { name: "WARN", hex: "var(--danger)", lvl: 2 };
+  if (d < S.warn) return { name: "CAUTION", hex: "var(--warning)", lvl: 1 };
+  return { name: "CLEAR", hex: "var(--success)", lvl: 0 };
 }
 
-function onSensor(a, d, f){
+function onSensor(a, d, f) {
   angle = a; dist = d; flags = f; lastData = performance.now();
   if (a !== 90) servoSeen = lastData;
-  blips.push({ a, d, t: lastData }); if (blips.length > 120) blips.shift();
+  blips.push({ a, d, t: lastData });
+  if (blips.length > 100) blips.shift();
+
   const z = zoneOf(d);
-  $("distNum").innerHTML = (d ? d : "&gt;400") + "<small>cm</small>"; $("distNum").style.color = z.hex;
-  const zEl = $("zone"); zEl.textContent = z.name; zEl.style.background = z.hex; zEl.style.color = "#0b0f14";
+  $("distNum").innerHTML = (d ? d : "&gt;400") + "<small>cm</small>";
+  $("distNum").style.color = z.lvl > 0 ? z.hex : "var(--text)";
+  const zEl = $("zone");
+  zEl.textContent = z.name;
+  zEl.style.color = z.lvl > 0 ? "#fff" : "var(--text-muted)";
+  zEl.style.background = z.lvl > 0 ? z.hex : "var(--border)";
+
   const reversing = !!(f & 1), alarm = !!(f & 2), blocked = !!(f & 4);
   $("tagRev").classList.toggle("hidden", !reversing);
   $("tagBrk").classList.toggle("hidden", !blocked);
+
   const hud = $("hud");
   hud.classList.toggle("danger", blocked || (alarm && z.lvl === 3));
   hud.classList.toggle("alarm", alarm && !hud.classList.contains("danger"));
+
   const frac = d ? Math.max(0, Math.min(1, 1 - (d - S.stop) / (S.warn - S.stop))) : 0;
   const lit = d && d < S.warn ? Math.ceil(frac * 8) : 0;
-  parkBars.forEach((s, i) => s.style.background = i < lit ? (i < 3 ? "#22c55e" : i < 6 ? "#f59e0b" : "#ef4444") : "#2a3442");
-  $("parkTxt").textContent = d ? d + " cm" : "clear";
+  parkBars.forEach((s, i) => {
+    s.style.background = i < lit ? (i < 3 ? "var(--success)" : i < 6 ? "var(--warning)" : "var(--danger)") : "rgba(255,255,255,0.25)";
+  });
+  $("parkTxt").textContent = d ? d + " cm" : "CLEAR";
   alarmNow = alarm; alarmDist = d;
 }
 
-/* Phone beep + vibration (same rhythm as the car buzzer) */
-let actx = null, gain = null, beepState = false, alarmNow = false, alarmDist = 0;
-function unlockAudio(){
-  if (actx || !S.phoneBeep) return;
-  try {
-    actx = new (window.AudioContext || window.webkitAudioContext)();
-    const osc = actx.createOscillator(); gain = actx.createGain(); osc.frequency.value = 2200; gain.gain.value = 0;
-    osc.connect(gain).connect(actx.destination); osc.start();
-  } catch(e) { actx = null; }
-}
+// Proximity Sound & Chime
 setInterval(() => {
   let on = false;
   if (alarmNow && alarmDist && performance.now() - lastData < 800) {
@@ -530,127 +1443,156 @@ setInterval(() => {
   }
   if (on !== beepState) {
     beepState = on;
-    if (gain && S.phoneBeep) gain.gain.setTargetAtTime(on ? 0.15 : 0, actx.currentTime, 0.005);
-    if (on && S.vibe && navigator.vibrate) navigator.vibrate(alarmDist <= S.stop + 5 ? 200 : 40);
+    if (sonarGain && S.phoneBeep) {
+      const t = actx ? actx.currentTime : 0;
+      sonarGain.gain.setTargetAtTime(on ? 0.2 : 0, t, 0.005);
+    }
+    if (on && S.vibe && navigator.vibrate) navigator.vibrate(alarmDist <= S.stop + 5 ? 180 : 35);
   }
 }, 20);
 
-/* ================================== Radar ================================== */
+/* Radar Canvas Renderer */
 const cv = $("radar"), g = cv.getContext("2d");
-function drawRadar(){
-  const dpr = window.devicePixelRatio || 1, W = cv.clientWidth, H = cv.clientHeight;
+function drawRadar() {
+  const dpr = window.devicePixelRatio || 1;
+  const W = cv.clientWidth, H = cv.clientHeight;
   if (!W || !H) return requestAnimationFrame(drawRadar);
-  if (cv.width !== Math.round(W*dpr) || cv.height !== Math.round(H*dpr)) { cv.width = Math.round(W*dpr); cv.height = Math.round(H*dpr); }
-  g.setTransform(dpr, 0, 0, dpr, 0, 0); g.clearRect(0, 0, W, H);
-  const cx = W/2, R = Math.max(20, Math.min(W/2 - 10, H - 30)), cy = Math.min(H - 14, H/2 + R/2 + 4);
+  if (cv.width !== Math.round(W * dpr) || cv.height !== Math.round(H * dpr)) {
+    cv.width = Math.round(W * dpr);
+    cv.height = Math.round(H * dpr);
+  }
+  g.setTransform(dpr, 0, 0, dpr, 0, 0);
+  g.clearRect(0, 0, W, H);
+
+  const cx = W / 2, R = Math.max(16, Math.min(W / 2 - 8, H - 16)), cy = Math.min(H - 6, H / 2 + R / 2 + 2);
   const range = +S.range, now = performance.now(), rad = a => a * Math.PI / 180;
-  const pt = (a, d) => [cx + Math.cos(rad(a)) * d/range*R, cy - Math.sin(rad(a)) * d/range*R];
-  const servo = now - servoSeen < 3000;
-  $("radarMode").textContent = servo ? "scanning" : "fixed sensor";
-  const wedge = (r0, r1, a0, a1, fill) => { g.beginPath(); g.arc(cx, cy, r1, -rad(a1), -rad(a0)); g.arc(cx, cy, r0, -rad(a0), -rad(a1), true); g.closePath(); g.fillStyle = fill; g.fill(); };
-  const rr = v => Math.min(R, v/range*R);
-  wedge(0, R, 0, 180, "#0b1a16");
-  wedge(rr(S.warn*0.5), rr(S.warn), 0, 180, "rgba(245,158,11,.10)");
-  wedge(rr(S.stop+5), rr(S.warn*0.5), 0, 180, "rgba(239,68,68,.10)");
-  wedge(0, rr(S.stop+5), 0, 180, "rgba(239,68,68,.25)");
-  g.strokeStyle = "rgba(34,197,94,.28)"; g.lineWidth = 1; g.fillStyle = "rgba(138,155,176,.9)"; g.font = "10px system-ui"; g.textAlign = "center";
+  const pt = (a, d) => [cx + Math.cos(rad(a)) * d / range * R, cy - Math.sin(rad(a)) * d / range * R];
+  const isLight = document.documentElement.getAttribute("data-theme") === "light";
+
+  // Polar Background
+  g.beginPath();
+  g.arc(cx, cy, R, 0, Math.PI, true);
+  g.fillStyle = isLight ? "#f1f5f9" : "#0d141f";
+  g.fill();
+
+  // Range rings
+  g.strokeStyle = isLight ? "rgba(148, 163, 184, 0.3)" : "rgba(6, 182, 212, 0.25)";
+  g.lineWidth = 1;
+  g.fillStyle = isLight ? "rgba(100, 116, 139, 0.8)" : "rgba(148, 163, 184, 0.8)";
+  g.font = `8px ${getComputedStyle(document.body).getPropertyValue('--mono')}`;
+  g.textAlign = "center";
+
   const step = range <= 100 ? 25 : 50;
   for (let d = step; d <= range; d += step) {
-    g.beginPath(); g.arc(cx, cy, d/range*R, Math.PI, 2*Math.PI); g.stroke();
-    if ((d % (step*2) === 0 || range <= 100) && d/range*R > 30) g.fillText(d >= 100 ? (d/100) + "m" : d + "", cx + d/range*R - 10, cy + 11);
+    g.beginPath();
+    g.arc(cx, cy, d / range * R, Math.PI, 2 * Math.PI);
+    g.stroke();
   }
-  for (let a = 0; a <= 180; a += 30) { const [x, y] = pt(a, range); g.beginPath(); g.moveTo(cx, cy); g.lineTo(x, y); g.stroke(); }
+
+  // Radial azimuth spokes
+  for (let a = 0; a <= 180; a += 45) {
+    const [x, y] = pt(a, range);
+    g.beginPath(); g.moveTo(cx, cy); g.lineTo(x, y); g.stroke();
+  }
+
+  // Blips & Target Overlay
   const fresh = now - lastData < 1000;
-  if (servo) {
-    const [x, y] = pt(angle, range); const grd = g.createLinearGradient(cx, cy, x, y);
-    grd.addColorStop(0, "rgba(34,197,94,.9)"); grd.addColorStop(1, "rgba(34,197,94,.1)");
-    g.strokeStyle = grd; g.lineWidth = 2; g.beginPath(); g.moveTo(cx, cy); g.lineTo(x, y); g.stroke();
-    for (const b of blips) { const age = (now - b.t) / 3000; if (age > 1 || !b.d || b.d > range) continue;
-      const [bx, by] = pt(b.a, b.d); g.globalAlpha = 1 - age; g.fillStyle = zoneOf(b.d).hex; g.beginPath(); g.arc(bx, by, 5, 0, 2*Math.PI); g.fill(); }
-    g.globalAlpha = 1;
-  } else {
-    wedge(0, R, 75, 105, `rgba(34,211,238,${0.10 + 0.06 * Math.sin(now / 300)})`);
-    for (const b of blips) { const age = (now - b.t) / 1500; if (age > 1 || !b.d || b.d > range) continue;
-      g.globalAlpha = (1 - age) * 0.35; g.strokeStyle = zoneOf(b.d).hex; g.lineWidth = 3; g.beginPath(); g.arc(cx, cy, b.d/range*R, -rad(105), -rad(75)); g.stroke(); }
-    g.globalAlpha = 1;
-    if (fresh && dist && dist <= range) {
-      const z = zoneOf(dist), r = dist/range*R;
-      g.strokeStyle = z.hex; g.lineWidth = 6; g.lineCap = "round"; g.shadowColor = z.hex; g.shadowBlur = 14;
-      g.beginPath(); g.arc(cx, cy, r, -rad(105), -rad(75)); g.stroke(); g.shadowBlur = 0; g.lineCap = "butt";
-    }
+  if (fresh && dist && dist <= range) {
+    const z = zoneOf(dist);
+    g.strokeStyle = z.hex === "var(--success)" ? "#10b981" : z.hex === "var(--warning)" ? "#f59e0b" : "#ef4444";
+    g.lineWidth = 4;
+    g.lineCap = "round";
+    g.beginPath();
+    g.arc(cx, cy, dist / range * R, -rad(105), -rad(75));
+    g.stroke();
   }
-  g.fillStyle = "#1f2937"; g.strokeStyle = "#22d3ee"; g.lineWidth = 1.5;
-  g.beginPath(); g.roundRect ? g.roundRect(cx - 20, cy - 4, 40, 14, 4) : g.rect(cx - 20, cy - 4, 40, 14); g.fill(); g.stroke();
-  g.fillStyle = "#ef4444"; g.fillRect(cx - 17, cy - 2, 6, 3); g.fillRect(cx + 11, cy - 2, 6, 3);
-  if (!fresh) { g.fillStyle = "rgba(7,11,17,.6)"; g.fillRect(0, 0, W, H); g.fillStyle = "#8a9bb0"; g.textAlign = "center"; g.font = "12px system-ui"; g.fillText(demo || wsOk ? "waiting for sensor…" : "not connected", W/2, H/2); }
+
+  // Rover base marker
+  g.fillStyle = isLight ? "#cbd5e1" : "#1e293b";
+  g.strokeStyle = isLight ? "#64748b" : "#06b6d4";
+  g.lineWidth = 1.5;
+  g.beginPath();
+  g.roundRect ? g.roundRect(cx - 14, cy - 3, 28, 8, 2) : g.rect(cx - 14, cy - 3, 28, 8);
+  g.fill(); g.stroke();
+
   requestAnimationFrame(drawRadar);
 }
 requestAnimationFrame(drawRadar);
 
-/* ================================ Settings UI ================================ */
-function bind(id, key, type, label, fmt, after){
+/* ============================== Settings UI Bindings ============================== */
+function bind(id, key, type, label, fmt, after) {
   const el = $(id);
-  if (type === "check") el.checked = !!S[key]; else el.value = S[key];
+  if (!el) return;
+  if (type === "check") el.checked = !!S[key];
+  else el.value = S[key];
   const show = () => label && ($(label).textContent = fmt ? fmt(S[key]) : S[key]);
   show();
   el.addEventListener(type === "range" ? "input" : "change", () => {
-    const v = el.value.trim();
+    const v = el.value.trim ? el.value.trim() : el.value;
     S[key] = type === "check" ? el.checked : (type === "text" || isNaN(+v) ? v : +v);
     show(); save(); after && after();
   });
 }
-const cfgChanged = () => { if (S.stop + 10 > S.warn) { S.warn = S.stop + 10; $("sWarn").value = S.warn; $("warnVal").textContent = S.warn + " cm"; } sendConfig(); };
-bind("sWarn","warn","range","warnVal", v => v + " cm", cfgChanged);
-bind("sStop","stop","range","stopVal", v => v + " cm", cfgChanged);
-bind("sBrake","brake","check",null,null,cfgChanged);
-bind("sAlways","always","check",null,null,cfgChanged);
-bind("sMute","mute","check",null,null,cfgChanged);
-bind("sPhoneBeep","phoneBeep","check",null,null,() => { if (S.phoneBeep) unlockAudio(); });
-bind("sVibe","vibe","check");
-bind("sMode","mode","select",null,null,applyMode);
-bind("sSpeed","speed","range","spdVal", v => v + "%", () => { showSpeed(); mix(); });
-bind("sTurn","turn","range","turnVal", v => v + "%");
-bind("sFlash","flash","range","flashVal", v => Math.round(v/2.55) + "%", () => flashOn && send(`K,${S.flash}`));
-bind("sRes","res","select",null,null,() => send(`F,${S.res}`));
-bind("sQual","qual","range","qVal",null,() => send(`Q,${S.qual}`));
-bind("sVflip","vflip","check",null,null,() => send(`V,${S.vflip?1:0}`));
-bind("sMirror","mirror","check",null,null,() => send(`X,${S.mirror?1:0}`));
-bind("sRange","range","select");
-bind("sHost","host","text",null,null,() => { try { ws && ws.close(); } catch(e){} startVideo(); });
+
+const cfgChanged = () => {
+  if (S.stop + 10 > S.warn) {
+    S.warn = S.stop + 10;
+    $("sWarn").value = S.warn;
+    $("warnVal").textContent = S.warn + " cm";
+  }
+  sendConfig();
+};
+
+bind("sInvertDrive", "invertDrive", "check", null, null, () => { mix(); cfgChanged(); });
+bind("sInvertSteer", "invertSteer", "check", null, null, () => { mix(); });
+bind("sSwapMotors", "swapMotors", "check", null, null, () => { mix(); });
+bind("sWarn", "warn", "range", "warnVal", v => v + " cm", cfgChanged);
+bind("sStop", "stop", "range", "stopVal", v => v + " cm", cfgChanged);
+bind("sBrake", "brake", "check", null, null, cfgChanged);
+bind("sAlways", "always", "check", null, null, cfgChanged);
+bind("sMute", "mute", "check", null, null, cfgChanged);
+bind("sPhoneBeep", "phoneBeep", "check", null, null, () => { if (S.phoneBeep) initAudio(); });
+bind("sVibe", "vibe", "check");
+bind("sMode", "mode", "select", null, null, applyMode);
+bind("sSpeed", "speed", "range", "spdVal", v => v + "%", () => { showSpeed(); mix(); });
+bind("sTurn", "turn", "range", "turnVal", v => v + "%");
+bind("sFlash", "flash", "range", "flashVal", v => Math.round(v/2.55) + "%", () => flashOn && send(`K,${S.flash}`));
+bind("sRes", "res", "select", null, null, () => { localStorage.setItem("rcResManuallySet", "1"); send(`F,${S.res}`); });
+bind("sQual", "qual", "range", "qVal", null, () => send(`Q,${S.qual}`));
+bind("sVflip", "vflip", "check", null, null, () => send(`V,${S.vflip?1:0}`));
+bind("sMirror", "mirror", "check", null, null, () => send(`X,${S.mirror?1:0}`));
+bind("sRange", "range", "select");
+bind("sHost", "host", "text", null, null, () => { try { ws && ws.close(); } catch(e){} startVideo(); });
 $("sHost").disabled = servedByCar;
-$("viewUrl").textContent = `http://${host()}/view`;
-if (demo) {  }
 
-function applyMode(){ $("stick").classList.toggle("hidden", S.mode !== "joy"); $("dpad").classList.toggle("hidden", S.mode === "joy"); }
-applyMode(); showSpeed(); showLights(0);
+function applyMode() {
+  $("stick").classList.toggle("hidden", S.mode !== "joy");
+  $("dpad").classList.toggle("hidden", S.mode === "joy");
+}
+applyMode();
+showSpeed();
+showLights(0);
 
-const openSet = o => document.body.classList.toggle("set-open", o);
+const openSet = o => document.body.classList.toggle("sheet-open", o);
 $("btnSet").onclick = () => openSet(true);
 $("btnClose").onclick = $("scrim").onclick = () => openSet(false);
-$("btnFull").onclick = async () => {
-  try {
-    if (!document.fullscreenElement) { await document.documentElement.requestFullscreen(); try { await screen.orientation.lock("landscape"); } catch(e){} }
-    else await document.exitFullscreen();
-  } catch(e) { toast("Full screen not supported here: use “Add to Home screen”"); }
-};
-const intro = o => $("intro").classList.toggle("hidden", !o);
-$("btnGo").onclick = () => { S.intro = true; save(); intro(false); unlockAudio(); };
-$("btnIntro").onclick = () => { openSet(false); intro(true); };
-if (!S.intro && !/[?&]nointro/.test(location.search)) intro(true);
 
-/* =================================== Demo =================================== */
+/* Demo Mode */
 let demoT = 0;
-function demoTick(){
+function demoTick() {
   demoT += 0.1;
-  const rev = (outL + outR) / 2 < -20;
+  const rev = S.invertDrive ? ((outL + outR) / 2 > 20) : ((outL + outR) / 2 < -20);
   const d = Math.max(8, Math.round(120 + 100 * Math.sin(demoT / 3)));
-  const blocked = S.brake && rev && d <= S.stop, alarm = (rev || S.always) && d < S.warn;
-  onSensor(90, d, (rev?1:0) | (alarm?2:0) | (blocked?4:0));
+  const blocked = S.brake && rev && d <= S.stop;
+  const alarm = (rev || S.always) && d < S.warn;
+  onSensor(90, d, (rev ? 1 : 0) | (alarm ? 2 : 0) | (blocked ? 4 : 0));
 }
 if (demo) {
   $("tagDemo").classList.remove("hidden");
-  setChip("chWs", "warn", "demo mode"); setChip("chCar", "", "simulated");
+  setChip("chWs", "warn", "SIMULATOR ACTIVE");
+  setChip("chCar", "", "STANDBY");
 }
+
 startVideo();
 connect();
 })();
