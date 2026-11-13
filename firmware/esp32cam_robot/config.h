@@ -31,12 +31,12 @@
 #define HEARTBEAT_MS      150   // how often the last command is re-sent to the UNO
 
 // ---------------------------------------------------------------- Camera ----
-// FRAMESIZE_QVGA (320x240) is smooth, FRAMESIZE_VGA (640x480) is sharper
-#define CAM_FRAMESIZE   FRAMESIZE_VGA
-#define CAM_QUALITY     12      // 10 (best) .. 63 (worst). 10-15 is good.
+// FRAMESIZE_QVGA (320x240) provides high frame rate (25-30 FPS) on all sensors
+#define CAM_FRAMESIZE   FRAMESIZE_QVGA
+#define CAM_QUALITY     12      // 10 (best) .. 63 (worst). 10-15 is good for OV2640.
 #define CAM_VFLIP       0       // set 1 if the image is upside down
 #define CAM_HMIRROR     0
 
 // Only if the board keeps rebooting with "Brownout detector was triggered"
 // AND you cannot fix the power supply yet. Fixing the power is the real cure.
-#define DISABLE_BROWNOUT 0
+#define DISABLE_BROWNOUT 1

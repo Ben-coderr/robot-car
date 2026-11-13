@@ -24,6 +24,8 @@
 #include <ESPmDNS.h>
 #include "esp_camera.h"
 #include "esp_http_server.h"
+#include <lwip/sockets.h>
+#include <netinet/tcp.h>
 #include "soc/soc.h"
 #include "soc/rtc_cntl_reg.h"
 
@@ -44,8 +46,10 @@ static volatile uint32_t lastDriveMs = 0;
 static volatile bool     driveDirty = false;
 static volatile int8_t   hornState = 0;
 static volatile bool     hornDirty = false;
+static volatile int8_t   songState = 0;
+static volatile bool     songDirty = false;
 static volatile bool     cfgDirty  = false;
-static volatile int      cfgWarn = 100, cfgStop = 15, cfgBrake = 1, cfgAlways = 0, cfgMute = 0;
+static volatile int      cfgWarn = 100, cfgStop = 15, cfgBrake = 1, cfgAlways = 0, cfgMute = 0, cfgInvertDrive = 0;
 static volatile uint8_t  camFlash = 0;     // white flash LED on the ESP32-CAM (0-255)
 static volatile uint8_t  lightMode = 0;    // car headlights on the UNO: 0 off, 1 on, 2 hazard
 static volatile bool     lightDirty = false;
@@ -83,6 +87,10 @@ static void flashInit() {
 }
 
 // =========================================================== camera =======
+static bool cameraOk = false;
+static bool isSoftwareSensor = false;
+static uint8_t softwareJpgQuality = 55; // Fast software JPEG (50-60 is 3x faster than 80, sharp image & high FPS)
+
 static bool cameraInit() {
   camera_config_t c = {};
   c.ledc_channel = LEDC_CHANNEL_0;
@@ -104,9 +112,9 @@ static bool cameraInit() {
   if (psramFound()) {
     c.frame_size   = CAM_FRAMESIZE;
     c.jpeg_quality = CAM_QUALITY;
-    c.fb_count     = 3;                    // 3 buffers: phone and PC can both watch
+    c.fb_count     = 2;
     c.fb_location  = CAMERA_FB_IN_PSRAM;
-    c.grab_mode    = CAMERA_GRAB_LATEST;   // always send the newest frame = low lag
+    c.grab_mode    = CAMERA_GRAB_LATEST;
   } else {
     c.frame_size   = FRAMESIZE_QVGA;
     c.jpeg_quality = 15;
@@ -115,42 +123,134 @@ static bool cameraInit() {
     c.grab_mode    = CAMERA_GRAB_WHEN_EMPTY;
   }
 
+  // Attempt 1: Standard hardware JPEG (OV2640, OV3660, OV5640)
   esp_err_t err = esp_camera_init(&c);
+
+  // Attempt 2: If JPEG returned 0x106 (ESP_ERR_NOT_SUPPORTED), the sensor is a non-JPEG
+  // model (e.g. GC2145, OV7670, GC0308). Switch to RGB565 with PSRAM double-buffering at 20MHz!
+  if (err != ESP_OK) {
+    Serial.printf("Camera init (JPEG) returned 0x%x. Retrying with RGB565 at 20MHz...\n", err);
+    esp_camera_deinit();
+    delay(50);
+    c.pixel_format = PIXFORMAT_RGB565;
+    c.frame_size   = FRAMESIZE_QVGA;
+    if (psramFound()) {
+      c.fb_count    = 2;
+      c.fb_location = CAMERA_FB_IN_PSRAM;
+      c.grab_mode   = CAMERA_GRAB_LATEST;
+    } else {
+      c.fb_count    = 1;
+      c.fb_location = CAMERA_FB_IN_DRAM;
+      c.grab_mode   = CAMERA_GRAB_WHEN_EMPTY;
+    }
+    c.xclk_freq_hz = 20000000;
+    err = esp_camera_init(&c);
+  }
+
+  // Attempt 3: If 20MHz RGB565 failed, try 16MHz
+  if (err != ESP_OK) {
+    Serial.printf("Camera init (20MHz) returned 0x%x. Retrying at 16MHz...\n", err);
+    esp_camera_deinit();
+    delay(50);
+    c.xclk_freq_hz = 16000000;
+    err = esp_camera_init(&c);
+  }
+
+  // Attempt 4: Fallback to 10MHz
+  if (err != ESP_OK) {
+    Serial.printf("Camera init (16MHz) returned 0x%x. Retrying at 10MHz...\n", err);
+    esp_camera_deinit();
+    delay(50);
+    c.xclk_freq_hz = 10000000;
+    err = esp_camera_init(&c);
+  }
+
   if (err != ESP_OK) {
     Serial.printf("Camera init FAILED 0x%x (check ribbon cable / board type)\n", err);
+    cameraOk = false;
     return false;
   }
+
   sensor_t *s = esp_camera_sensor_get();
-  s->set_vflip(s, CAM_VFLIP);
-  s->set_hmirror(s, CAM_HMIRROR);
+  if (s) {
+    Serial.printf("Camera sensor detected! PID: 0x%02X\n", s->id.PID);
+    // Identify if sensor requires software JPEG encoding (GC2145, OV7670, GC0308)
+    isSoftwareSensor = (s->id.PID == 0x2145 || s->id.PID == 0x76 || s->id.PID == 0x9b || s->id.PID == 0x232a);
+    if (isSoftwareSensor) {
+      Serial.println("Non-JPEG sensor: using hardware double-buffer + accelerated software JPEG");
+      s->set_framesize(s, FRAMESIZE_QVGA); // QVGA (320x240) ensures smooth 25-30 FPS!
+    }
+    s->set_vflip(s, CAM_VFLIP);
+    s->set_hmirror(s, CAM_HMIRROR);
+  }
+  cameraOk = true;
   return true;
 }
 
 // ======================================================= video stream =====
 #define PART_BOUNDARY "123456789000000000000987654321"
 static const char *STREAM_CONTENT_TYPE = "multipart/x-mixed-replace;boundary=" PART_BOUNDARY;
-static const char *STREAM_BOUNDARY     = "\r\n--" PART_BOUNDARY "\r\n";
-static const char *STREAM_PART         = "Content-Type: image/jpeg\r\nContent-Length: %u\r\n\r\n";
 
 static volatile int streamViewers = 0;
 
 static esp_err_t streamLoop(httpd_req_t *req) {
-  char partHdr[64];
+  if (!cameraOk) {
+    httpd_resp_send_err(req, HTTPD_500_INTERNAL_SERVER_ERROR, "Camera not initialized");
+    return ESP_FAIL;
+  }
+
+  // Optimize TCP socket for immediate streaming flush without Nagle buffering
+  int sockfd = httpd_req_to_sockfd(req);
+  if (sockfd >= 0) {
+    int nodelay = 1;
+    setsockopt(sockfd, IPPROTO_TCP, TCP_NODELAY, &nodelay, sizeof(nodelay));
+  }
+
+  char partHdr[128];
   esp_err_t res = httpd_resp_set_type(req, STREAM_CONTENT_TYPE);
   if (res != ESP_OK) return res;
   httpd_resp_set_hdr(req, "Access-Control-Allow-Origin", "*");
-  httpd_resp_set_hdr(req, "Cache-Control", "no-cache");
+  httpd_resp_set_hdr(req, "Cache-Control", "no-cache, no-store, must-revalidate");
+  httpd_resp_set_hdr(req, "Pragma", "no-cache");
 
   while (true) {
     camera_fb_t *fb = esp_camera_fb_get();
     if (!fb) { Serial.println("Frame capture failed"); res = ESP_FAIL; break; }
 
-    size_t hlen = snprintf(partHdr, sizeof(partHdr), STREAM_PART, fb->len);
-    res = httpd_resp_send_chunk(req, STREAM_BOUNDARY, strlen(STREAM_BOUNDARY));
-    if (res == ESP_OK) res = httpd_resp_send_chunk(req, partHdr, hlen);
-    if (res == ESP_OK) res = httpd_resp_send_chunk(req, (const char *)fb->buf, fb->len);
+    uint8_t *jpg_buf = NULL;
+    size_t jpg_len = 0;
+    bool free_jpg = false;
+
+    if (fb->format == PIXFORMAT_JPEG) {
+      jpg_buf = fb->buf;
+      jpg_len = fb->len;
+    } else {
+      // Fast software conversion: softwareJpgQuality = 55 (3x-4x faster than 80, ~7KB JPEGs)
+      bool converted = frame2jpg(fb, softwareJpgQuality, &jpg_buf, &jpg_len);
+      free_jpg = true;
+      if (!converted || !jpg_buf) {
+        esp_camera_fb_return(fb);
+        vTaskDelay(pdMS_TO_TICKS(5));
+        continue;
+      }
+    }
+
+    // Combine boundary and part header in one single chunk to cut TCP packets in half
+    size_t hlen = snprintf(partHdr, sizeof(partHdr),
+                           "\r\n--" PART_BOUNDARY "\r\nContent-Type: image/jpeg\r\nContent-Length: %u\r\n\r\n",
+                           (unsigned)jpg_len);
+    res = httpd_resp_send_chunk(req, partHdr, hlen);
+    if (res == ESP_OK) {
+      res = httpd_resp_send_chunk(req, (const char *)jpg_buf, jpg_len);
+    }
+
+    if (free_jpg && jpg_buf) free(jpg_buf);
     esp_camera_fb_return(fb);
+
     if (res != ESP_OK) break;               // viewer closed the stream
+
+    // Minimal task yield to let networking & WebSocket process without wasting frame time
+    vTaskDelay(pdMS_TO_TICKS(1));
   }
   return res;
 }
@@ -170,7 +270,8 @@ static esp_err_t streamHandler(httpd_req_t *req) {
   httpd_req_t *copy = NULL;
   if (httpd_req_async_handler_begin(req, &copy) != ESP_OK) return streamLoop(req);
   streamViewers++;
-  if (xTaskCreate(streamTask, "stream", 4096, copy, 5, NULL) != pdPASS) {
+  // Pin stream task to Core 1 with 8KB stack so it runs on a dedicated 240MHz core parallel to WiFi on Core 0
+  if (xTaskCreatePinnedToCore(streamTask, "stream", 8192, copy, 5, NULL, 1) != pdPASS) {
     streamViewers--;
     httpd_req_async_handler_complete(copy);
     return ESP_FAIL;
@@ -183,12 +284,33 @@ static esp_err_t streamHandler(httpd_req_t *req) { return streamLoop(req); }
 #endif
 
 static esp_err_t captureHandler(httpd_req_t *req) {
+  if (!cameraOk) { httpd_resp_send_err(req, HTTPD_500_INTERNAL_SERVER_ERROR, "Camera not initialized"); return ESP_FAIL; }
   camera_fb_t *fb = esp_camera_fb_get();
   if (!fb) { httpd_resp_send_500(req); return ESP_FAIL; }
+
+  uint8_t *jpg_buf = NULL;
+  size_t jpg_len = 0;
+  bool free_jpg = false;
+
+  if (fb->format == PIXFORMAT_JPEG) {
+    jpg_buf = fb->buf;
+    jpg_len = fb->len;
+  } else {
+    bool converted = frame2jpg(fb, 80, &jpg_buf, &jpg_len);
+    free_jpg = true;
+    if (!converted || !jpg_buf) {
+      esp_camera_fb_return(fb);
+      httpd_resp_send_500(req);
+      return ESP_FAIL;
+    }
+  }
+
   httpd_resp_set_type(req, "image/jpeg");
   httpd_resp_set_hdr(req, "Content-Disposition", "inline; filename=robotcar.jpg");
   httpd_resp_set_hdr(req, "Access-Control-Allow-Origin", "*");
-  esp_err_t res = httpd_resp_send(req, (const char *)fb->buf, fb->len);
+  esp_err_t res = httpd_resp_send(req, (const char *)jpg_buf, jpg_len);
+
+  if (free_jpg && jpg_buf) free(jpg_buf);
   esp_camera_fb_return(fb);
   return res;
 }
@@ -198,8 +320,20 @@ static void cameraSet(char cmd, int v) {
   sensor_t *s = esp_camera_sensor_get();
   if (!s) return;
   switch (cmd) {
-    case 'F': if (v >= FRAMESIZE_QQVGA && v <= FRAMESIZE_UXGA) s->set_framesize(s, (framesize_t)v); break;
-    case 'Q': s->set_quality(s, constrain(v, 10, 63)); break;
+    case 'F':
+      if (v >= FRAMESIZE_QQVGA && v <= FRAMESIZE_UXGA) {
+        // For non-JPEG sensors, prevent choosing sizes larger than CIF (400x296) to keep frame rate high
+        if (isSoftwareSensor && v > FRAMESIZE_CIF) v = FRAMESIZE_QVGA;
+        s->set_framesize(s, (framesize_t)v);
+      }
+      break;
+    case 'Q':
+      if (isSoftwareSensor) {
+        softwareJpgQuality = constrain(v, 25, 85);
+      } else {
+        s->set_quality(s, constrain(v, 10, 63));
+      }
+      break;
     case 'V': s->set_vflip(s, v ? 1 : 0); break;
     case 'X': s->set_hmirror(s, v ? 1 : 0); break;
     case 'B': s->set_brightness(s, constrain(v, -2, 2)); break;
@@ -210,10 +344,10 @@ static void cameraSet(char cmd, int v) {
 // Parse one text message from the phone (see docs/05_PROTOCOL.md)
 static void handlePhoneMessage(char *msg) {
   char cmd = msg[0];
-  int a[5] = {0, 0, 0, 0, 0};
+  int a[6] = {0, 0, 0, 0, 0, 0};
   int n = 0;
   char *p = strchr(msg, ',');
-  while (p && n < 5) { a[n++] = atoi(p + 1); p = strchr(p + 1, ','); }
+  while (p && n < 6) { a[n++] = atoi(p + 1); p = strchr(p + 1, ','); }
 
   switch (cmd) {
     case 'M':
@@ -225,14 +359,20 @@ static void handlePhoneMessage(char *msg) {
       break;
     case 'S':
       driveL = driveR = 0; lastDriveMs = millis(); driveDirty = true;
+      songState = 0; songDirty = true;
       break;
     case 'H':
       hornState = (n >= 1 && a[0]) ? 1 : 0; hornDirty = true;
+      if (hornState) { songState = 0; songDirty = true; }
       lastDriveMs = millis();
+      break;
+    case 'P':                               // play song / melody on the buzzer
+      songState = (n >= 1 && a[0]) ? 1 : 0; songDirty = true;
       break;
     case 'C':
       if (n < 5) return;
       cfgWarn = a[0]; cfgStop = a[1]; cfgBrake = a[2]; cfgAlways = a[3]; cfgMute = a[4];
+      if (n >= 6) cfgInvertDrive = a[5];
       cfgDirty = true;
       break;
     case 'L':                               // car headlights (on the UNO)
@@ -345,14 +485,15 @@ static esp_err_t viewHandler(httpd_req_t *req) {
 }
 
 static esp_err_t statusHandler(httpd_req_t *req) {
-  char json[200];
+  char json[220];
   sensor_t *s = esp_camera_sensor_get();
   snprintf(json, sizeof(json),
            "{\"dist\":%d,\"angle\":%d,\"flags\":%d,\"uno\":%s,\"rssi\":%d,"
-           "\"framesize\":%d,\"quality\":%d,\"lights\":%d,\"flash\":%d,\"heap\":%u}",
+           "\"camOk\":%s,\"framesize\":%d,\"quality\":%d,\"lights\":%d,\"flash\":%d,\"heap\":%u}",
            lastDist, lastAngle, lastFlags,
            (millis() - lastUnoMs < 1000) ? "true" : "false",
            apMode ? 0 : (int)WiFi.RSSI(),
+           cameraOk ? "true" : "false",
            s ? s->status.framesize : -1, s ? s->status.quality : -1,
            (int)lightMode, (int)camFlash, (unsigned)ESP.getFreeHeap());
   httpd_resp_set_type(req, "application/json");
@@ -382,7 +523,9 @@ static void startServers() {
   httpd_config_t cfg = HTTPD_DEFAULT_CONFIG();
   cfg.server_port = 80;
   cfg.max_uri_handlers = 8;
-  cfg.lru_purge_enable = true;
+  cfg.max_open_sockets = 7;
+  cfg.lru_purge_enable = false;      // Never purge active WebSocket sockets
+  cfg.stack_size = 8192;             // Adequate stack for WebSocket frame operations
 
   httpd_uri_t uIndex  = { .uri = "/",       .method = HTTP_GET, .handler = indexHandler,   .user_ctx = NULL };
   httpd_uri_t uView   = { .uri = "/view",   .method = HTTP_GET, .handler = viewHandler,    .user_ctx = NULL };
@@ -426,6 +569,7 @@ static void wifiStart() {
   if (strlen(STA_SSID) > 0) {
     Serial.printf("Joining WiFi \"%s\" ", STA_SSID);
     WiFi.mode(WIFI_STA);
+    WiFi.setTxPower(WIFI_POWER_15dBm);       // Reduce RF peak surges from 450mA to ~260mA
     WiFi.begin(STA_SSID, STA_PASSWORD);
     uint32_t t0 = millis();
     while (WiFi.status() != WL_CONNECTED && millis() - t0 < 10000) { delay(250); Serial.print('.'); }
@@ -443,6 +587,7 @@ static void wifiStart() {
   WiFi.mode(WIFI_AP);
   WiFi.softAP(AP_SSID, AP_PASSWORD, AP_CHANNEL, 0, 4);
   WiFi.setSleep(false);
+  WiFi.setTxPower(WIFI_POWER_15dBm);         // Protect 5V rail against brownout reset loops
   apMode = true;
   Serial.printf("WiFi network \"%s\" / password \"%s\"\n", AP_SSID, AP_PASSWORD);
   Serial.printf("Phone: open  http://%s       PC viewer: http://%s/view\n",
@@ -454,6 +599,8 @@ static char unoBuf[48];
 static uint8_t unoLen = 0;
 
 static void readUno() {
+  static uint32_t lastUnoBroadcast = 0;
+  static int prevFlags = -1;
   while (Link.available()) {
     char ch = Link.read();
     if (ch == '\r') continue;
@@ -463,7 +610,13 @@ static void readUno() {
         int a = 90, d = 0, f = 0;
         if (sscanf(unoBuf, "D,%d,%d,%d", &a, &d, &f) == 3) {
           lastAngle = a; lastDist = d; lastFlags = f; lastUnoMs = millis();
-          wsBroadcast(unoBuf);                    // straight to the radar
+          // Rate-limit sensor broadcasts over WebSocket to ~90-100ms unless flags change,
+          // which avoids flooding the async WebSocket queue and dropping the socket
+          if (f != prevFlags || millis() - lastUnoBroadcast >= 90) {
+            lastUnoBroadcast = millis();
+            prevFlags = f;
+            wsBroadcast(unoBuf);                    // straight to the radar
+          }
         }
       }
       unoLen = 0;
@@ -510,11 +663,15 @@ static void sendToUno() {
     hornDirty = false;
     linkSend("H,%d", (int)hornState);
   }
+  if (songDirty) {
+    songDirty = false;
+    linkSend("P,%d", (int)songState);
+  }
   // Settings: on change, and every 3 s in case the UNO was reset
   if (cfgDirty || now - lastCfg >= 3000) {
     cfgDirty = false;
     lastCfg = now;
-    linkSend("C,%d,%d,%d,%d,%d", cfgWarn, cfgStop, cfgBrake, cfgAlways, cfgMute);
+    linkSend("C,%d,%d,%d,%d,%d,%d", cfgWarn, cfgStop, cfgBrake, cfgAlways, cfgMute, cfgInvertDrive);
   }
   // Headlights: on change, and every 3 s in case the UNO was reset
   if (lightDirty || now - lastLight >= 3000) {
@@ -529,6 +686,11 @@ void setup() {
 #if DISABLE_BROWNOUT
   WRITE_PERI_REG(RTC_CNTL_BROWN_OUT_REG, 0);
 #endif
+  // Drive flash LED pin LOW immediately so it does not flicker or leak power during boot
+  pinMode(FLASH_LED_PIN, OUTPUT);
+  digitalWrite(FLASH_LED_PIN, LOW);
+  flashInit();
+
   Serial.begin(115200);
   Serial.println("\n=== ROBOT CAR ESP32-CAM ===");
 
@@ -542,7 +704,6 @@ void setup() {
     // Keep running so the car can still be driven without video
     Serial.println("Continuing WITHOUT camera");
   }
-  flashInit();
   wifiStart();
   startServers();
   Serial.println("Ready.");
