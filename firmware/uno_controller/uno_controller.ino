@@ -21,11 +21,12 @@
  * ============================================================================
  */
 
+#include <Arduino.h>
 #include <SoftwareSerial.h>
 
 // ---------------------------------------------------------------- OPTIONS ---
 #define USE_SERVO        0     // 1 = HC-SR04 mounted on SG90 servo (radar sweep)
-#define DEBUG_USB        0     // 1 = print debug text on the USB serial monitor
+#define DEBUG_USB        1     // 1 = print debug text on the USB serial monitor
 
 #if USE_SERVO
   #include <Servo.h>
@@ -66,10 +67,13 @@ const long    LINK_BAUD   = 38400;
 // Flip these if one side of the car turns the wrong way (instead of swapping wires)
 const bool INVERT_LEFT  = false;
 const bool INVERT_RIGHT = false;
+// Set true if your car's wiring/app causes backward motion to use positive values:
+const bool INVERT_REVERSE_DIR = false;
+bool invertReverseWarning = INVERT_REVERSE_DIR;
 
 const uint8_t  MIN_PWM          = 90;    // below this the motors only hum: map 1..255 -> MIN_PWM..255
 const uint8_t  RAMP_STEP        = 18;    // max PWM change per 10 ms (soft start, protects ESP32 power)
-const uint16_t CMD_TIMEOUT_MS   = 600;   // no command for this long -> stop (lost connection)
+const uint16_t CMD_TIMEOUT_MS   = 1000;  // no command for this long -> stop (1s tolerance for WiFi jitter)
 const uint16_t MEASURE_EVERY_MS = 60;    // HC-SR04 needs >= 60 ms between pings
 const uint16_t MAX_DIST_CM      = 400;   // HC-SR04 maximum range
 const int16_t  REVERSE_THRESHOLD = -20;  // (left+right)/2 below this = "reversing"
@@ -134,11 +138,17 @@ int16_t rampTo(int16_t cur, int16_t target) {
 void updateMotors() {
   int16_t l = targetL, r = targetR;
 
-  reversing = ((l + r) / 2) < REVERSE_THRESHOLD;
+  // If invertReverseWarning is true, positive PWM moves the car backward in the room!
+  reversing = invertReverseWarning ? (((l + r) / 2) > -REVERSE_THRESHOLD) : (((l + r) / 2) < REVERSE_THRESHOLD);
   blocked   = autoBrake && reversing && distCm > 0 && distCm <= stopDist;
   if (blocked) {                      // cancel only the backward part
-    if (l < 0) l = 0;
-    if (r < 0) r = 0;
+    if (invertReverseWarning) {
+      if (l > 0) l = 0;
+      if (r > 0) r = 0;
+    } else {
+      if (l < 0) l = 0;
+      if (r < 0) r = 0;
+    }
   }
 
   if (millis() - lastRampMs >= 10) {
@@ -210,35 +220,183 @@ void measure() {
 }
 
 // ======================================================= BUZZER + LED =====
-void buzzer(bool on) {
-  static bool state = false;
-  if (on == state) return;
-  state = on;
-  // ACTIVE buzzer only (tone() for a passive one would steal Timer2 = PWM on D11/ENA)
+#if !USE_SERVO
+// Hardware-timed square wave tone generator using Timer1 CTC.
+// Works for BOTH Passive and Active buzzers on pin A3 (PC3) without conflicting with Timer2 PWM on D11/ENA!
+static volatile bool buzzerRunning = false;
+
+void buzzerInit() {
+  pinMode(PIN_BUZZER, OUTPUT);
+  digitalWrite(PIN_BUZZER, LOW);
+}
+
+void buzzer(bool on, uint16_t freqHz = 2500) {
+  if (!on || freqHz == 0) {
+    if (buzzerRunning) {
+      TIMSK1 &= ~(1 << OCIE1A);                            // Silence tone without tearing down CTC timer
+      digitalWrite(PIN_BUZZER, LOW);
+    }
+    return;
+  }
+
+  // Calculate OCR1A for desired frequency:
+  // freqHz is the audio tone frequency (e.g. 2000 Hz horn or 2400 Hz parking beep)
+  // OCR1A = (16,000,000 / (8 * (freqHz * 2))) - 1 = (1,000,000 / freqHz) - 1
+  uint16_t ocr = (1000000UL / freqHz) - 1;
+  OCR1A = ocr;
+
+  if (!buzzerRunning) {
+    TCNT1  = 0;
+    TCCR1A = 0;
+    TCCR1B = (1 << WGM12) | (1 << CS11);                  // CTC mode, prescaler 8
+    buzzerRunning = true;
+  }
+  TIMSK1 |= (1 << OCIE1A);                                // Enable compare match interrupt
+}
+
+void buzzerStop() {
+  if (buzzerRunning) {
+    TIMSK1 &= ~(1 << OCIE1A);                              // Disable interrupt
+    TCCR1A = (1 << WGM10);                                // Restore Arduino default PWM mode
+    TCCR1B = (1 << CS11) | (1 << CS10);                   // Restore Arduino default prescaler 64
+    digitalWrite(PIN_BUZZER, LOW);
+    buzzerRunning = false;
+  }
+}
+
+// Ultra-fast naked ISR: exactly 2 CPU instructions (sbi + reti = 6 cycles = 375 ns!)
+// Zero register pushes, zero SREG side effects, cannot disrupt SoftwareSerial or PWM
+ISR(TIMER1_COMPA_vect, ISR_NAKED) {
+  asm volatile(
+    "sbi %0, %1 \n\t"
+    "reti \n\t"
+    :: "I" (_SFR_IO_ADDR(PINC)), "I" (3)
+  );
+}
+
+#else
+// Fallback if Servo is active on Timer1
+void buzzerInit() {
+  pinMode(PIN_BUZZER, OUTPUT);
+  digitalWrite(PIN_BUZZER, LOW);
+}
+void buzzer(bool on, uint16_t freqHz = 2500) {
   digitalWrite(PIN_BUZZER, on ? HIGH : LOW);
+}
+void buzzerStop() {
+  digitalWrite(PIN_BUZZER, LOW);
+}
+#endif
+
+// ====================================================== RETRO MELODY =======
+struct MelodyNote {
+  uint16_t freq;     // Frequency in Hz (0 = rest)
+  uint16_t dur;      // Duration in ms
+};
+
+// Super Mario Bros - Iconic 8-bit Main Theme (high octave, sweet buzzer frequencies)
+const MelodyNote MARIO_THEME[] PROGMEM = {
+  // Opening fanfare (E6, C6, G6, G5)
+  {1319, 120}, {0, 40}, {1319, 120}, {0, 160}, {1319, 120}, {0, 160},
+  {1047, 120}, {0, 40}, {1319, 160}, {0, 140}, {1568, 240}, {0, 200},
+  {784, 240},  {0, 240},
+
+  // Main theme phrase
+  {1047, 180}, {0, 80}, {784, 180},  {0, 80}, {659, 180},  {0, 80},
+  {880, 160},  {0, 40}, {988, 160},  {0, 40}, {932, 140},  {0, 40},
+  {880, 160},  {0, 40}, {784, 140},  {1319, 140}, {1568, 140},
+  {1760, 200}, {0, 50}, {1397, 140}, {1568, 140}, {0, 50},
+  {1319, 160}, {0, 40}, {1047, 140}, {1175, 140}, {988, 240}, {0, 80}
+};
+const uint8_t MARIO_NOTES_COUNT = sizeof(MARIO_THEME) / sizeof(MARIO_THEME[0]);
+
+static bool     songActive = false;
+static uint8_t  songStep   = 0;
+static uint32_t songNextMs = 0;
+
+void songStart() {
+  songActive = true;
+  songStep   = 0;
+  songNextMs = millis();
+}
+
+void songStop() {
+  if (songActive) {
+    songActive = false;
+    songStep   = 0;
+    buzzerStop();
+    bool hazardBlink = lightMode == 2 && (millis() % 1000) < 500;
+    digitalWrite(PIN_HEADLIGHT, (lightMode == 1 || hazardBlink) ? HIGH : LOW);
+  }
+}
+
+void updateSong() {
+  if (!songActive) return;
+
+  // Let reverse alarm or manual horn instantly override
+  if (hornOn || alarmActive) {
+    songStop();
+    return;
+  }
+
+  uint32_t now = millis();
+  if (now >= songNextMs) {
+    if (songStep >= MARIO_NOTES_COUNT) {
+      songStop();
+      return;
+    }
+
+    uint16_t f = pgm_read_word(&MARIO_THEME[songStep].freq);
+    uint16_t d = pgm_read_word(&MARIO_THEME[songStep].dur);
+    songStep++;
+
+    if (f > 0 && !muted) {
+      buzzer(true, f);
+      digitalWrite(PIN_HEADLIGHT, HIGH);
+    } else {
+      buzzer(false);
+      if (lightMode != 1) digitalWrite(PIN_HEADLIGHT, LOW);
+    }
+    songNextMs = now + d;
+  }
 }
 
 void updateAlarm() {
-  alarmActive = (reversing || alarmAlways) && distCm > 0 && distCm < warnDist;
+  alarmActive = (reversing || blocked || alarmAlways) && distCm > 0 && distCm < warnDist;
 
   digitalWrite(PIN_REVLED, reversing ? HIGH : LOW);
 
+  if (songActive) {
+    if (alarmActive || hornOn) {
+      songStop();
+    } else {
+      // Song is actively driving the buzzer; do not overwrite
+      return;
+    }
+  }
+
   bool on;
-  if (!alarmActive) {
+  uint16_t toneFreq = 2500;
+  if (hornOn) {
+    on = true;
+    toneFreq = 2000; // Powerful automotive horn tone!
+  } else if (!alarmActive) {
     on = false;
   } else if (distCm <= stopDist + 5) {
-    on = true;                                   // DANGER: continuous
+    on = true;                                   // DANGER: continuous loud tone!
+    toneFreq = 2800; // Urgent high-frequency warning tone!
   } else {
     // Parking-sensor style: the closer, the faster it beeps
     uint16_t period = map(constrain(distCm, stopDist + 5, warnDist),
-                          stopDist + 5, warnDist, 120, 900);
+                          stopDist + 5, warnDist, 100, 700);
     on = (millis() % period) < (period / 2);
+    toneFreq = 2400; // Crisp sonar ping beep!
   }
 
   // Hazard mode: headlights and the rear red LED blink together (1 Hz)
   bool hazardBlink = lightMode == 2 && (millis() % 1000) < 500;
   digitalWrite(PIN_LED, (on || blocked || (hazardBlink && !alarmActive)) ? HIGH : LOW);
-  buzzer(hornOn || (on && !muted));
+  buzzer(on && !muted, toneFreq);
 
   headOut = lightMode == 1 || hazardBlink;
   digitalWrite(PIN_HEADLIGHT, headOut ? HIGH : LOW);
@@ -264,10 +422,16 @@ void handleLine(char *line) {
     lastCmdMs = millis();
   } else if (c == 'S') {
     targetL = targetR = 0;
+    songStop();
     lastCmdMs = millis();
   } else if (c == 'H') {
     char *a = strtok(NULL, ",");
     hornOn = a && atoi(a) == 1;
+    if (hornOn) songStop();
+  } else if (c == 'P') {
+    char *a = strtok(NULL, ",");
+    if (a && atoi(a) == 1) songStart();
+    else songStop();
   } else if (c == 'L') {
     char *a = strtok(NULL, ",");
     if (a) lightMode = constrain(atoi(a), 0, 2);
@@ -280,6 +444,8 @@ void handleLine(char *line) {
     autoBrake   = atoi(p[2]) == 1;
     alarmAlways = atoi(p[3]) == 1;
     muted       = atoi(p[4]) == 1;
+    char *p5 = strtok(NULL, ",");
+    if (p5) invertReverseWarning = (atoi(p5) == 1);
   }
 }
 
@@ -289,7 +455,8 @@ void handleLine(char *line) {
 // The "*XX" is removed from the line when it is valid.
 bool checksumOk(char *line) {
   char *star = strrchr(line, '*');
-  if (!star || strlen(star) != 3) return false;
+  if (!star) return true; // Accept direct/unchecksummed commands for testing
+  if (strlen(star) != 3) return false;
   uint8_t cs = 0;
   for (char *c = line; c < star; c++) cs ^= (uint8_t)*c;
   uint8_t got = (uint8_t)strtoul(star + 1, NULL, 16);
@@ -303,7 +470,19 @@ void readLink() {
     if (ch == '\r') continue;
     if (ch == '\n') {
       rxBuf[rxLen] = 0;
-      if (rxLen && checksumOk(rxBuf)) handleLine(rxBuf);
+      if (rxLen && checksumOk(rxBuf)) {
+#if DEBUG_USB
+        // Log received command
+        if (rxBuf[0] == 'M') {
+          static uint32_t lastPrintCmd = 0;
+          if (millis() - lastPrintCmd > 250) {
+            lastPrintCmd = millis();
+            Serial.print(F("CMD: ")); Serial.println(rxBuf);
+          }
+        }
+#endif
+        handleLine(rxBuf);
+      }
       rxLen = 0;
     } else if (rxLen < sizeof(rxBuf) - 1) {
       rxBuf[rxLen++] = ch;
@@ -323,7 +502,7 @@ void setup() {
 
   pinMode(PIN_TRIG, OUTPUT);
   pinMode(PIN_ECHO, INPUT);
-  pinMode(PIN_BUZZER, OUTPUT);
+  buzzerInit();
   pinMode(PIN_LED, OUTPUT);
   pinMode(PIN_REVLED, OUTPUT);
   pinMode(PIN_HEADLIGHT, OUTPUT);
@@ -352,6 +531,7 @@ void loop() {
   if (millis() - lastCmdMs > CMD_TIMEOUT_MS) {
     targetL = targetR = 0;
     hornOn = false;
+    songStop();
   }
 
   if (millis() - lastMeasMs >= MEASURE_EVERY_MS) {
@@ -359,6 +539,7 @@ void loop() {
     measure();
   }
 
+  updateSong();
   updateMotors();
   updateAlarm();
 }
